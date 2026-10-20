@@ -1,191 +1,169 @@
-@extends('layouts.app')
+@extends('layouts.sidebar')
 
-@section('title', 'Admin Dashboard - TaniLink')
+@section('title', 'Dashboard Admin - TaniLink Central')
 
-@section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-
-    {{-- Admin Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg font-bold">
-                <i class="fa-solid fa-shield-halved"></i>
-            </div>
-            <div>
-                <h1 class="text-xl font-extrabold text-slate-900">Dashboard Admin</h1>
-                <p class="text-[11px] text-slate-400">TaniLink Central • Kelola platform & escrow</p>
-            </div>
-        </div>
-    </div>
-
-    {{-- Metric Cards --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total GMV</span>
-            <div class="text-lg sm:text-2xl font-black text-slate-900 mt-1">Rp {{ number_format($totalGmv, 0, ',', '.') }}</div>
-            <span class="text-[10px] font-semibold text-purple-600 flex items-center gap-1 mt-1">
-                <i class="fa-solid fa-chart-line"></i> Volume transaksi
-            </span>
-        </div>
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">DP Tersalurkan</span>
-            <div class="text-lg sm:text-2xl font-black text-slate-900 mt-1">Rp {{ number_format($totalDpDisbursed, 0, ',', '.') }}</div>
-            <span class="text-[10px] font-semibold text-[#05C793] flex items-center gap-1 mt-1">
-                <i class="fa-solid fa-check"></i> Ke petani
-            </span>
-        </div>
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Escrow Terkunci</span>
-            <div class="text-lg sm:text-2xl font-black text-slate-900 mt-1">Rp {{ number_format($totalEscrowLocked, 0, ',', '.') }}</div>
-            <span class="text-[10px] font-semibold text-cyan-600 flex items-center gap-1 mt-1">
-                <i class="fa-solid fa-lock"></i> Dana aman
-            </span>
-        </div>
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Pengguna</span>
-            <div class="text-lg sm:text-2xl font-black text-slate-900 mt-1">{{ $allUsers->count() }}</div>
-            <span class="text-[10px] font-semibold text-slate-500 flex items-center gap-1 mt-1">
-                <i class="fa-solid fa-users"></i>
-                {{ $allUsers->where('role', 'petani')->count() }} petani • {{ $allUsers->where('role', 'pembeli')->count() }} pembeli
-            </span>
-        </div>
-    </div>
-
-    {{-- Active Orders / Escrow Management --}}
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm">
-        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-            <h2 class="font-extrabold text-sm text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-clipboard-list text-purple-600"></i> Pesanan & Escrow
-            </h2>
-            <span class="text-[10px] font-bold text-slate-400 uppercase">{{ $allOrders->count() }} pesanan</span>
-        </div>
-
-        @if($allOrders->count() > 0)
-        <div class="divide-y divide-slate-100">
-            @foreach($allOrders as $order)
-            <div class="p-5 hover:bg-slate-50/50 transition-colors">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 flex-wrap mb-1">
-                            <span class="px-2 py-0.5 rounded-lg bg-purple-50 text-purple-600 border border-purple-200 text-[10px] font-extrabold uppercase">
-                                {{ $order->order_code }}
-                            </span>
-                            <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase
-                                {{ $order->status === 'selesai' ? 'bg-emerald-50 text-emerald-600' : 'bg-cyan-50 text-cyan-600' }}">
-                                {{ str_replace('_', ' ', $order->status) }}
-                            </span>
-                        </div>
-                        <h4 class="font-bold text-sm text-slate-900">{{ $order->commodityListing->commodity_name }} — {{ number_format($order->quantity_kg, 0, ',', '.') }} kg</h4>
-                        <p class="text-[11px] text-slate-400 mt-0.5">
-                            <i class="fa-solid fa-person-digging text-[#05C793]"></i> {{ $order->farmer->name }}
-                            <span class="mx-1">→</span>
-                            <i class="fa-solid fa-hotel text-cyan-600"></i> {{ $order->buyer->name }}
-                        </p>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <div class="text-right">
-                            <span class="text-[10px] font-bold text-slate-400 block">Escrow</span>
-                            <span class="text-sm font-extrabold text-slate-900">Rp {{ number_format($order->escrow_locked_amount, 0, ',', '.') }}</span>
-                        </div>
-
-                        @if($order->status !== 'selesai' && $order->escrow_locked_amount > 0)
-                        <form method="POST" action="{{ route('admin.escrow.release', $order->id) }}">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-[11px] font-bold shadow-sm transition-colors cursor-pointer whitespace-nowrap">
-                                <i class="fa-solid fa-unlock text-[10px]"></i> Rilis Escrow
-                            </button>
-                        </form>
-                        @else
-                        <span class="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-bold">
-                            <i class="fa-solid fa-check"></i> Selesai
-                        </span>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-        @else
-        <div class="p-12 text-center">
-            <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xl mx-auto mb-3">
-                <i class="fa-solid fa-inbox"></i>
-            </div>
-            <h4 class="font-bold text-sm text-slate-900">Belum Ada Pesanan</h4>
-            <p class="text-[11px] text-slate-400 mt-1">Pesanan dari pembeli akan muncul di sini.</p>
-        </div>
-        @endif
-    </div>
-
-    {{-- Listings Overview --}}
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm">
-        <div class="px-5 py-4 border-b border-slate-100">
-            <h2 class="font-extrabold text-sm text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-store text-[#05C793]"></i> Semua Listing Marketplace
-            </h2>
-        </div>
-        <div class="divide-y divide-slate-100">
-            @foreach($allListings as $listing)
-            <div class="px-5 py-3 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0">
-                        <img src="{{ str_starts_with($listing->image_url ?? '', '/storage') ? asset($listing->image_url) : $listing->image_url }}" 
-                             alt="" class="w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-xs text-slate-900">{{ $listing->commodity_name }}</h4>
-                        <p class="text-[10px] text-slate-400">{{ $listing->farmer->name ?? 'Unknown' }} • {{ $listing->location }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-xs font-bold text-slate-700">Rp {{ number_format($listing->price_per_kg, 0, ',', '.') }}/kg</span>
-                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold
-                        {{ $listing->status === 'available' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500' }}">
-                        {{ ucfirst($listing->status) }}
-                    </span>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-
-    {{-- Users --}}
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm">
-        <div class="px-5 py-4 border-b border-slate-100">
-            <h2 class="font-extrabold text-sm text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-users text-purple-600"></i> Daftar Pengguna
-            </h2>
-        </div>
-        <div class="divide-y divide-slate-100">
-            @foreach($allUsers as $user)
-            <div class="px-5 py-3 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold
-                        @if($user->role === 'petani') bg-emerald-100 text-[#05C793]
-                        @elseif($user->role === 'pembeli') bg-cyan-100 text-cyan-600
-                        @else bg-purple-100 text-purple-600
-                        @endif">
-                        @if($user->role === 'petani') <i class="fa-solid fa-person-digging"></i>
-                        @elseif($user->role === 'pembeli') <i class="fa-solid fa-hotel"></i>
-                        @else <i class="fa-solid fa-shield-halved"></i>
-                        @endif
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-xs text-slate-900">{{ $user->name }}</h4>
-                        <p class="text-[10px] text-slate-400">{{ $user->email }} • {{ $user->organization }}</p>
-                    </div>
-                </div>
-                <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase
-                    @if($user->role === 'petani') bg-emerald-50 text-emerald-600
-                    @elseif($user->role === 'pembeli') bg-cyan-50 text-cyan-600
-                    @else bg-purple-50 text-purple-600
-                    @endif">
-                    {{ $user->role }}
-                </span>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</div>
+@section('sidebar_nav')
+<a href="{{ route('portal.admin') }}" class="nav-btn {{ request()->routeIs('portal.admin') ? 'active' : '' }}">
+    <span class="nav-icon">▦</span> Dashboard Admin
+</a>
+<a href="{{ route('admin.pengguna') }}" class="nav-btn {{ request()->routeIs('admin.pengguna*') ? 'active' : '' }}">
+    <span class="nav-icon">♧</span> Kelola Pengguna
+</a>
+<a href="{{ route('admin.komoditas') }}" class="nav-btn {{ request()->routeIs('admin.komoditas*') ? 'active' : '' }}">
+    <span class="nav-icon">▤</span> Kelola Komoditas
+</a>
+<a href="{{ route('admin.pesanan') }}" class="nav-btn {{ request()->routeIs('admin.pesanan*') ? 'active' : '' }}">
+    <span class="nav-icon">▣</span> Pesanan & Escrow
+</a>
+<a href="{{ route('admin.laporan') }}" class="nav-btn {{ request()->routeIs('admin.laporan*') ? 'active' : '' }}">
+    <span class="nav-icon">▥</span> Laporan & Statistik
+</a>
 @endsection
 
+@section('breadcrumb')
+    TaniLink &rsaquo; Admin &rsaquo; <strong>Ringkasan Operasional</strong>
+@endsection
+
+@section('content')
+
+    {{-- Headline --}}
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
+        <div>
+            <div style="font-size:10px; font-weight:900; color:#7257CA; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">TaniLink / Admin Central</div>
+            <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Ringkasan Operasional</h1>
+            <p style="font-size:12px; color:#8A9A94; margin:0;">Pantau aktivitas pengguna, penawaran komoditas, dan simulasi kontrak TaniLink.</p>
+        </div>
+        <a href="{{ route('admin.laporan') }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; background:#7257CA; color:#fff; font-size:12px; font-weight:800; text-decoration:none;">
+            Lihat Laporan ↗
+        </a>
+    </div>
+
+    {{-- Notice --}}
+    <div style="padding:14px 18px; display:flex; align-items:flex-start; gap:11px; border-radius:12px; background:#F1EFFB; border:1px solid #D8D1F5; color:#513B9B; font-size:11px; line-height:1.6; margin-bottom:20px;">
+        <span>ⓘ</span>
+        <span><b>Data operasional:</b> Nilai DP, escrow, GMV, dan rilis dana adalah instrumen tata kelola transaksi pertanian transparan TaniLink.</span>
+    </div>
+
+    {{-- 4 Metric Cards --}}
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:20px;">
+        <div class="card" style="padding:19px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
+                <span>Pengguna Terdaftar</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#F1EFFB; color:#7257CA; font-size:16px;">♧</span>
+            </div>
+            <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
+                {{ $allUsers->count() }}
+            </div>
+            <div style="font-size:10px; color:#7B9187;">Gapoktan & Horeka aktif</div>
+        </div>
+
+        <div class="card" style="padding:19px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
+                <span>Komoditas Aktif</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:16px;">▤</span>
+            </div>
+            <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
+                {{ $allListings->count() }}
+            </div>
+            <div style="font-size:10px; color:#7B9187;">Penawaran di marketplace</div>
+        </div>
+
+        <div class="card" style="padding:19px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
+                <span>Pesanan Pre-Order</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E8F9FC; color:#0B8BAA; font-size:16px;">▦</span>
+            </div>
+            <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
+                {{ $allOrders->count() }}
+            </div>
+            <div style="font-size:10px; color:#7B9187;">Seluruh status kontrak</div>
+        </div>
+
+        <div class="card" style="padding:19px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
+                <span>Nilai GMV Platform</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#FFF5E8; color:#BA7A1F; font-size:16px;">▥</span>
+            </div>
+            <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
+                Rp {{ number_format($totalGmv, 0, ',', '.') }}
+            </div>
+            <div style="font-size:10px; color:#7B9187;">Escrow locked: Rp {{ number_format($totalEscrowLocked, 0, ',', '.') }}</div>
+        </div>
+    </div>
+
+    {{-- Grid 2 Kolom --}}
+    <div style="display:grid; grid-template-columns:minmax(0, 1.6fr) minmax(300px, 1fr); gap:18px;">
+        
+        {{-- Kiri: Tren Pre-Order Bar Chart Pure CSS --}}
+        <div class="card" style="padding:22px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+                <div>
+                    <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Tren Volume Pre-Order</h2>
+                    <p style="font-size:11px; color:#91A19B; margin:0;">Ilustrasi volume transaksi komoditas 7 bulan terakhir.</p>
+                </div>
+                <span style="font-size:11px; font-weight:800; color:#07946C;">+18.4% MoM</span>
+            </div>
+
+            {{-- Pure CSS Bar Chart --}}
+            <div style="height:175px; display:flex; align-items:flex-end; gap:16px; padding:0 12px 14px; border-bottom:1px solid #E5ECEA; margin-bottom:28px;">
+                @php
+                    $months = [
+                        ['Apr', 45], ['Mei', 65], ['Jun', 52],
+                        ['Jul', 80], ['Agt', 70], ['Sep', 95], ['Okt', 85]
+                    ];
+                @endphp
+                @foreach($months as $m)
+                <div style="flex:1; height:{{ $m[1] }}%; background:linear-gradient(180deg, #05C793, #9BE8CF); border-radius:8px 8px 0 0; position:relative; min-height:12px;">
+                    <span style="position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:10px; font-weight:800; color:#07876B;">{{ $m[1] }}</span>
+                    <small style="position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); color:#9AA9A3; font-size:10px; font-weight:700;">{{ $m[0] }}</small>
+                </div>
+                @endforeach
+            </div>
+
+            <div style="display:flex; justify-content:space-between; font-size:11px; color:#85958F;">
+                <span>Total Escrow Diamankan: <b style="color:#6953B5;">Rp {{ number_format($totalEscrowLocked, 0, ',', '.') }}</b></span>
+                <span>DP Tersalurkan: <b style="color:#0C8D65;">Rp {{ number_format($totalDpDisbursed, 0, ',', '.') }}</b></span>
+            </div>
+        </div>
+
+        {{-- Kanan: Pesanan Terkini --}}
+        <div class="card" style="padding:22px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+                <div>
+                    <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Pesanan Terkini</h2>
+                    <p style="font-size:11px; color:#91A19B; margin:0;">Status transaksi escrow platform.</p>
+                </div>
+                <a href="{{ route('admin.pesanan') }}" style="color:#7257CA; font-size:11px; font-weight:850; text-decoration:none;">
+                    Kelola →
+                </a>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                @forelse($allOrders->take(4) as $o)
+                <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:1px solid #EEF3F0;">
+                    <div>
+                        <b style="font-size:12px; color:#172B29;">{{ $o->order_code }}</b>
+                        <div style="font-size:10px; color:#8A9994; margin-top:2px;">
+                            {{ $o->commodityListing->commodity_name ?? 'Komoditas' }} &bull; {{ $o->buyer->name ?? 'Pembeli' }}
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <b style="font-size:12px; color:#0A765A;">Rp {{ number_format($o->total_amount, 0, ',', '.') }}</b>
+                        <div style="margin-top:2px;">
+                            @if($o->status === 'selesai')
+                                <span style="display:inline-flex; align-items:center; padding:2px 7px; border-radius:5px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:9px;">Selesai</span>
+                            @else
+                                <span style="display:inline-flex; align-items:center; padding:2px 7px; border-radius:5px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:9px;">DP Cair</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @empty
+                <p style="font-size:12px; color:#8A9D95; text-align:center;">Belum ada pesanan masuk.</p>
+                @endforelse
+            </div>
+        </div>
+
+    </div>
+
+@endsection

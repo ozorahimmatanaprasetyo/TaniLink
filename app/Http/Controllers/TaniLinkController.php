@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\CommodityListing;
 use App\Models\PreOrder;
@@ -37,7 +38,7 @@ class TaniLinkController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'password' => Hash::make($validated['password']),
             'role' => 'pending', // will be set in onboarding
         ]);
 
@@ -88,7 +89,6 @@ class TaniLinkController extends Controller
 
     public function onboarding()
     {
-        // Jika admin nyasar kesini, kembalikan ke admin
         if (Auth::user()->role === 'admin') {
             return redirect()->route('portal.admin');
         }
@@ -120,7 +120,7 @@ class TaniLinkController extends Controller
     }
 
     // ==========================================
-    // 1. PORTAL PETANI (PRODUSEN)
+    // 1. PORTAL PETANI (GAPOKTAN)
     // ==========================================
 
     public function petani(Request $request)
@@ -144,6 +144,89 @@ class TaniLinkController extends Controller
         $totalCropKg = $myListings->sum('estimated_harvest_kg');
 
         return view('tanilink.petani', compact('petani', 'myListings', 'activeOrders', 'dpReceived', 'escrowLocked', 'totalCropKg'));
+    }
+
+    public function petaniListings(Request $request)
+    {
+        $petani = Auth::user();
+        session(['active_role' => 'petani']);
+
+        $myListings = CommodityListing::where('user_id', $petani->id)->latest()->get();
+        $activeOrders = PreOrder::where('farmer_id', $petani->id)->get();
+
+        $dpReceived = $activeOrders->sum('dp_amount');
+        $totalCropKg = $myListings->sum('estimated_harvest_kg');
+
+        return view('tanilink.farmer.listings', compact('petani', 'myListings', 'dpReceived', 'totalCropKg'));
+    }
+
+    public function petaniCreateListing(Request $request)
+    {
+        $petani = Auth::user();
+        session(['active_role' => 'petani']);
+
+        return view('tanilink.farmer.create', compact('petani'));
+    }
+
+    public function petaniOrders(Request $request)
+    {
+        $petani = Auth::user();
+        session(['active_role' => 'petani']);
+
+        $activeOrders = PreOrder::with(['commodityListing', 'buyer', 'plantingProgress', 'deliveryTracking'])
+            ->where('farmer_id', $petani->id)
+            ->latest()
+            ->get();
+
+        $totalKg = $activeOrders->sum('quantity_kg');
+        $totalContract = $activeOrders->sum('total_amount');
+        $dpReceived = $activeOrders->sum('dp_amount');
+
+        return view('tanilink.farmer.orders', compact('petani', 'activeOrders', 'totalKg', 'totalContract', 'dpReceived'));
+    }
+
+    public function petaniOrderProgress($id)
+    {
+        $petani = Auth::user();
+        session(['active_role' => 'petani']);
+
+        $order = PreOrder::with(['commodityListing', 'buyer', 'plantingProgress', 'deliveryTracking'])
+            ->where('farmer_id', $petani->id)
+            ->findOrFail($id);
+
+        return view('tanilink.farmer.progress', compact('petani', 'order'));
+    }
+
+    public function petaniProfile()
+    {
+        $petani = Auth::user();
+        session(['active_role' => 'petani']);
+
+        $listingCount = CommodityListing::where('user_id', $petani->id)->count();
+
+        return view('tanilink.farmer.profile', compact('petani', 'listingCount'));
+    }
+
+    public function updatePetaniProfile(Request $request)
+    {
+        $petani = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'organization' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'location' => 'nullable|string|max:255',
+            'bio' => 'nullable|string',
+        ]);
+
+        $petani->update([
+            'name' => $validated['name'],
+            'organization' => $validated['organization'] ?? $petani->organization,
+            'phone' => $validated['phone'] ?? $petani->phone,
+            'location' => $validated['location'] ?? $petani->location,
+        ]);
+
+        return back()->with('success', 'Profil kelompok tani berhasil diperbarui!');
     }
 
     public function storeListing(Request $request)
@@ -184,7 +267,7 @@ class TaniLinkController extends Controller
             'status' => 'available',
         ]);
 
-        return redirect()->route('portal.petani')->with('success', 'Jualan komoditas berhasil diterbitkan!');
+        return redirect()->route('petani.komoditas')->with('success', 'Jualan komoditas berhasil diterbitkan!');
     }
 
     public function storeProgress(Request $request)
@@ -212,7 +295,7 @@ class TaniLinkController extends Controller
             'stage_percentage' => min(100, $preOrder->stage_percentage + 15),
         ]);
 
-        return redirect()->route('portal.petani')->with('success', 'Update progres berhasil dikirim ke pembeli!');
+        return back()->with('success', 'Update progres berhasil dikirim ke pembeli!');
     }
 
     // ==========================================
@@ -244,6 +327,67 @@ class TaniLinkController extends Controller
         return view('tanilink.pembeli', compact('pembeli', 'catalog', 'myOrders', 'totalPreOrderValue', 'escrowHeld'));
     }
 
+    public function pembeliCatalog(Request $request)
+    {
+        $pembeli = Auth::user();
+        session(['active_role' => 'pembeli']);
+
+        $catalog = CommodityListing::with('farmer')
+            ->where('status', '!=', 'draft')
+            ->latest()
+            ->get();
+
+        return view('tanilink.buyer.catalog', compact('pembeli', 'catalog'));
+    }
+
+    public function pembeliOrders(Request $request)
+    {
+        $pembeli = Auth::user();
+        session(['active_role' => 'pembeli']);
+
+        $myOrders = PreOrder::with(['commodityListing', 'farmer', 'plantingProgress', 'deliveryTracking'])
+            ->where('buyer_id', $pembeli->id)
+            ->latest()
+            ->get();
+
+        $totalPreOrderValue = $myOrders->sum('total_amount');
+        $escrowHeld = $myOrders->sum('escrow_locked_amount');
+
+        return view('tanilink.buyer.orders', compact('pembeli', 'myOrders', 'totalPreOrderValue', 'escrowHeld'));
+    }
+
+    public function pembeliTracking($id)
+    {
+        $pembeli = Auth::user();
+        session(['active_role' => 'pembeli']);
+
+        $order = PreOrder::with(['commodityListing', 'farmer', 'plantingProgress', 'deliveryTracking'])
+            ->where('buyer_id', $pembeli->id)
+            ->findOrFail($id);
+
+        return view('tanilink.buyer.tracking', compact('pembeli', 'order'));
+    }
+
+    public function pembeliCommodityDetail($id)
+    {
+        $pembeli = Auth::user();
+        session(['active_role' => 'pembeli']);
+
+        $listing = CommodityListing::with('farmer')->findOrFail($id);
+
+        return view('tanilink.buyer.product', compact('pembeli', 'listing'));
+    }
+
+    public function pembeliPreorderForm($id)
+    {
+        $pembeli = Auth::user();
+        session(['active_role' => 'pembeli']);
+
+        $listing = CommodityListing::with('farmer')->findOrFail($id);
+
+        return view('tanilink.buyer.preorder', compact('pembeli', 'listing'));
+    }
+
     public function storeBooking(Request $request)
     {
         $pembeli = Auth::user();
@@ -260,7 +404,6 @@ class TaniLinkController extends Controller
         $listing = CommodityListing::findOrFail($validated['listing_id']);
         $qty = (int) $validated['quantity_kg'];
 
-        // Validasi stok mencukupi
         if ($listing->status !== 'available') {
             return back()->withErrors(['error' => 'Komoditas ini sudah tidak tersedia.'])->withInput();
         }
@@ -300,13 +443,13 @@ class TaniLinkController extends Controller
         DeliveryTracking::create([
             'pre_order_id' => $order->id,
             'pickup_address' => 'Lahan Petani, ' . $listing->location,
-            'destination_address' => $pembeli->organization . ', ' . ($pembeli->location ?? 'Kota'),
+            'destination_address' => ($pembeli->organization ?? 'Grand Hotel Malang') . ', ' . ($pembeli->location ?? 'Kota Malang'),
             'distance_km' => 18.0,
             'estimated_time' => '45 Menit',
             'status' => 'scheduled',
             'pickup_time' => now()->addDays(30)->setTime(6, 30),
-            'driver_name' => 'Sistem Kurir TaniLink',
-            'driver_vehicle' => 'Pickup/Engkel',
+            'driver_name' => 'Budi Santoso (Pickup L300)',
+            'driver_vehicle' => 'Pickup L300',
             'cargo_crates' => max(1, ceil($qty / 20)),
         ]);
 
@@ -315,7 +458,7 @@ class TaniLinkController extends Controller
             $listing->update(['status' => 'booked']);
         }
 
-        return redirect()->route('portal.pembeli')->with('success', 'Pre-Order berhasil! DP diamankan di Escrow.');
+        return redirect()->route('pembeli.pesanan')->with('success', 'Pre-Order berhasil! DP diamankan di Escrow.');
     }
 
     // ==========================================
@@ -345,6 +488,77 @@ class TaniLinkController extends Controller
         return view('tanilink.admin', compact('admin', 'allOrders', 'allListings', 'allUsers', 'totalEscrowLocked', 'totalDpDisbursed', 'totalGmv'));
     }
 
+    public function adminUsers()
+    {
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->route('home');
+        }
+
+        $admin = Auth::user();
+        session(['active_role' => 'admin']);
+
+        $allUsers = User::latest()->get();
+
+        return view('tanilink.admin.users', compact('admin', 'allUsers'));
+    }
+
+    public function adminListings()
+    {
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->route('home');
+        }
+
+        $admin = Auth::user();
+        session(['active_role' => 'admin']);
+
+        $allListings = CommodityListing::with('farmer')->latest()->get();
+
+        return view('tanilink.admin.listings', compact('admin', 'allListings'));
+    }
+
+    public function adminOrders()
+    {
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->route('home');
+        }
+
+        $admin = Auth::user();
+        session(['active_role' => 'admin']);
+
+        $allOrders = PreOrder::with(['commodityListing', 'farmer', 'buyer', 'deliveryTracking'])
+            ->latest()
+            ->get();
+
+        $totalEscrowLocked = $allOrders->sum('escrow_locked_amount');
+        $totalDpDisbursed = $allOrders->sum('dp_amount');
+        $totalGmv = $allOrders->sum('total_amount');
+
+        return view('tanilink.admin.orders', compact('admin', 'allOrders', 'totalEscrowLocked', 'totalDpDisbursed', 'totalGmv'));
+    }
+
+    public function adminReports()
+    {
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->route('home');
+        }
+
+        $admin = Auth::user();
+        session(['active_role' => 'admin']);
+
+        $allOrders = PreOrder::with(['commodityListing', 'farmer', 'buyer'])
+            ->latest()
+            ->get();
+
+        $allUsers = User::all();
+        $allListings = CommodityListing::all();
+
+        $totalGmv = $allOrders->sum('total_amount');
+        $totalDpDisbursed = $allOrders->sum('dp_amount');
+        $totalEscrowLocked = $allOrders->sum('escrow_locked_amount');
+
+        return view('tanilink.admin.reports', compact('admin', 'allOrders', 'allUsers', 'allListings', 'totalGmv', 'totalDpDisbursed', 'totalEscrowLocked'));
+    }
+
     public function releaseEscrow($orderId)
     {
         if (Auth::user()->role !== 'admin') {
@@ -361,6 +575,49 @@ class TaniLinkController extends Controller
             $order->deliveryTracking->update(['status' => 'delivered']);
         }
 
-        return redirect()->route('portal.admin')->with('success', 'Dana escrow berhasil dirilis penuh ke petani!');
+        return back()->with('success', 'Dana escrow berhasil dirilis penuh ke petani!');
+    }
+
+    // ==========================================
+    // 4. COMMON (PENGATURAN & BANTUAN)
+    // ==========================================
+
+    public function settings()
+    {
+        $user = Auth::user();
+        return view('tanilink.settings', compact('user'));
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'organization' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'location' => 'nullable|string|max:255',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        $data = [
+            'name' => $validated['name'],
+            'organization' => $validated['organization'] ?? $user->organization,
+            'phone' => $validated['phone'] ?? $user->phone,
+            'location' => $validated['location'] ?? $user->location,
+        ];
+
+        if (!empty($validated['password'])) {
+            $data['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($data);
+
+        return back()->with('success', 'Pengaturan profil akun berhasil diperbarui!');
+    }
+
+    public function helpCenter()
+    {
+        return view('tanilink.help');
     }
 }
