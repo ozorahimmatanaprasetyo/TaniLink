@@ -19,7 +19,7 @@
 
         /* ── Left panel ── */
         .login-left {
-            width: 52%;
+            width: 50%;
             background: linear-gradient(140deg, #064737, #08a881);
             position: relative;
             display: flex;
@@ -77,7 +77,7 @@
 
         /* ── Right panel ── */
         .login-right {
-            width: 48%;
+            width: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -249,7 +249,7 @@
             Hubungkan<br>Panen &amp; Peluang.
         </h1>
         <p class="login-left-para">
-            TaniLink adalah platform pre-order agrikultur yang mempertemukan petani dan Horeka secara langsung — transparan, efisien, dan tanpa perantara.
+            TaniLink adalah platform pre-order agrikultur yang mempertemukan petani dan konsumen secara langsung — transparan, efisien, dan tanpa perantara.
         </p>
 
         {{-- Decoration --}}
@@ -280,29 +280,38 @@
             @endif
 
             {{-- Login form --}}
-            <form action="{{ route('login.post') }}" method="POST">
+            <form action="{{ route('login.post') }}" method="POST" x-data="{ showPass: false }">
                 @csrf
 
-                {{-- Email --}}
+                {{-- Email / Phone --}}
                 <div style="margin-bottom:16px;">
-                    <label for="email" class="form-label">Alamat Email</label>
-                    <input type="email" name="email" id="email"
-                           value="{{ old('email') }}"
+                    <label for="login_input" class="form-label">Alamat Email atau Nomor HP</label>
+                    <input type="text" name="login" id="login_input"
+                           value="{{ old('login', old('email')) }}"
                            required autofocus
                            class="form-input"
-                           placeholder="nama@email.com">
+                           placeholder="nama@email.com atau 08123456789">
                 </div>
 
-                {{-- Password --}}
+                {{-- Password with Eye Toggle --}}
                 <div style="margin-bottom:20px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:7px;">
                         <label for="password" class="form-label" style="margin-bottom:0;">Password</label>
                         <a href="#" style="font-size:12px; font-weight:700; color:#05C793; text-decoration:none;">Lupa Password?</a>
                     </div>
-                    <input type="password" name="password" id="password"
-                           required
-                           class="form-input"
-                           placeholder="••••••••">
+                    <div style="position:relative;">
+                        <input :type="showPass ? 'text' : 'password'" name="password" id="password"
+                               required
+                               class="form-input"
+                               style="padding-right:42px;"
+                               placeholder="••••••••">
+                        <button type="button" @click="showPass = !showPass"
+                                tabindex="-1"
+                                style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#8A9D96; cursor:pointer; font-size:14px; padding:4px;"
+                                title="Lihat password">
+                            <i :class="showPass ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
+                        </button>
+                    </div>
                 </div>
 
                 {{-- Submit --}}
@@ -331,7 +340,7 @@
                         <div class="demo-item-email">raden@tanilink.id</div>
                     </div>
                     <div class="demo-item">
-                        <div class="demo-item-role">Pembeli (Horeka)</div>
+                        <div class="demo-item-role">Konsumen</div>
                         <div class="demo-item-email">maya@grandhotel.com</div>
                     </div>
                     <div class="demo-item">

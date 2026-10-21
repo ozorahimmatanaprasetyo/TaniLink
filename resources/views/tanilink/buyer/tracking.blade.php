@@ -9,13 +9,12 @@
 <a href="{{ route('pembeli.katalog') }}" class="nav-btn {{ request()->routeIs('pembeli.katalog*') ? 'active' : '' }}">
     <span class="nav-icon">▧</span> Marketplace
 </a>
-<a href="{{ route('pembeli.pesanan*') }}" class="nav-btn {{ request()->routeIs('pembeli.pesanan*') ? 'active' : '' }}">
+<a href="{{ route('pembeli.pesanan') }}" class="nav-btn {{ request()->routeIs('pembeli.pesanan*') ? 'active' : '' }}">
     <span class="nav-icon">▤</span> Pesanan Saya
 </a>
-@endsection
-
-@section('breadcrumb')
-    TaniLink &rsaquo; Horeka &rsaquo; <a href="{{ route('pembeli.pesanan') }}" style="color:inherit; text-decoration:none;">Pesanan</a> &rsaquo; <strong>{{ $order->order_code }}</strong>
+<a href="{{ route('pembeli.profil') }}" class="nav-btn {{ request()->routeIs('pembeli.profil*') ? 'active' : '' }}">
+    <span class="nav-icon">♙</span> Profil Konsumen
+</a>
 @endsection
 
 @section('content')
@@ -23,12 +22,11 @@
     {{-- Headline --}}
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
         <div>
-            <div style="font-size:10px; font-weight:900; color:#049874; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">TaniLink / Horeka</div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">
                 Pantau Pesanan {{ $order->order_code }}
             </h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">
-                {{ $order->commodityListing->commodity_name ?? 'Komoditas' }} &bull; {{ number_format($order->quantity_kg, 0, ',', '.') }} kg &bull; Gapoktan {{ $order->farmer->name ?? 'Mitra Petani' }}
+                {{ $order->commodityListing->commodity_name ?? 'Komoditas' }} &bull; {{ number_format($order->quantity_kg, 0, ',', '.') }} kg &bull; Petani {{ $order->farmer->name ?? 'Mitra Petani' }}
             </p>
         </div>
         <a href="{{ route('pembeli.pesanan') }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; border:1px solid #DFE8E5; background:#fff; color:#365249; font-size:12px; font-weight:800; text-decoration:none;">
@@ -39,7 +37,7 @@
     {{-- Notice --}}
     <div style="padding:14px 18px; display:flex; align-items:flex-start; gap:11px; border-radius:12px; background:#FFF8EA; border:1px solid #F6E3B9; color:#7F631E; font-size:11px; line-height:1.6; margin-bottom:20px;">
         <span>ⓘ</span>
-        <span><b>Mode simulasi pengiriman dan escrow:</b> nama kurir, rute, jarak, estimasi durasi serta dana escrow dalam platform adalah fitur monitoring terintegrasi untuk kelancaran suplai B2B.</span>
+        <span><b>Sistem Escrow Terjamin:</b> DP 30% telah disalurkan untuk pembiayaan bibit dan pupuk petani. Saldo 70% diamankan di rekening escrow bersama TaniLink dan hanya diteruskan setelah barang panen diterima.</span>
     </div>
 
     {{-- Grid 2 Kolom --}}
@@ -71,72 +69,89 @@
 
                 <div style="height:1px; background:#E5ECEA; margin:16px 0;"></div>
 
-                {{-- Timeline 4 Fase --}}
+                {{-- Dynamic Timeline 4 Fase --}}
                 <div style="display:flex; flex-direction:column; gap:16px;">
-                    <div style="display:flex; gap:14px;">
-                        <div style="height:25px; width:25px; min-width:25px; border-radius:50%; display:grid; place-items:center; background:#E5F9EF; color:#069873; font-size:12px;">🌱</div>
-                        <div>
-                            <b style="font-size:12px; color:#172B29;">Benih & Semai</b>
-                            <p style="font-size:10px; color:#8A9994; line-height:1.5; margin:3px 0 0;">Bibit varietas {{ $order->commodityListing->variety ?? 'unggul' }} mulai disemai.</p>
+                    @foreach($order->phase_timeline as $ph)
+                    <div style="display:flex; gap:14px; align-items:flex-start;">
+                        <div style="height:30px; width:30px; min-width:30px; border-radius:50%; display:grid; place-items:center; font-size:14px;
+                            {{ $ph['status'] === 'selesai' ? 'background:#E5F9EF; color:#069873;' : ($ph['status'] === 'berlangsung' ? 'background:#E8F9FC; color:#0B8BAA; border:2px solid #05C793;' : 'background:#F5F8F7; color:#91A19B;') }}">
+                            {{ $ph['icon'] }}
+                        </div>
+                        <div style="flex:1;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <b style="font-size:12.5px; color:#172B29;">{{ $ph['name'] }}</b>
+                                @if($ph['status'] === 'selesai')
+                                    <span style="font-size:10px; font-weight:800; color:#0C8D65; background:#E9F9F2; padding:2px 8px; border-radius:5px;">Selesai</span>
+                                @elseif($ph['status'] === 'berlangsung')
+                                    <span style="font-size:10px; font-weight:800; color:#0B8BAA; background:#E8F9FC; padding:2px 8px; border-radius:5px;">Sedang Berlangsung</span>
+                                @else
+                                    <span style="font-size:10px; font-weight:750; color:#91A19B; background:#F5F8F7; padding:2px 8px; border-radius:5px;">Menunggu</span>
+                                @endif
+                            </div>
+                            <p style="font-size:11px; color:#6B8077; line-height:1.5; margin:4px 0 0;">{{ $ph['desc'] }}</p>
                         </div>
                     </div>
-
-                    <div style="display:flex; gap:14px;">
-                        <div style="height:25px; width:25px; min-width:25px; border-radius:50%; display:grid; place-items:center; background:#E5F9EF; color:#069873; font-size:12px;">🌿</div>
-                        <div>
-                            <b style="font-size:12px; color:#172B29;">Pertumbuhan Vegetatif</b>
-                            <p style="font-size:10px; color:#8A9994; line-height:1.5; margin:3px 0 0;">Irigasi berjalan teratur dan monitoring nutrisi harian.</p>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; gap:14px;">
-                        <div style="height:25px; width:25px; min-width:25px; border-radius:50%; display:grid; place-items:center; background:#E8F9FC; color:#0B8BAA; font-size:12px;">🌼</div>
-                        <div>
-                            <b style="font-size:12px; color:#172B29;">Pembungaan & Bakal Buah</b>
-                            <p style="font-size:10px; color:#8A9994; line-height:1.5; margin:3px 0 0;">Bakal panen mulai terbentuk merata, kualitas terkontrol.</p>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; gap:14px;">
-                        <div style="height:25px; width:25px; min-width:25px; border-radius:50%; display:grid; place-items:center; background:#F5F8F7; color:#91A19B; font-size:12px;">🌶️</div>
-                        <div>
-                            <b style="font-size:12px; color:#172B29;">Panen & Pengepakan</b>
-                            <p style="font-size:10px; color:#8A9994; line-height:1.5; margin:3px 0 0;">Siap panen dan sortir sesuai spesifikasi pesanan Horeka.</p>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
 
-            {{-- Card Logistik Pengiriman --}}
+            {{-- Card Logistik Pengiriman with Real Map --}}
             <div class="card" style="padding:24px;">
-                <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Logistik Pengiriman</h2>
-                <p style="font-size:11px; color:#91A19B; margin:0 0 16px;">Ilustrasi rute pengiriman dari lahan petani ke lokasi Anda.</p>
+                <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Peta Lokasi Lahan &amp; Logistik Pengiriman</h2>
+                <p style="font-size:11px; color:#91A19B; margin:0 0 16px;">Lokasi kebun panen petani mitra untuk koordinasi penjemputan hasil panen.</p>
 
-                {{-- Map Visual Placeholder --}}
-                <div style="height:200px; background:repeating-linear-gradient(0deg, #EBF4ED 0 43px, #fff 43px 45px), repeating-linear-gradient(90deg, #DCEFE6 0 40px, #EFF7F0 40px 42px); border-radius:14px; border:1px solid #D9E8DD; display:grid; place-items:center; position:relative; overflow:hidden;">
-                    <div style="position:absolute; font-size:18px; color:#079E73; transform:rotate(-15deg); letter-spacing:8px; opacity:0.6;">
-                        ● ━━━ ● ━━━ ●
-                    </div>
-                    <span style="z-index:2; background:#fff; border:1px solid #D9E8DD; padding:10px 16px; border-radius:10px; font-size:12px; font-weight:800; color:#417760; box-shadow:0 4px 14px rgba(0,0,0,0.06);">
-                        📍 {{ $order->commodityListing->location ?? 'Malang' }} → {{ $order->buyer->organization ?? 'Grand Hotel Malang' }}
+                {{-- Real Map Embed --}}
+                @php
+                    $farmLoc = $order->commodityListing->location ?? 'Malang, Jawa Timur';
+                    $mapQuery = urlencode($farmLoc);
+                @endphp
+                <div style="border-radius:14px; overflow:hidden; border:1px solid #DFEAE5; margin-bottom:14px; box-shadow:0 2px 10px rgba(0,0,0,0.04);">
+                    <iframe width="100%" height="220" style="border:0; display:block;" loading="lazy" allowfullscreen
+                            src="https://maps.google.com/maps?q={{ $mapQuery }}&t=&z=13&ie=UTF8&iwloc=&output=embed">
+                    </iframe>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#F8FCFA; border:1px solid #DFEAE5; border-radius:11px; padding:10px 14px; font-size:11.5px;">
+                    <span style="color:#527063;">
+                        📍 <b>Titik Lahan:</b> {{ $farmLoc }}
                     </span>
+                    <span style="color:#0C8D65; font-weight:800; font-size:11px;">Pengambilan Mandiri</span>
                 </div>
+            </div>
 
-                {{-- 3 Info Cells --}}
-                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:16px;">
-                    <div style="background:#F7FAF9; border-radius:12px; padding:12px 14px;">
-                        <span style="font-size:10px; color:#889991;">Jarak estimasi</span>
-                        <b style="display:block; font-size:14px; color:#172B29; margin-top:4px;">18 km</b>
-                    </div>
-                    <div style="background:#F7FAF9; border-radius:12px; padding:12px 14px;">
-                        <span style="font-size:10px; color:#889991;">Waktu tempuh</span>
-                        <b style="display:block; font-size:14px; color:#172B29; margin-top:4px;">45 menit</b>
-                    </div>
-                    <div style="background:#F7FAF9; border-radius:12px; padding:12px 14px;">
-                        <span style="font-size:10px; color:#889991;">Kemasan krat</span>
-                        <b style="display:block; font-size:14px; color:#172B29; margin-top:4px;">{{ max(1, ceil($order->quantity_kg / 20)) }} krat</b>
-                    </div>
+            {{-- Card Foto Dokumentasi Lapangan dari Petani --}}
+            <div class="card" style="padding:24px;">
+                <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Dokumentasi Lapangan Realtime</h2>
+                <p style="font-size:11px; color:#91A19B; margin:0 0 16px;">Foto dan catatan kondisi tanaman yang dilaporkan langsung oleh petani.</p>
+
+                @if($order->plantingProgress->isEmpty())
+                <div style="text-align:center; padding:30px 10px; color:#8A9D95;">
+                    <p style="font-size:12px;">Petani belum mengunggah foto progres terbaru.</p>
                 </div>
+                @else
+                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:14px;">
+                    @foreach($order->plantingProgress as $prog)
+                    <div style="border:1px solid #E5ECEA; border-radius:12px; overflow:hidden; background:#fff;">
+                        @if($prog->photo_url)
+                        <div style="height:140px; overflow:hidden; background:#F5F8F7;">
+                            <img src="{{ str_starts_with($prog->photo_url, 'http') ? $prog->photo_url : asset($prog->photo_url) }}"
+                                 alt="{{ $prog->stage_name }}"
+                                 style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                        @endif
+                        <div style="padding:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <b style="font-size:11.5px; color:#172B29;">{{ $prog->stage_name }}</b>
+                                <span style="font-size:9.5px; color:#8A9D95;">{{ $prog->reported_at ? $prog->reported_at->diffForHumans() : 'Baru saja' }}</span>
+                            </div>
+                            <p style="font-size:11px; color:#50695E; line-height:1.5; margin:0;">
+                                {{ $prog->note }}
+                            </p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
             </div>
 
         </div>
@@ -184,41 +199,46 @@
                 </table>
             </div>
 
-            {{-- Card Rencana Pengiriman --}}
+            {{-- Card Titik Serah Terima --}}
             <div class="card" style="padding:22px;">
-                <h2 style="font-size:15px; font-weight:850; margin:0 0 16px; color:#172B29;">Rencana Pengiriman</h2>
+                <h2 style="font-size:15px; font-weight:850; margin:0 0 16px; color:#172B29;">Titik Serah Terima Panen</h2>
                 
                 <table style="width:100%; font-size:11px; border-collapse:collapse;">
                     <tbody>
                         <tr style="border-bottom:1px solid #EEF2F0;">
-                            <td style="padding:10px 0; color:#8A9994;">Asal Penjemputan</td>
+                            <td style="padding:10px 0; color:#8A9994;">Kontak Petani Mitra</td>
+                            <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
+                                {{ $order->farmer->name ?? 'Petani Mitra' }} &bull; {{ $order->farmer->organization ?? '-' }}
+                                @if($order->farmer && $order->farmer->phone)
+                                <div style="color:#0C8D65; font-size:10px; margin-top:2px;">
+                                    <i class="fa-brands fa-whatsapp"></i> {{ $order->farmer->phone }}
+                                </div>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #EEF2F0;">
+                            <td style="padding:10px 0; color:#8A9994;">Lokasi Lahan Petani</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
                                 {{ $order->commodityListing->location ?? 'Ambarawa, Malang' }}
                             </td>
                         </tr>
                         <tr style="border-bottom:1px solid #EEF2F0;">
-                            <td style="padding:10px 0; color:#8A9994;">Tujuan Penerima</td>
+                            <td style="padding:10px 0; color:#8A9994;">Tujuan Konsumen</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
-                                {{ $order->buyer->organization ?? 'Grand Hotel Malang' }}
+                                {{ $order->buyer->organization ?? 'Konsumen Malang' }}
                             </td>
                         </tr>
                         <tr style="border-bottom:1px solid #EEF2F0;">
-                            <td style="padding:10px 0; color:#8A9994;">Kurir Mitra</td>
-                            <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
-                                {{ $order->deliveryTracking->driver_name ?? 'Budi Santoso' }}
-                            </td>
-                        </tr>
-                        <tr style="border-bottom:1px solid #EEF2F0;">
-                            <td style="padding:10px 0; color:#8A9994;">Kendaraan</td>
-                            <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
-                                {{ $order->deliveryTracking->driver_vehicle ?? 'Pickup L300' }}
+                            <td style="padding:10px 0; color:#8A9994;">Metode Penyerahan</td>
+                            <td style="padding:10px 0; text-align:right; font-weight:750; color:#078362;">
+                                Pengambilan Mandiri di Lahan Panen
                             </td>
                         </tr>
                         <tr>
-                            <td style="padding:10px 0; color:#8A9994;">Status Logistik</td>
+                            <td style="padding:10px 0; color:#8A9994;">Status Jadwal</td>
                             <td style="padding:10px 0; text-align:right;">
                                 <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#FFF5E8; color:#BA7A1F; font-weight:800; font-size:10px;">
-                                    Terjadwal Panen
+                                    {{ $order->current_stage_status === 'selesai' && $order->current_stage === 'Fase Pematangan & Siap Panen' ? 'Siap Diambil' : 'Dalam Masa Tanam' }}
                                 </span>
                             </td>
                         </tr>

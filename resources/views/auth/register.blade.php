@@ -3,141 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Akun - TaniLink</title>
+    <title>Daftar Akun Baru - TaniLink</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ── Left panel ── */
+        .register-left {
+            width: 50%;
+            background: linear-gradient(140deg, #064737, #08a881);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 48px 56px;
+            overflow: hidden;
+        }
+        .register-left-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .register-left-mark {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: rgba(255,255,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+        .register-left-brand-text {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: #ffffff;
+        }
+        .register-left-brand-text span { color: #A7F3D0; }
+        .register-left-heading {
+            margin-top: 80px;
+            font-size: 44px;
+            font-weight: 900;
+            letter-spacing: -1.6px;
+            color: #ffffff;
+            line-height: 1.15;
+        }
+        .register-left-para {
+            margin-top: 20px;
+            color: #C9F5E4;
+            font-size: 15px;
+            line-height: 1.8;
+            max-width: 440px;
+        }
+        .register-left-features {
+            margin-top: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .register-left-feat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #ffffff;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+        .register-left-feat-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.15);
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            color: #A7F3D0;
+        }
+        .register-left-deco {
+            position: absolute;
+            bottom: -30px;
+            left: -20px;
+            font-size: 255px;
+            opacity: 0.65;
+            pointer-events: none;
+            user-select: none;
+            line-height: 1;
+        }
+
+        /* ── Right panel ── */
+        .register-right {
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 60px;
+            background: #ffffff;
+            overflow-y: auto;
+        }
+        .register-right-inner {
+            width: 100%;
+            max-width: 420px;
+        }
+        .register-heading {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: #172B29;
+            margin-bottom: 6px;
+        }
+        .register-subheading {
+            font-size: 14px;
+            color: #8A9D96;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        /* Form fields */
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #172B29;
+            margin-bottom: 7px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #DFEAE5;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #172B29;
+            background: #fff;
+            outline: none;
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .form-input::placeholder { color: #A2AEAA; font-weight: 400; }
+        .form-input:focus {
+            border-color: #05C793;
+            box-shadow: 0 0 0 3px #05C79320;
+        }
+
+        /* Submit button */
+        .register-btn {
+            width: 100%;
+            padding: 13px;
+            background: #163D34;
+            color: #ffffff;
+            border: none;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.18s;
+            margin-top: 10px;
+        }
+        .register-btn:hover { background: #0f2b24; }
+
+        /* Alert */
+        .alert-error {
+            background: #FFF1F0;
+            border: 1px solid #FECACA;
+            color: #9B1C1C;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 flex flex-row-reverse">
-    
-    {{-- Right Side: Image/Branding (Hidden on mobile) --}}
-    <div class="hidden lg:flex w-1/2 bg-slate-900 relative items-center justify-center overflow-hidden">
-        {{-- Background Image with Overlay --}}
-        <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Agriculture" class="w-full h-full object-cover opacity-40">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
+<body>
+
+    {{-- ── LEFT PANEL ── --}}
+    <div class="register-left">
+        {{-- Brand --}}
+        <div class="register-left-brand">
+            <div class="register-left-mark">🌿</div>
+            <div class="register-left-brand-text">Tani<span>Link</span></div>
         </div>
-        
-        <div class="relative z-10 w-full max-w-lg p-12 text-white">
-            <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#05C793] to-[#06B6D4] flex items-center justify-center shadow-xl shadow-emerald-500/30 mb-8 border border-white/10">
-                <i class="fa-solid fa-leaf text-4xl text-white"></i>
+
+        {{-- Headline --}}
+        <h1 class="register-left-heading">
+            Mulai Perjalanan<br>Agrikultur Anda.
+        </h1>
+        <p class="register-left-para">
+            Bergabunglah bersama ribuan petani produsen dan konsumen usaha dalam ekosistem pre-order pertanian dengan kepastian harga dan escrow terpercaya.
+        </p>
+
+        {{-- Features list --}}
+        <div class="register-left-features">
+            <div class="register-left-feat-item">
+                <div class="register-left-feat-icon"><i class="fa-solid fa-handshake"></i></div>
+                <span>Kontrak Langsung Produsen &amp; Pembeli</span>
             </div>
-            
-            <h1 class="text-5xl font-extrabold tracking-tight mb-6 leading-tight">
-                Mulai Perjalanan<br>Agrikultur Anda.
-            </h1>
-            <p class="text-lg text-slate-300 leading-relaxed mb-8">
-                Bergabung dengan komunitas TaniLink untuk memperluas jangkauan pasar dan mendapatkan komoditas terbaik.
-            </p>
-            
-            <div class="flex items-center gap-4 text-sm font-semibold text-slate-400">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-users text-[#05C793]"></i> Ribuan Pengguna
-                </div>
-                <div class="w-1.5 h-1.5 rounded-full bg-slate-700"></div>
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-bolt text-[#05C793]"></i> Transaksi Cepat
-                </div>
+            <div class="register-left-feat-item">
+                <div class="register-left-feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <span>Rekening Bersama Escrow Terjamin</span>
+            </div>
+            <div class="register-left-feat-item">
+                <div class="register-left-feat-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <span>Stabilitas Harga Sebelum Musim Tanam</span>
             </div>
         </div>
+
+        {{-- Decoration --}}
+        <div class="register-left-deco" aria-hidden="true">🌿</div>
     </div>
 
-    {{-- Left Side: Form --}}
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative overflow-hidden">
-        {{-- Decorative blobs for mobile background --}}
-        <div class="absolute top-0 left-0 -ml-20 -mt-20 w-64 h-64 rounded-full bg-[#05C793]/10 blur-3xl lg:hidden"></div>
-        <div class="absolute bottom-0 right-0 -mr-20 -mb-20 w-80 h-80 rounded-full bg-[#06B6D4]/10 blur-3xl lg:hidden"></div>
-        
-        <div class="w-full max-w-md relative z-10">
-            
-            {{-- Mobile Brand --}}
-            <div class="lg:hidden text-center mb-10">
-                <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#05C793] to-[#06B6D4] flex items-center justify-center shadow-lg shadow-emerald-500/20 mb-4">
-                    <i class="fa-solid fa-leaf text-2xl text-white"></i>
-                </div>
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Tani<span class="text-[#05C793]">Link</span></h2>
-            </div>
-            
-            <div class="mb-8 lg:mt-0 mt-2">
-                <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Buat Akun Baru</h2>
-                <p class="text-slate-500 font-medium">Lengkapi data di bawah ini untuk mendaftar.</p>
-            </div>
+    {{-- ── RIGHT PANEL ── --}}
+    <div class="register-right">
+        <div class="register-right-inner">
 
+            <h2 class="register-heading">Buat Akun TaniLink</h2>
+            <p class="register-subheading">Lengkapi formulir pendaftaran di bawah ini.</p>
+
+            {{-- Error alert --}}
             @if($errors->any())
-                <div class="bg-red-50 text-red-700 p-4 rounded-2xl text-sm mb-6 border border-red-100 flex items-start gap-3">
-                    <i class="fa-solid fa-circle-exclamation mt-0.5 text-red-500"></i>
-                    <div>
-                        <ul class="list-disc list-inside">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+            <div class="alert-error">
+                <i class="fa-solid fa-circle-exclamation" style="margin-top:1px; color:#DC2626;"></i>
+                <div>
+                    @foreach($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
                 </div>
+            </div>
             @endif
 
-            <form action="{{ route('register.post') }}" method="POST" class="space-y-5">
+            {{-- Form registrasi simetris --}}
+            <form action="{{ route('register.post') }}" method="POST" x-data="{ showPass: false, showConfirmPass: false }">
                 @csrf
 
-                <div class="space-y-4">
-                    {{-- Nama --}}
-                    <div>
-                        <label for="name" class="block text-sm font-bold text-slate-700 mb-2">Nama Lengkap</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                                
-                            </div>
-                            <input type="text" name="name" id="name" value="{{ old('name') }}" required autofocus
-                                class="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 bg-white focus:bg-white focus:border-[#05C793] focus:ring-4 focus:ring-[#05C793]/10 transition-all outline-none font-medium placeholder:text-slate-400 placeholder:font-normal"
-                                placeholder="Nama Lengkap Anda">
-                        </div>
-                    </div>
+                {{-- Nama Lengkap --}}
+                <div style="margin-bottom:14px;">
+                    <label for="name" class="form-label">Nama Lengkap</label>
+                    <input type="text" name="name" id="name"
+                           value="{{ old('name') }}"
+                           required autofocus
+                           class="form-input"
+                           placeholder="Contoh: Budi Santoso">
+                </div>
 
-                    {{-- Email --}}
-                    <div>
-                        <label for="email" class="block text-sm font-bold text-slate-700 mb-2">Alamat Email</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                            </div>
-                            <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                                class="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 bg-white focus:bg-white focus:border-[#05C793] focus:ring-4 focus:ring-[#05C793]/10 transition-all outline-none font-medium placeholder:text-slate-400 placeholder:font-normal"
-                                placeholder="nama@email.com">
-                        </div>
-                    </div>
+                {{-- Email --}}
+                <div style="margin-bottom:14px;">
+                    <label for="email" class="form-label">Alamat Email</label>
+                    <input type="email" name="email" id="email"
+                           value="{{ old('email') }}"
+                           required
+                           class="form-input"
+                           placeholder="nama@email.com">
+                </div>
 
-                    {{-- Password --}}
-                    <div>
-                        <label for="password" class="block text-sm font-bold text-slate-700 mb-2">Password</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                            </div>
-                            <input type="password" name="password" id="password" required minlength="8"
-                                class="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 bg-white focus:bg-white focus:border-[#05C793] focus:ring-4 focus:ring-[#05C793]/10 transition-all outline-none font-medium placeholder:text-slate-400 placeholder:font-normal"
-                                placeholder="Minimal 8 karakter">
-                        </div>
+                {{-- Nomor WhatsApp / HP --}}
+                <div style="margin-bottom:14px;">
+                    <label for="phone" class="form-label">Nomor WhatsApp / HP Aktif</label>
+                    <input type="text" name="phone" id="phone"
+                           value="{{ old('phone') }}"
+                           required
+                           class="form-input"
+                           placeholder="0812xxxxxxxx">
+                    <span style="font-size:10.5px; color:#8A9D95; display:block; margin-top:3px;">Digunakan untuk verifikasi akun dan koordinasi transaksi.</span>
+                </div>
+
+                {{-- Password --}}
+                <div style="margin-bottom:14px;">
+                    <label for="password" class="form-label">Kata Sandi</label>
+                    <div style="position:relative;">
+                        <input :type="showPass ? 'text' : 'password'" name="password" id="password"
+                               required minlength="8"
+                               class="form-input"
+                               style="padding-right:42px;"
+                               placeholder="Minimal 8 karakter">
+                        <button type="button" @click="showPass = !showPass"
+                                tabindex="-1"
+                                style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#8A9D96; cursor:pointer; font-size:14px; padding:4px;"
+                                title="Lihat kata sandi">
+                            <i :class="showPass ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Konfirmasi Kata Sandi --}}
+                <div style="margin-bottom:20px;">
+                    <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi</label>
+                    <div style="position:relative;">
+                        <input :type="showConfirmPass ? 'text' : 'password'" name="password_confirmation" id="password_confirmation"
+                               required minlength="8"
+                               class="form-input"
+                               style="padding-right:42px;"
+                               placeholder="Ulangi kata sandi">
+                        <button type="button" @click="showConfirmPass = !showConfirmPass"
+                                tabindex="-1"
+                                style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#8A9D96; cursor:pointer; font-size:14px; padding:4px;"
+                                title="Lihat konfirmasi kata sandi">
+                            <i :class="showConfirmPass ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
+                        </button>
                     </div>
                 </div>
 
                 {{-- Submit --}}
-                <button type="submit" class="w-full py-4 mt-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-xl shadow-slate-900/20 transition-all duration-200 flex justify-center items-center gap-2 cursor-pointer">
-                    Daftar Sekarang <i class="fa-solid fa-user-plus"></i>
+                <button type="submit" class="register-btn">
+                    Daftar Akun Sekarang <i class="fa-solid fa-user-plus"></i>
                 </button>
             </form>
 
-            <div class="mt-8 text-center">
-                <p class="text-sm font-medium text-slate-500">
-                    Sudah punya akun? 
-                    <a href="{{ route('login') }}" class="text-slate-900 font-bold hover:underline">Masuk di sini</a>
-                </p>
+            <div style="margin-top:24px; text-align:center; font-size:13.5px; color:#71837C;">
+                Sudah punya akun?
+                <a href="{{ route('login') }}" style="font-weight:700; color:#172B29; text-decoration:none;">Masuk di sini</a>
             </div>
-            
+
         </div>
     </div>
+
 </body>
 </html>
-

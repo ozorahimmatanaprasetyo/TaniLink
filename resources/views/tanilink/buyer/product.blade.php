@@ -9,13 +9,12 @@
 <a href="{{ route('pembeli.katalog') }}" class="nav-btn {{ request()->routeIs('pembeli.katalog*') || request()->routeIs('pembeli.komoditas*') ? 'active' : '' }}">
     <span class="nav-icon">▧</span> Marketplace
 </a>
-<a href="{{ route('pembeli.pesanan*') }}" class="nav-btn {{ request()->routeIs('pembeli.pesanan*') ? 'active' : '' }}">
+<a href="{{ route('pembeli.pesanan') }}" class="nav-btn {{ request()->routeIs('pembeli.pesanan*') ? 'active' : '' }}">
     <span class="nav-icon">▤</span> Pesanan Saya
 </a>
-@endsection
-
-@section('breadcrumb')
-    TaniLink &rsaquo; Horeka &rsaquo; <a href="{{ route('pembeli.katalog') }}" style="color:inherit; text-decoration:none;">Marketplace</a> &rsaquo; <strong>{{ $listing->commodity_name }}</strong>
+<a href="{{ route('pembeli.profil') }}" class="nav-btn {{ request()->routeIs('pembeli.profil*') ? 'active' : '' }}">
+    <span class="nav-icon">♙</span> Profil Konsumen
+</a>
 @endsection
 
 @section('content')
@@ -47,7 +46,7 @@
             <div class="card" style="padding:16px;">
                 <div style="height:360px; border-radius:14px; background:linear-gradient(145deg, #FFE6D9, #FFF3E9); display:grid; place-items:center; font-size:140px; position:relative; overflow:hidden;">
                     @if($hasImage)
-                        <img src="{{ str_starts_with($imgUrl, '/storage') ? asset($imgUrl) : $imgUrl }}"
+                        <img src="{{ str_starts_with($imgUrl, 'http') ? $imgUrl : asset($imgUrl) }}"
                              alt="{{ $listing->commodity_name }}"
                              style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;">
                     @else
@@ -118,6 +117,13 @@
                 <div style="font-size:11px; color:#8A9994;">
                     Varietas {{ $listing->variety ?? '-' }} &bull; Ditawarkan oleh <strong>{{ $listing->farmer->organization ?? ($listing->farmer->name ?? 'Gapoktan Mitra') }}</strong>
                 </div>
+
+                @if(!empty($listing->description))
+                <div style="margin: 14px 0; padding: 12px 14px; border-radius: 10px; background: #F8FCFA; border: 1px solid #DFEAE5; font-size: 12px; color: #365448; line-height: 1.6;">
+                    <strong style="color: #172B29; display:block; margin-bottom:4px; font-size: 11px; text-transform:uppercase; letter-spacing:0.5px;">Deskripsi Tanaman:</strong>
+                    {{ $listing->description }}
+                </div>
+                @endif
 
                 <div style="font-size:32px; font-weight:900; color:#087A59; margin:20px 0 6px;">
                     Rp {{ number_format($listing->price_per_kg, 0, ',', '.') }}

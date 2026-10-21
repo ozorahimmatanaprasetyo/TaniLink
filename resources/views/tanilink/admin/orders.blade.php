@@ -18,10 +18,9 @@
 <a href="{{ route('admin.laporan') }}" class="nav-btn {{ request()->routeIs('admin.laporan*') ? 'active' : '' }}">
     <span class="nav-icon">▥</span> Laporan & Statistik
 </a>
-@endsection
-
-@section('breadcrumb')
-    TaniLink &rsaquo; Admin &rsaquo; <strong>Pesanan & Escrow</strong>
+<a href="{{ route('admin.bantuan') }}" class="nav-btn {{ request()->routeIs('admin.bantuan*') ? 'active' : '' }}">
+    <span class="nav-icon">❓</span> Kelola Pusat Bantuan
+</a>
 @endsection
 
 @section('content')
@@ -30,7 +29,6 @@
     {{-- Headline --}}
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px;">
         <div>
-            <div style="font-size:10px; font-weight:900; color:#7257CA; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">TaniLink / Admin Central</div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Pesanan & Rekening Escrow</h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">Monitoring kepatuhan kontrak, dana DP awal petani, dan keamanan dana escrow 70%.</p>
         </div>

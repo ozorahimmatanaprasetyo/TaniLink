@@ -14,6 +14,7 @@ class PlantingProgress extends Model
     protected $fillable = [
         'pre_order_id',
         'stage_name',
+        'stage_status',
         'note',
         'photo_url',
         'location_tag',

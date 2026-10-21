@@ -9,19 +9,12 @@
 <a href="{{ route('petani.komoditas') }}" class="nav-btn {{ request()->routeIs('petani.komoditas') ? 'active' : '' }}">
     <span class="nav-icon">♧</span> Komoditas Saya
 </a>
-<a href="{{ route('petani.komoditas.create') }}" class="nav-btn {{ request()->routeIs('petani.komoditas.create') ? 'active' : '' }}">
-    <span class="nav-icon">⊕</span> Tambah Komoditas
-</a>
 <a href="{{ route('petani.pesanan') }}" class="nav-btn {{ request()->routeIs('petani.pesanan*') ? 'active' : '' }}">
     <span class="nav-icon">▤</span> Pesanan Masuk
 </a>
 <a href="{{ route('petani.profil') }}" class="nav-btn {{ request()->routeIs('petani.profil') ? 'active' : '' }}">
-    <span class="nav-icon">♙</span> Profil Gapoktan
+    <span class="nav-icon">♙</span> Profil Petani
 </a>
-@endsection
-
-@section('breadcrumb')
-    TaniLink &rsaquo; Gapoktan &rsaquo; <strong>Komoditas Saya</strong>
 @endsection
 
 @section('content')
@@ -29,11 +22,10 @@
     {{-- Headline --}}
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px;">
         <div>
-            <div style="font-size:10px; font-weight:900; color:#049874; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">TaniLink / Gapoktan</div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Komoditas Saya</h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">Kelola seluruh penawaran komoditas, stok alokasi, dan estimasi panen.</p>
         </div>
-        <a href="{{ route('petani.komoditas.create') }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; background:#05C793; color:#053B2D; font-size:12px; font-weight:800; text-decoration:none;">
+        <a href="{{ route('petani.komoditas.create') }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; background:#05C793; color:#053B2D; font-size:12px; font-weight:800; text-decoration:none; box-shadow:0 3px 10px rgba(5,199,147,0.2);">
             + Tambah Komoditas
         </a>
     </div>
@@ -55,7 +47,7 @@
                 <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:16px;">▥</span>
             </div>
             <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">{{ number_format($totalCropKg, 0, ',', '.') }} kg</div>
-            <div style="font-size:10px; color:#7B9187;">Bukan stok fisik aktual</div>
+            <div style="font-size:10px; color:#7B9187;">Total estimasi panen</div>
         </div>
 
         <div class="card" style="padding:19px 20px;">
@@ -72,14 +64,14 @@
     <div class="card" style="padding:24px;">
         <div style="margin-bottom:18px;">
             <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Daftar Komoditas</h2>
-            <p style="font-size:11px; color:#91A19B; margin:0;">Setiap harga dan jumlah dapat berubah mengikuti penawaran kelompok tani.</p>
+            <p style="font-size:11px; color:#91A19B; margin:0;">Setiap penawaran dapat diedit atau dihapus secara mandiri.</p>
         </div>
 
         @if($myListings->isEmpty())
         <div style="text-align:center; padding:50px 20px; color:#8A9D95;">
             <div style="font-size:42px; margin-bottom:10px;">🌾</div>
-            <h3 style="font-size:15px; font-weight:800; color:#172B29; margin-bottom:4px;">Belum Ada Komoditas</h3>
-            <p style="font-size:12px; margin-bottom:16px;">Publikasikan penawaran tanaman Anda agar pembeli Horeka dapat mengajukan pre-order.</p>
+            <h3 style="font-size:15px; font-weight:850; color:#172B29; margin-bottom:4px;">Belum Ada Komoditas</h3>
+            <p style="font-size:12px; margin-bottom:16px;">Publikasikan penawaran tanaman Anda agar pembeli konsumen dapat mengajukan pre-order.</p>
             <a href="{{ route('petani.komoditas.create') }}" style="display:inline-block; padding:10px 18px; border-radius:11px; background:#05C793; color:#053B2D; font-size:12px; font-weight:800; text-decoration:none;">
                 + Tambah Komoditas Baru
             </a>
@@ -94,15 +86,24 @@
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">TERSEDIA</th>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">EST. PANEN</th>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">STATUS</th>
-                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">AKSI</th>
+                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px; text-align:right;">AKSI</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($myListings as $listing)
                     <tr style="border-bottom:1px solid #EEF2F0;">
                         <td style="font-size:11px; font-weight:650; padding:15px 10px;">
-                            <b style="font-weight:850; color:#183B30;">{{ $listing->commodity_name }}</b>
-                            <div style="font-size:10px; color:#85958F; margin-top:2px;">{{ $listing->variety ?? '-' }} • {{ $listing->location ?? 'Malang' }}</div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                @if($listing->image_url)
+                                <div style="width:38px; height:38px; border-radius:8px; overflow:hidden; border:1px solid #E5ECEA; flex-shrink:0;">
+                                    <img src="{{ str_starts_with($listing->image_url, 'http') ? $listing->image_url : asset($listing->image_url) }}" alt="" style="width:100%; height:100%; object-fit:cover;">
+                                </div>
+                                @endif
+                                <div>
+                                    <b style="font-weight:850; color:#183B30;">{{ $listing->commodity_name }}</b>
+                                    <div style="font-size:10px; color:#85958F; margin-top:2px;">{{ $listing->variety ?? '-' }} • {{ $listing->location ?? 'Malang' }}</div>
+                                </div>
+                            </div>
                         </td>
                         <td style="font-size:11px; font-weight:800; color:#0A765A; padding:15px 10px;">
                             Rp {{ number_format($listing->price_per_kg, 0, ',', '.') }}
@@ -120,8 +121,23 @@
                                 <span style="display:inline-flex; align-items:center; padding:5px 9px; border-radius:7px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:10px;">Aktif</span>
                             @endif
                         </td>
-                        <td style="font-size:11px; padding:15px 10px;">
-                            <a href="{{ route('petani.pesanan') }}" style="color:#07946C; font-weight:850; text-decoration:none;">Kelola ↗</a>
+                        <td style="font-size:11px; padding:15px 10px; text-align:right;">
+                            <div style="display:inline-flex; align-items:center; gap:6px; justify-content:flex-end;">
+                                <a href="{{ route('petani.komoditas.edit', $listing->id) }}"
+                                   style="display:inline-flex; align-items:center; gap:4px; padding:5px 11px; border-radius:7px; background:#EBF9F2; border:1px solid #C6EEDC; color:#078362; font-weight:800; font-size:11px; text-decoration:none;">
+                                    <i class="fa-regular fa-pen-to-square"></i> Edit
+                                </a>
+                                <form action="{{ route('petani.komoditas.destroy', $listing->id) }}" method="POST"
+                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus komoditas {{ $listing->commodity_name }}?');"
+                                      style="display:inline; margin:0;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            style="display:inline-flex; align-items:center; gap:4px; padding:5px 11px; border-radius:7px; background:#FEE2E2; border:1px solid #FECACA; color:#B91C1C; font-weight:800; font-size:11px; cursor:pointer;">
+                                        <i class="fa-regular fa-trash-can"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach

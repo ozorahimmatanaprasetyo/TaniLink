@@ -285,7 +285,7 @@
 @php
     $authUser   = Auth::user();
     $currentRole = session('active_role', $authUser ? $authUser->role : 'petani');
-    $roleLabels  = ['petani' => 'Petani', 'pembeli' => 'Pembeli / Horeka', 'admin' => 'Administrator', 'pending' => 'Pengguna Baru'];
+    $roleLabels  = ['petani' => 'Petani', 'pembeli' => 'Konsumen', 'admin' => 'Administrator', 'pending' => 'Pengguna Baru'];
     $userInitial = $authUser ? strtoupper(substr($authUser->name, 0, 1)) : '?';
     $userName    = $authUser ? $authUser->name : 'Tamu';
     $roleLabel   = $roleLabels[$currentRole] ?? 'Pengguna';
@@ -346,17 +346,14 @@
             @yield('sidebar_nav')
         </nav>
 
-        {{-- LAINNYA --}}
-        <div class="sidebar-nav-label" style="margin-top:10px;">LAINNYA</div>
+        {{-- SIDEBAR BOTTOM --}}
         <nav class="sidebar-bottom">
-            <a href="{{ route('pengaturan') }}" class="nav-btn {{ request()->routeIs('pengaturan') ? 'active' : '' }}">
-                <span class="nav-icon"><i class="fa-regular fa-gear"></i></span>
-                Pengaturan
-            </a>
+            @if($currentRole !== 'admin')
             <a href="{{ route('bantuan') }}" class="nav-btn {{ request()->routeIs('bantuan') ? 'active' : '' }}">
                 <span class="nav-icon"><i class="fa-regular fa-circle-question"></i></span>
                 Pusat Bantuan
             </a>
+            @endif
             @auth
             <a href="{{ route('logout') }}" class="nav-btn" style="color:#B85C5C;"
                onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();">
@@ -372,29 +369,144 @@
     {{-- ── MAIN AREA (header + content) ── --}}
     <div style="flex:1; display:flex; flex-direction:column; min-width:0; min-height:100vh;">
 
+        @php
+            $notifItems = [];
+            $latestNotifId = 0;
+            if (Auth::check()) {
+                $u = Auth::user();
+                if ($u->role === 'petani') {
+                    $orders = \App\Models\PreOrder::with('buyer', 'commodityListing')
+                        ->where('farmer_id', $u->id)
+                        ->latest()
+                        ->take(5)
+                        ->get();
+                    foreach ($orders as $ord) {
+                        $latestNotifId = max($latestNotifId, $ord->id);
+                        $notifItems[] = [
+                            'id' => $ord->id,
+                            'title' => 'Pesanan baru: ' . $ord->order_code,
+                            'desc' => ($ord->buyer->name ?? 'Konsumen') . ' memesan ' . ($ord->commodityListing->commodity_name ?? 'komoditas') . ' (' . number_format($ord->quantity_kg, 0, ',', '.') . ' kg)',
+                            'time' => $ord->created_at ? $ord->created_at->diffForHumans() : 'Baru saja',
+                            'icon' => '📦',
+                            'url' => route('petani.pesanan'),
+                        ];
+                    }
+                } elseif ($u->role === 'pembeli') {
+                    $progs = \App\Models\PlantingProgress::whereHas('preOrder', function($q) use ($u) {
+                            $q->where('buyer_id', $u->id);
+                        })
+                        ->with('preOrder.commodityListing')
+                        ->latest()
+                        ->take(5)
+                        ->get();
+                    foreach ($progs as $pr) {
+                        $latestNotifId = max($latestNotifId, $pr->id);
+                        $notifItems[] = [
+                            'id' => $pr->id,
+                            'title' => 'Update ' . $pr->stage_name,
+                            'desc' => ($pr->preOrder->commodityListing->commodity_name ?? 'Pesanan') . ': ' . \Illuminate\Support\Str::limit($pr->note, 45),
+                            'time' => $pr->created_at ? $pr->created_at->diffForHumans() : 'Baru saja',
+                            'icon' => '🌱',
+                            'url' => route('pembeli.pesanan'),
+                        ];
+                    }
+                } else {
+                    $latestOrders = \App\Models\PreOrder::with('commodityListing')->latest()->take(5)->get();
+                    foreach ($latestOrders as $ord) {
+                        $latestNotifId = max($latestNotifId, $ord->id);
+                        $notifItems[] = [
+                            'id' => $ord->id,
+                            'title' => 'Kontrak Pre-Order ' . $ord->order_code,
+                            'desc' => 'Escrow locked Rp ' . number_format($ord->escrow_locked_amount, 0, ',', '.'),
+                            'time' => $ord->created_at ? $ord->created_at->diffForHumans() : 'Baru saja',
+                            'icon' => '🔒',
+                            'url' => route('admin.pesanan'),
+                        ];
+                    }
+                }
+            }
+        @endphp
+
         {{-- Header --}}
-        <header class="main-header">
+        <header class="main-header" x-data="{
+            notifOpen: false,
+            latestId: {{ $latestNotifId }},
+            unreadCount: (parseInt(localStorage.getItem('tl_seen_notif_{{ Auth::id() }}') || '0') < {{ $latestNotifId }}) ? {{ count($notifItems) }} : 0,
+            toggleNotif() {
+                this.notifOpen = !this.notifOpen;
+                if (this.notifOpen) {
+                    this.markAllRead();
+                }
+            },
+            markAllRead() {
+                this.unreadCount = 0;
+                localStorage.setItem('tl_seen_notif_{{ Auth::id() }}', this.latestId);
+            }
+        }">
             {{-- Left: Breadcrumb --}}
             <div class="header-breadcrumb">
-                @yield('breadcrumb', '<strong>Dashboard</strong>')
+                @yield('breadcrumb')
             </div>
 
             {{-- Right: date + notif + user --}}
             <div class="header-right">
                 <span class="header-date">{{ $dateStr }}</span>
 
-                <a href="#" class="header-notif" title="Notifikasi">
-                    <i class="fa-regular fa-bell"></i>
-                </a>
+                {{-- Interactive Notification Dropdown --}}
+                <div style="position:relative;">
+                    <button type="button" @click="toggleNotif()" class="header-notif" title="Notifikasi" style="position:relative;">
+                        <i class="fa-regular fa-bell"></i>
+                        <span x-show="unreadCount > 0"
+                              style="position:absolute; top:-4px; right:-4px; width:18px; height:18px; border-radius:50%; background:#EF4444; color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; border:2px solid #fff;"
+                              x-text="unreadCount"></span>
+                    </button>
 
-                @auth
-                <div style="display:flex; align-items:center; gap:9px;">
-                    <div class="header-user-avatar">{{ $userInitial }}</div>
-                    <div>
-                        <div class="header-user-name">{{ $userName }}</div>
-                        <div class="header-user-role">{{ $roleLabel }}</div>
+                    <div x-cloak x-show="notifOpen"
+                         @click.away="notifOpen = false"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 translate-y-1 scale-95"
+                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         style="position:absolute; right:0; top:48px; width:340px; background:#ffffff; border-radius:16px; border:1px solid var(--border-color); box-shadow:0 18px 45px rgba(0,0,0,0.12); z-index:100; overflow:hidden;">
+                        
+                        <div style="padding:14px 18px; border-bottom:1px solid #E5ECEA; display:flex; justify-content:space-between; align-items:center; background:#FAFCFB;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <strong style="font-size:13px; color:#172B29;">Notifikasi</strong>
+                                <span x-show="unreadCount > 0" style="background:#EBF9F2; color:#0A8E68; font-size:10px; font-weight:800; padding:2px 7px; border-radius:8px;" x-text="unreadCount + ' baru'"></span>
+                            </div>
+                            <button type="button" @click="markAllRead()" style="background:none; border:none; color:#07946C; font-size:11px; font-weight:700; cursor:pointer;">
+                                Tandai dibaca
+                            </button>
+                        </div>
+
+                        <div style="max-height:300px; overflow-y:auto; display:flex; flex-direction:column;">
+                            @forelse($notifItems as $item)
+                            <a href="{{ $item['url'] }}" style="padding:12px 16px; border-bottom:1px solid #F0F4F2; display:flex; gap:10px; text-decoration:none; color:inherit; background:#F8FCFA; transition:background 0.15s;" onmouseover="this.style.background='#F0FAF5'" onmouseout="this.style.background='#F8FCFA'">
+                                <div style="width:30px; height:30px; border-radius:8px; background:#DCF8EB; color:#007B55; display:grid; place-items:center; font-size:13px; flex-shrink:0;">{{ $item['icon'] }}</div>
+                                <div>
+                                    <div style="font-size:11.5px; font-weight:750; color:#172B29;">{{ $item['title'] }}</div>
+                                    <div style="font-size:10.5px; color:#6B8077; margin-top:2px;">{{ $item['desc'] }}</div>
+                                    <div style="font-size:9.5px; color:#A1B0AA; margin-top:4px;">{{ $item['time'] }}</div>
+                                </div>
+                            </a>
+                            @empty
+                            <div style="padding:30px 16px; text-align:center; color:#8A9D95; font-size:12px;">
+                                Belum ada notifikasi baru.
+                            </div>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
+
+                @auth
+                @php
+                    $profileRoute = $currentRole === 'petani' ? route('petani.profil') : ($currentRole === 'pembeli' ? route('pembeli.profil') : '#');
+                @endphp
+                <a href="{{ $profileRoute }}" title="Profil {{ $roleLabel }}" style="text-decoration:none; display:flex; align-items:center;">
+                    <div class="header-user-avatar">{{ $userInitial }}</div>
+                </a>
                 @endauth
             </div>
         </header>

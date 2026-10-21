@@ -212,12 +212,12 @@
                     </div>
                 </div>
 
-                {{-- Horeka / Pembeli --}}
+                {{-- Konsumen / Pembeli --}}
                 <div class="role-card" :class="{ selected: selectedRole === 'pembeli' }" @click="selectedRole = 'pembeli'">
-                    <div class="role-card-icon">🏨</div>
+                    <div class="role-card-icon">🏢</div>
                     <div>
-                        <div class="role-card-title">Saya Horeka</div>
-                        <div class="role-card-desc">Cari komoditas terbaik, lakukan pre-order, dan pantau proses tanam secara transparan.</div>
+                        <div class="role-card-title">Saya Konsumen</div>
+                        <div class="role-card-desc">Cari komoditas terbaik langsung dari petani, lakukan pre-order, dan pantau progres tanam.</div>
                     </div>
                 </div>
 

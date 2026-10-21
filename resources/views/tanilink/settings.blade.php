@@ -20,7 +20,7 @@
     <span class="nav-icon">▤</span> Pesanan Masuk
 </a>
 <a href="{{ route('petani.profil') }}" class="nav-btn">
-    <span class="nav-icon">♙</span> Profil Gapoktan
+    <span class="nav-icon">♙</span> Profil Petani
 </a>
 @elseif($role === 'pembeli')
 <a href="{{ route('portal.pembeli') }}" class="nav-btn">
@@ -31,6 +31,9 @@
 </a>
 <a href="{{ route('pembeli.pesanan') }}" class="nav-btn">
     <span class="nav-icon">▤</span> Pesanan Saya
+</a>
+<a href="{{ route('pembeli.profil') }}" class="nav-btn">
+    <span class="nav-icon">♙</span> Profil Konsumen
 </a>
 @else
 <a href="{{ route('portal.admin') }}" class="nav-btn">

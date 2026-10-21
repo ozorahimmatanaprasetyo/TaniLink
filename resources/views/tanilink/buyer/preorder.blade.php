@@ -9,22 +9,21 @@
 <a href="{{ route('pembeli.katalog') }}" class="nav-btn {{ request()->routeIs('pembeli.katalog*') || request()->routeIs('pembeli.komoditas*') || request()->routeIs('pembeli.preorder*') ? 'active' : '' }}">
     <span class="nav-icon">▧</span> Marketplace
 </a>
-<a href="{{ route('pembeli.pesanan*') }}" class="nav-btn {{ request()->routeIs('pembeli.pesanan*') ? 'active' : '' }}">
+<a href="{{ route('pembeli.pesanan') }}" class="nav-btn {{ request()->routeIs('pembeli.pesanan*') ? 'active' : '' }}">
     <span class="nav-icon">▤</span> Pesanan Saya
 </a>
-@endsection
-
-@section('breadcrumb')
-    TaniLink &rsaquo; Horeka &rsaquo; <a href="{{ route('pembeli.katalog') }}" style="color:inherit; text-decoration:none;">Marketplace</a> &rsaquo; <strong>Ajukan Pre-Order</strong>
+<a href="{{ route('pembeli.profil') }}" class="nav-btn {{ request()->routeIs('pembeli.profil*') ? 'active' : '' }}">
+    <span class="nav-icon">♙</span> Profil Konsumen
+</a>
 @endsection
 
 @section('content')
 <div x-data="{
-    qty: {{ min(100, $listing->available_kg) }},
+    qty: '',
     price: {{ (int)$listing->price_per_kg }},
     maxQty: {{ $listing->available_kg }},
-    agree: false,
-    get total() { return this.qty * this.price; },
+    agree: true,
+    get total() { return (this.qty ? this.qty : 0) * this.price; },
     get dp() { return Math.round(this.total * 0.3); },
     get escrow() { return Math.round(this.total * 0.7); }
 }">
@@ -32,7 +31,6 @@
     {{-- Headline --}}
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
         <div>
-            <div style="font-size:10px; font-weight:900; color:#049874; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">TaniLink / Horeka</div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Ajukan Pre-Order</h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">
                 {{ $listing->commodity_name }} &bull; {{ $listing->farmer->organization ?? ($listing->farmer->name ?? 'Gapoktan') }}
@@ -78,7 +76,8 @@
                     <div style="display:flex; flex-direction:column; gap:6px;">
                         <label style="font-size:11px; font-weight:800; color:#365448;">Jumlah Pemesanan (kg) *</label>
                         <input type="number" name="quantity_kg" x-model.number="qty" min="1" :max="maxQty" required
-                               style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:14px; font-weight:800; color:#172B29;">
+                               placeholder="Contoh: 100"
+                               style="outline:0; width:100%; border:1.5px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:14px; font-weight:800; color:#172B29;">
                         <small style="color:#87968F; font-size:10px;">Tersedia maksimal: <b x-text="maxQty"></b> kg</small>
                     </div>
 
@@ -86,7 +85,8 @@
                     <div style="display:flex; flex-direction:column; gap:6px;">
                         <label style="font-size:11px; font-weight:800; color:#365448;">Tanggal Dibutuhkan *</label>
                         <input type="date" name="need_date" value="{{ $listing->harvest_estimated_date ? \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d') : now()->addDays(20)->format('Y-m-d') }}" required
-                               style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:12px;">
+                               min="{{ $listing->harvest_estimated_date ? \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d') : '' }}"
+                               style="outline:0; width:100%; border:1.5px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:12px;">
                         <small style="color:#87968F; font-size:10px;">Estimasi panen: {{ \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('d M Y') }}</small>
                     </div>
                 </div>
@@ -94,8 +94,8 @@
                 {{-- Catatan untuk petani --}}
                 <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:18px;">
                     <label style="font-size:11px; font-weight:800; color:#365448;">Catatan Khusus untuk Kelompok Tani</label>
-                    <textarea name="notes" rows="3" placeholder="Contoh: Untuk kebutuhan Grand Hotel Malang, harap kemasan krat per 20 kg dan sortir segar..."
-                              style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:12px; resize:vertical;">Untuk kebutuhan {{ $pembeli->organization ?? 'Horeka' }}, kualitas segar dan pengemasan krat standar.</textarea>
+                    <textarea name="notes" rows="3" placeholder="Contoh: Kualitas segar, sortir ukuran grade A, dan pengemasan krat standar..."
+                              style="outline:0; width:100%; border:1.5px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:12px; resize:vertical;"></textarea>
                 </div>
 
                 {{-- Notice cyan --}}
@@ -105,17 +105,21 @@
 
                 {{-- Checkbox --}}
                 <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; margin-bottom:24px;">
-                    <input type="checkbox" x-model="agree" required style="width:16px; height:16px; margin-top:2px; accent-color:#05C793;">
-                    <span style="font-size:11px; color:#50695E; line-height:1.6;">
+                    <input type="checkbox" x-model="agree" required style="width:18px; height:18px; margin-top:2px; accent-color:#05C793;">
+                    <span style="font-size:11.5px; color:#50695E; line-height:1.6;">
                         Saya memahami bahwa jadwal panen, harga fixed-price, dan spesifikasi pesanan terikat dalam kontrak pre-order agrikultur TaniLink.
                     </span>
                 </label>
 
+                {{-- Clear, obvious Submit Button --}}
                 <div>
-                    <button type="submit" :disabled="!agree || qty < 1 || qty > maxQty"
-                            style="padding:13px 26px; border-radius:11px; border:none; background:#05C793; color:#053B2D; font-size:13px; font-weight:850; cursor:pointer; display:inline-flex; align-items:center; gap:8px;"
-                            :style="(!agree || qty < 1 || qty > maxQty) ? 'opacity:0.5; cursor:not-allowed;' : ''">
-                        Tinjau & Konfirmasi Pengajuan Pre-Order ↗
+                    <button type="submit" :disabled="!agree || !qty || qty < 1 || qty > maxQty"
+                            style="width:100%; padding:15px 24px; border-radius:12px; border:2px solid #049874; background:#05C793; color:#053B2D; font-size:14px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 6px 18px rgba(5,199,147,0.35); transition:all 0.15s;"
+                            :style="(!agree || !qty || qty < 1 || qty > maxQty) ? 'opacity:0.4; cursor:not-allowed; background:#85958F; border-color:#71837C; color:#fff;' : ''"
+                            onmouseover="if(!this.disabled) { this.style.background='#04B484'; this.style.transform='translateY(-2px)'; }"
+                            onmouseout="if(!this.disabled) { this.style.background='#05C793'; this.style.transform='none'; }">
+                        <i class="fa-solid fa-file-contract" style="font-size:16px;"></i>
+                        <span>Tinjau &amp; Konfirmasi Pengajuan Pre-Order ↗</span>
                     </button>
                 </div>
 

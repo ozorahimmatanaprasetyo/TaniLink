@@ -9,19 +9,12 @@
 <a href="{{ route('petani.komoditas') }}" class="nav-btn {{ request()->routeIs('petani.komoditas') ? 'active' : '' }}">
     <span class="nav-icon">♧</span> Komoditas Saya
 </a>
-<a href="{{ route('petani.komoditas.create') }}" class="nav-btn {{ request()->routeIs('petani.komoditas.create') ? 'active' : '' }}">
-    <span class="nav-icon">⊕</span> Tambah Komoditas
-</a>
-<a href="{{ route('petani.pesanan*') }}" class="nav-btn {{ request()->routeIs('petani.pesanan*') ? 'active' : '' }}">
+<a href="{{ route('petani.pesanan') }}" class="nav-btn {{ request()->routeIs('petani.pesanan*') ? 'active' : '' }}">
     <span class="nav-icon">▤</span> Pesanan Masuk
 </a>
 <a href="{{ route('petani.profil') }}" class="nav-btn {{ request()->routeIs('petani.profil') ? 'active' : '' }}">
-    <span class="nav-icon">♙</span> Profil Gapoktan
+    <span class="nav-icon">♙</span> Profil Petani
 </a>
-@endsection
-
-@section('breadcrumb')
-    TaniLink &rsaquo; Gapoktan &rsaquo; <strong>Pesanan Masuk</strong>
 @endsection
 
 @section('content')
@@ -30,12 +23,11 @@
     {{-- Headline --}}
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px;">
         <div>
-            <div style="font-size:10px; font-weight:900; color:#049874; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">TaniLink / Gapoktan</div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Pesanan Masuk</h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">Kelola permintaan pre-order, kontrak, dan rencana pemenuhan panen.</p>
         </div>
         @if($activeOrders->isNotEmpty())
-        <a href="{{ route('petani.pesanan.show', $activeOrders->first()->id) }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; background:#05C793; color:#053B2D; font-size:12px; font-weight:800; text-decoration:none;">
+        <a href="{{ route('petani.pesanan.show', $activeOrders->first()->id) }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; background:#05C793; color:#053B2D; font-size:12px; font-weight:800; text-decoration:none; box-shadow:0 3px 10px rgba(5,199,147,0.2);">
             Lihat Progres Tanam ↗
         </a>
         @endif
@@ -51,7 +43,7 @@
             <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
                 {{ str_pad($activeOrders->count(), 2, '0', STR_PAD_LEFT) }}
             </div>
-            <div style="font-size:10px; color:#7B9187;">Dari pembeli industri Horeka</div>
+            <div style="font-size:10px; color:#7B9187;">Dari pembeli konsumen</div>
         </div>
 
         <div class="card" style="padding:19px 20px;">
@@ -60,20 +52,20 @@
                 <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:16px;">▥</span>
             </div>
             <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
-                {{ number_format($totalKg, 0, ',', '.') }} kg
+                {{ number_format($activeOrders->sum('quantity_kg'), 0, ',', '.') }} kg
             </div>
-            <div style="font-size:10px; color:#7B9187;">Total estimasi dipesan</div>
+            <div style="font-size:10px; color:#7B9187;">Komitmen panen terjual</div>
         </div>
 
         <div class="card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
-                <span>Nilai Kontrak</span>
+                <span>Nilai Kontrak Total</span>
                 <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:16px;">◉</span>
             </div>
             <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
-                Rp {{ number_format($totalContract, 0, ',', '.') }}
+                Rp {{ number_format($activeOrders->sum('total_amount'), 0, ',', '.') }}
             </div>
-            <div style="font-size:10px; color:#7B9187;">DP Rp {{ number_format($dpReceived, 0, ',', '.') }}</div>
+            <div style="font-size:10px; color:#7B9187;">Termasuk 30% DP diterima</div>
         </div>
     </div>
 
@@ -102,7 +94,7 @@
         <div style="text-align:center; padding:50px 20px; color:#8A9D95;">
             <div style="font-size:42px; margin-bottom:10px;">📋</div>
             <h3 style="font-size:15px; font-weight:800; color:#172B29; margin-bottom:4px;">Belum Ada Pesanan Masuk</h3>
-            <p style="font-size:12px; margin-top:4px;">Saat pembeli Horeka memesan komoditas Anda, pesanan akan tercatat di sini.</p>
+            <p style="font-size:12px; margin-top:4px;">Saat konsumen memesan komoditas Anda, pesanan akan tercatat di sini.</p>
         </div>
         @else
         <div style="overflow-x:auto;">
@@ -115,7 +107,7 @@
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">QTY</th>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">TOTAL</th>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">STATUS</th>
-                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">AKSI</th>
+                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px; text-align:right;">AKSI</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -133,8 +125,13 @@
                             <div style="font-size:10px; color:#85958F;">{{ $order->commodityListing->variety ?? '-' }}</div>
                         </td>
                         <td style="font-size:11px; font-weight:650; color:#172B29; padding:15px 10px;">
-                            {{ $order->buyer->name ?? 'Pembeli' }}
+                            <div>{{ $order->buyer->name ?? 'Pembeli' }}</div>
                             <div style="font-size:10px; color:#85958F;">{{ $order->buyer->organization ?? '-' }}</div>
+                            @if($order->buyer && $order->buyer->phone)
+                            <div style="font-size:10px; color:#0A765A; font-weight:700; margin-top:2px;">
+                                <i class="fa-brands fa-whatsapp"></i> {{ $order->buyer->phone }}
+                            </div>
+                            @endif
                         </td>
                         <td style="font-size:11px; font-weight:650; padding:15px 10px;">
                             {{ number_format($order->quantity_kg, 0, ',', '.') }} kg
@@ -149,8 +146,11 @@
                                 <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10px;">DP Cair</span>
                             @endif
                         </td>
-                        <td style="font-size:11px; padding:15px 10px;">
-                            <a href="{{ route('petani.pesanan.show', $order->id) }}" style="color:#07946C; font-weight:850; text-decoration:none;">Buka ↗</a>
+                        <td style="font-size:11px; padding:15px 10px; text-align:right;">
+                            <a href="{{ route('petani.pesanan.show', $order->id) }}"
+                               style="display:inline-block; padding:5px 12px; border-radius:7px; background:#EBF9F2; border:1px solid #C6EEDC; color:#078362; font-weight:800; font-size:11px; text-decoration:none;">
+                                Detail ↗
+                            </a>
                         </td>
                     </tr>
                     @endforeach
@@ -162,4 +162,3 @@
 
 </div>
 @endsection
-

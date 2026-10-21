@@ -1,6 +1,6 @@
 @extends('layouts.sidebar')
 
-@section('title', 'Dashboard Horeka - TaniLink')
+@section('title', 'Dashboard Konsumen - TaniLink')
 
 @section('sidebar_nav')
 <a href="{{ route('portal.pembeli') }}" class="nav-btn {{ request()->routeIs('portal.pembeli') ? 'active' : '' }}">
@@ -12,10 +12,9 @@
 <a href="{{ route('pembeli.pesanan') }}" class="nav-btn {{ request()->routeIs('pembeli.pesanan*') ? 'active' : '' }}">
     <span class="nav-icon">▤</span> Pesanan Saya
 </a>
-@endsection
-
-@section('breadcrumb')
-    TaniLink &rsaquo; Horeka &rsaquo; <strong>Dashboard</strong>
+<a href="{{ route('pembeli.profil') }}" class="nav-btn {{ request()->routeIs('pembeli.profil*') ? 'active' : '' }}">
+    <span class="nav-icon">♙</span> Profil Konsumen
+</a>
 @endsection
 
 @section('content')
@@ -23,7 +22,6 @@
     {{-- Headline --}}
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
         <div>
-            <div style="font-size:10px; font-weight:900; color:#049874; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">TaniLink / Horeka</div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">
                 Selamat datang, {{ $pembeli->name }} 👋
             </h1>
@@ -31,25 +29,22 @@
                 Temukan pasokan berkualitas langsung dari petani lokal dengan kontrak harga tetap.
             </p>
         </div>
-        <a href="{{ route('pembeli.katalog') }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; background:#05C793; color:#053B2D; font-size:12px; font-weight:800; text-decoration:none;">
-            Jelajahi Katalog →
-        </a>
     </div>
 
     {{-- Hero Banner --}}
-    <div style="display:flex; justify-content:space-between; align-items:center; background:linear-gradient(110deg, #0B644B, #0BA87B); border-radius:20px; min-height:180px; padding:30px 36px; position:relative; overflow:hidden; color:white; margin-bottom:20px; box-shadow:0 8px 24px rgba(11,100,75,0.15);">
-        <div style="position:relative; z-index:2; max-width:540px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; background:linear-gradient(110deg, #0B644B, #0BA87B); border-radius:20px; min-height:170px; padding:28px 36px; position:relative; overflow:hidden; color:white; margin-bottom:20px; box-shadow:0 8px 24px rgba(11,100,75,0.15);">
+        <div style="position:relative; z-index:2; max-width:560px;">
             <h2 style="font-size:22px; font-weight:850; letter-spacing:-0.7px; margin:0 0 10px; line-height:1.3;">
-                Pasokan berkualitas, terencana sejak sebelum panen.
+                Pasokan segar berkualitas, terencana sejak sebelum masa tanam.
             </h2>
-            <p style="font-size:12px; opacity:0.85; line-height:1.7; margin:0 0 16px;">
-                Dapatkan kepastian stok dapur hotel dan restoran Anda melalui kontrak pre-order langsung ke kelompok tani mitra.
+            <p style="font-size:12px; opacity:0.9; line-height:1.7; margin:0 0 16px;">
+                Dapatkan kepastian stok dapur usaha dan konsumsi Anda melalui kontrak pre-order langsung ke kelompok tani mitra TaniLink.
             </p>
-            <a href="{{ route('pembeli.katalog') }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:11px; background:#fff; color:#053B2D; font-size:12px; font-weight:800; text-decoration:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-                Cari Komoditas ↗
+            <a href="{{ route('pembeli.katalog') }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px; border-radius:11px; background:#fff; color:#053B2D; font-size:12px; font-weight:850; text-decoration:none; box-shadow:0 4px 12px rgba(0,0,0,0.12);">
+                Jelajahi Marketplace Komoditas ↗
             </a>
         </div>
-        <div style="font-size:100px; line-height:1; filter:drop-shadow(0 14px 10px rgba(3,53,34,0.3)); z-index:2;">
+        <div style="font-size:100px; line-height:1; filter:drop-shadow(0 14px 10px rgba(3,53,34,0.3)); z-index:2; user-select:none;">
             🌽
         </div>
     </div>
@@ -100,21 +95,25 @@
                     <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Komoditas Pilihan</h2>
                     <p style="font-size:11px; color:#91A19B; margin:0;">Rencanakan pembelian berdasarkan jadwal panen.</p>
                 </div>
-                <a href="{{ route('pembeli.katalog') }}" style="color:#07946C; font-size:11px; font-weight:850; text-decoration:none;">
-                    Marketplace →
+                <a href="{{ route('pembeli.katalog') }}" style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; background:#F0FDF4; border:1px solid #BBF7D0; color:#15803D; font-size:11px; font-weight:800; text-decoration:none;">
+                    Buka Marketplace →
                 </a>
             </div>
 
             <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;">
                 @foreach($catalog->take(3) as $item)
                 @php
-                    $emojis = ['Sayuran' => '🍅', 'Cabai & Bumbu' => '🌶️', 'Palawija' => '🌽', 'Buah' => '🍊'];
+                    $emojis = ['Sayuran' => '🍅', 'Cabai & Bumbu' => '🌶️', 'Palawija' => '🌽', 'Buah' => '🍊', 'Biji-bijian' => '🌾'];
                     $emoji = $emojis[$item->category] ?? '🧅';
                 @endphp
                 <div style="border:1px solid #E5ECEA; border-radius:16px; background:#fff; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between;">
-                    <div style="height:120px; display:grid; place-items:center; font-size:48px; background:linear-gradient(145deg, #FFE6D9, #FFF3E9); position:relative;">
+                    <div style="height:115px; display:grid; place-items:center; font-size:44px; background:linear-gradient(145deg, #FFE6D9, #FFF3E9); position:relative; overflow:hidden;">
+                        @if($item->image_url)
+                        <img src="{{ str_starts_with($item->image_url, 'http') ? $item->image_url : asset($item->image_url) }}" alt="{{ $item->commodity_name }}" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;">
+                        @else
                         {{ $emoji }}
-                        <span style="position:absolute; top:8px; left:8px; font-size:9px; font-weight:900; background:#fff; border-radius:6px; padding:3px 7px;">
+                        @endif
+                        <span style="position:absolute; top:8px; left:8px; font-size:9px; font-weight:900; background:#fff; border-radius:6px; padding:3px 7px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
                             {{ $item->status === 'available' ? 'Tersedia' : 'Pre-Order' }}
                         </span>
                     </div>
@@ -125,17 +124,24 @@
                         </h3>
                         <div style="font-size:10px; color:#80908D;">{{ $item->variety ?? '-' }} • {{ $item->location ?? 'Malang' }}</div>
                         
-                        <div style="font-size:15px; font-weight:900; color:#0A765A; margin:10px 0 8px;">
+                        <div style="font-size:15px; font-weight:900; color:#0A765A; margin:8px 0 6px;">
                             Rp {{ number_format($item->price_per_kg, 0, ',', '.') }}
                             <span style="font-size:10px; font-weight:500; color:#80908D;">/kg</span>
                         </div>
 
                         <div style="font-size:10px; color:#80908D; margin-bottom:10px;">
-                            Est. Panen: <b style="color:#172B29;">{{ \Carbon\Carbon::parse($item->harvest_estimated_date)->format('d M') }}</b>
+                            Est. Panen: <b style="color:#172B29;">{{ \Carbon\Carbon::parse($item->harvest_estimated_date)->format('d M Y') }}</b>
                         </div>
 
-                        <a href="{{ route('pembeli.komoditas.show', $item->id) }}" style="display:block; text-align:center; padding:8px; border-radius:9px; background:#05C793; color:#053B2D; font-size:11px; font-weight:800; text-decoration:none;">
-                            Lihat detail ↗
+                        @if(!empty($item->description))
+                        <div style="font-size:10.5px; color:#556C62; line-height:1.4; margin-bottom:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;" title="{{ $item->description }}">
+                            {{ $item->description }}
+                        </div>
+                        @endif
+
+                        <a href="{{ route('pembeli.komoditas.show', $item->id) }}"
+                           style="display:block; text-align:center; padding:8px; border-radius:9px; background:#05C793; color:#053B2D; font-size:11px; font-weight:800; text-decoration:none; box-shadow:0 2px 8px rgba(5,199,147,0.2);">
+                            Lihat Detail ↗
                         </a>
                     </div>
                 </div>
@@ -148,9 +154,9 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
                 <div>
                     <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Pesanan Terbaru</h2>
-                    <p style="font-size:11px; color:#91A19B; margin:0;">Status suplai terkini bisnis Anda.</p>
+                    <p style="font-size:11px; color:#91A19B; margin:0;">Status suplai terkini Anda.</p>
                 </div>
-                <a href="{{ route('pembeli.pesanan') }}" style="color:#07946C; font-size:11px; font-weight:850; text-decoration:none;">
+                <a href="{{ route('pembeli.pesanan') }}" style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; background:#F0FDF4; border:1px solid #BBF7D0; color:#15803D; font-size:11px; font-weight:800; text-decoration:none;">
                     Semua →
                 </a>
             </div>
@@ -164,8 +170,8 @@
             @else
             <div style="display:flex; flex-direction:column; gap:12px;">
                 @foreach($myOrders->take(4) as $order)
-                <div style="display:flex; gap:12px; padding-bottom:12px; border-bottom:1px solid #EEF3F0;">
-                    <div style="width:28px; height:28px; border-radius:50%; background:#E5FAF1; color:#069873; display:grid; place-items:center; font-size:12px; flex-shrink:0;">
+                <div style="display:flex; gap:12px; padding-bottom:12px; border-bottom:1px solid #EEF3F0; align-items:center;">
+                    <div style="width:30px; height:30px; border-radius:50%; background:#E5FAF1; color:#069873; display:grid; place-items:center; font-size:12px; flex-shrink:0;">
                         ▤
                     </div>
                     <div style="flex:1;">
@@ -179,7 +185,8 @@
                             </span>
                         </div>
                     </div>
-                    <a href="{{ route('pembeli.tracking', $order->id) }}" style="font-size:11px; font-weight:850; color:#07946C; text-decoration:none; align-self:center;">
+                    <a href="{{ route('pembeli.tracking', $order->id) }}"
+                       style="display:inline-block; padding:5px 12px; border-radius:7px; background:#EBF9F2; border:1px solid #C6EEDC; color:#078362; font-weight:800; font-size:11px; text-decoration:none; white-space:nowrap;">
                         Pantau ↗
                     </a>
                 </div>
