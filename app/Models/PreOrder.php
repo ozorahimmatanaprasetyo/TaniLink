@@ -111,5 +111,30 @@ class PreOrder extends Model
     {
         return $this->hasOne(DeliveryTracking::class, 'pre_order_id');
     }
+
+    public function getDistanceKmAttribute()
+    {
+        $farmerLat = $this->commodityListing->latitude ?? ($this->farmer->latitude ?? null);
+        $farmerLng = $this->commodityListing->longitude ?? ($this->farmer->longitude ?? null);
+        $buyerLat = $this->buyer->latitude ?? null;
+        $buyerLng = $this->buyer->longitude ?? null;
+
+        if ($farmerLat && $farmerLng && $buyerLat && $buyerLng) {
+            $earthRadius = 6371; // radius bumi dalam km
+            $latFrom = deg2rad((float)$farmerLat);
+            $lonFrom = deg2rad((float)$farmerLng);
+            $latTo = deg2rad((float)$buyerLat);
+            $lonTo = deg2rad((float)$buyerLng);
+
+            $latDelta = $latTo - $latFrom;
+            $lonDelta = $lonTo - $lonFrom;
+
+            $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+                cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+            return round($angle * $earthRadius, 1);
+        }
+
+        return null;
+    }
 }
 

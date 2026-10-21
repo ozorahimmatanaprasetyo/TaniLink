@@ -95,27 +95,56 @@
                 </div>
             </div>
 
-            {{-- Card Logistik Pengiriman with Real Map --}}
+            {{-- Card Logistik Pengiriman with Real Map & Pinpoint Coordinates --}}
             <div class="card" style="padding:24px;">
-                <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Peta Lokasi Lahan &amp; Logistik Pengiriman</h2>
-                <p style="font-size:11px; color:#91A19B; margin:0 0 16px;">Lokasi kebun panen petani mitra untuk koordinasi penjemputan hasil panen.</p>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                    <div>
+                        <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Peta Lokasi Lahan &amp; Koordinat Kebun</h2>
+                        <p style="font-size:11px; color:#91A19B; margin:0;">Titik lokasi kebun petani mitra untuk koordinasi penjemputan hasil panen.</p>
+                    </div>
+                    @if($order->distance_km)
+                    <span style="display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px; background:#E9FBF3; border:1px solid #C5EEDC; color:#0A7E5E; font-size:11.5px; font-weight:850;">
+                        🚗 ± {{ $order->distance_km }} km dari lokasi Anda
+                    </span>
+                    @endif
+                </div>
 
-                {{-- Real Map Embed --}}
+                {{-- Real Map Embed with Precise Coordinates if available --}}
                 @php
-                    $farmLoc = $order->commodityListing->location ?? 'Malang, Jawa Timur';
-                    $mapQuery = urlencode($farmLoc);
+                    $farmerLat = $order->commodityListing->latitude ?? ($order->farmer->latitude ?? null);
+                    $farmerLng = $order->commodityListing->longitude ?? ($order->farmer->longitude ?? null);
+                    $farmLoc = $order->commodityListing->location ?? ($order->farmer->location ?? 'Malang, Jawa Timur');
+                    
+                    if ($farmerLat && $farmerLng) {
+                        $mapQuery = $farmerLat . ',' . $farmerLng;
+                        $gmapsUrl = "https://www.google.com/maps?q={$farmerLat},{$farmerLng}";
+                    } else {
+                        $mapQuery = urlencode($farmLoc);
+                        $gmapsUrl = "https://www.google.com/maps/search/?api=1&query=" . urlencode($farmLoc);
+                    }
                 @endphp
+
                 <div style="border-radius:14px; overflow:hidden; border:1px solid #DFEAE5; margin-bottom:14px; box-shadow:0 2px 10px rgba(0,0,0,0.04);">
-                    <iframe width="100%" height="220" style="border:0; display:block;" loading="lazy" allowfullscreen
-                            src="https://maps.google.com/maps?q={{ $mapQuery }}&t=&z=13&ie=UTF8&iwloc=&output=embed">
+                    <iframe width="100%" height="230" style="border:0; display:block;" loading="lazy" allowfullscreen
+                            src="https://maps.google.com/maps?q={{ $mapQuery }}&t=&z=14&ie=UTF8&iwloc=&output=embed">
                     </iframe>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; background:#F8FCFA; border:1px solid #DFEAE5; border-radius:11px; padding:10px 14px; font-size:11.5px;">
-                    <span style="color:#527063;">
-                        📍 <b>Titik Lahan:</b> {{ $farmLoc }}
-                    </span>
-                    <span style="color:#0C8D65; font-weight:800; font-size:11px;">Pengambilan Mandiri</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#F8FCFA; border:1px solid #DFEAE5; border-radius:11px; padding:12px 16px; font-size:11.5px;">
+                    <div>
+                        <div style="color:#254D3F; font-weight:800;">
+                            📍 {{ $farmLoc }}
+                        </div>
+                        @if($farmerLat && $farmerLng)
+                        <div style="color:#6A867A; font-size:10.5px; margin-top:2px;">
+                            Koordinat Presisi: <code>{{ $farmerLat }}, {{ $farmerLng }}</code>
+                        </div>
+                        @endif
+                    </div>
+                    <a href="{{ $gmapsUrl }}" target="_blank"
+                       style="padding:6px 12px; border-radius:8px; background:#05C793; color:#053B2D; font-weight:850; text-decoration:none; font-size:11px; box-shadow:0 2px 6px rgba(5,199,147,0.3); white-space:nowrap;">
+                        Buka di Google Maps ↗
+                    </a>
                 </div>
             </div>
 
@@ -210,28 +239,39 @@
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
                                 {{ $order->farmer->name ?? 'Petani Mitra' }} &bull; {{ $order->farmer->organization ?? '-' }}
                                 @if($order->farmer && $order->farmer->phone)
-                                <div style="color:#0C8D65; font-size:10px; margin-top:2px;">
-                                    <i class="fa-brands fa-whatsapp"></i> {{ $order->farmer->phone }}
+                                <div style="margin-top:3px;">
+                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $order->farmer->phone) }}" target="_blank"
+                                       style="color:#0C8D65; font-size:10.5px; text-decoration:none; font-weight:800; display:inline-flex; align-items:center; gap:4px;">
+                                        <i class="fa-brands fa-whatsapp"></i> {{ $order->farmer->phone }}
+                                    </a>
                                 </div>
                                 @endif
                             </td>
                         </tr>
                         <tr style="border-bottom:1px solid #EEF2F0;">
-                            <td style="padding:10px 0; color:#8A9994;">Lokasi Lahan Petani</td>
+                            <td style="padding:10px 0; color:#8A9994;">Lokasi Kebun Panen (Asal)</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
-                                {{ $order->commodityListing->location ?? 'Ambarawa, Malang' }}
+                                {{ $order->commodityListing->location ?? ($order->farmer->location ?? 'Malang, Jawa Timur') }}
                             </td>
                         </tr>
                         <tr style="border-bottom:1px solid #EEF2F0;">
-                            <td style="padding:10px 0; color:#8A9994;">Tujuan Konsumen</td>
+                            <td style="padding:10px 0; color:#8A9994;">Tujuan Konsumen (Tujuan)</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
-                                {{ $order->buyer->organization ?? 'Konsumen Malang' }}
+                                {{ $order->buyer->location ?? ($order->buyer->organization ?? 'Lokasi Konsumen') }}
                             </td>
                         </tr>
+                        @if($order->distance_km)
+                        <tr style="border-bottom:1px solid #EEF2F0;">
+                            <td style="padding:10px 0; color:#8A9994;">Estimasi Jarak Tempuh</td>
+                            <td style="padding:10px 0; text-align:right; font-weight:850; color:#0A7E5E;">
+                                ± {{ $order->distance_km }} km (rute langsung)
+                            </td>
+                        </tr>
+                        @endif
                         <tr style="border-bottom:1px solid #EEF2F0;">
                             <td style="padding:10px 0; color:#8A9994;">Metode Penyerahan</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#078362;">
-                                Pengambilan Mandiri di Lahan Panen
+                                Pengambilan Mandiri di Lahan Kebun
                             </td>
                         </tr>
                         <tr>

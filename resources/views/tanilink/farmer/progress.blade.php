@@ -164,24 +164,35 @@
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
                                 {{ $order->buyer->name }} &bull; {{ $order->buyer->organization ?? '-' }}
                                 @if($order->buyer->phone)
-                                <div style="color:#0C8D65; font-size:10px; margin-top:2px;">
-                                    <i class="fa-brands fa-whatsapp"></i> {{ $order->buyer->phone }}
+                                <div style="margin-top:3px;">
+                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $order->buyer->phone) }}" target="_blank"
+                                       style="color:#0C8D65; font-size:10.5px; text-decoration:none; font-weight:800; display:inline-flex; align-items:center; gap:4px;">
+                                        <i class="fa-brands fa-whatsapp"></i> {{ $order->buyer->phone }}
+                                    </a>
                                 </div>
                                 @endif
                             </td>
                         </tr>
                         <tr style="border-bottom:1px solid #EEF2F0;">
-                            <td style="padding:10px 0; color:#8A9994;">Lokasi Lahan Petani</td>
+                            <td style="padding:10px 0; color:#8A9994;">Lokasi Kebun Panen (Asal)</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
-                                {{ $order->deliveryTracking->pickup_address ?? 'Lahan Petani, Malang' }}
+                                {{ $order->commodityListing->location ?? ($order->farmer->location ?? 'Lahan Petani, Malang') }}
                             </td>
                         </tr>
                         <tr style="border-bottom:1px solid #EEF2F0;">
-                            <td style="padding:10px 0; color:#8A9994;">Tujuan Konsumen</td>
+                            <td style="padding:10px 0; color:#8A9994;">Tujuan Konsumen (Tujuan)</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">
-                                {{ $order->deliveryTracking->destination_address ?? ($order->buyer->organization ?? 'Konsumen Malang') }}
+                                {{ $order->buyer->location ?? ($order->buyer->organization ?? 'Konsumen Malang') }}
                             </td>
                         </tr>
+                        @if($order->distance_km)
+                        <tr style="border-bottom:1px solid #EEF2F0;">
+                            <td style="padding:10px 0; color:#8A9994;">Estimasi Jarak Tempuh</td>
+                            <td style="padding:10px 0; text-align:right; font-weight:850; color:#0A7E5E;">
+                                ± {{ $order->distance_km }} km (rute langsung)
+                            </td>
+                        </tr>
+                        @endif
                         <tr style="border-bottom:1px solid #EEF2F0;">
                             <td style="padding:10px 0; color:#8A9994;">Metode Penyerahan</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#078362;">
@@ -219,6 +230,25 @@
                 Informasi ini akan terkirim langsung ke dasbor pembeli {{ $order->buyer->name }}.
             </p>
 
+            @php
+                $stageIdxMap = [
+                    'Fase Benih & Penyemaian' => 1,
+                    'Fase Vegetatif & Pertunasan' => 2,
+                    'Fase Pembungaan & Bakal Buah' => 3,
+                    'Fase Pematangan & Siap Panen' => 4,
+                ];
+                $curIdx = $stageIdxMap[$order->current_stage] ?? 1;
+                $curStatus = $order->current_stage_status ?? 'berlangsung';
+                $minAvailableIdx = ($curStatus === 'selesai') ? min(4, $curIdx + 1) : $curIdx;
+                $isAllCompleted = ($curIdx === 4 && $curStatus === 'selesai');
+            @endphp
+
+            @if($isAllCompleted)
+            <div style="padding:14px; border-radius:12px; background:#EBFBF3; border:1px solid #C4EED9; color:#0A7B59; font-size:12px; margin-bottom:16px;">
+                🎉 <b>Semua fase budidaya telah selesai tuntas (100%).</b> Pesanan ini telah siap panen dan masuk tahap serah terima logistik.
+            </div>
+            @endif
+
             <form action="{{ route('petani.progress.store') }}" method="POST" enctype="multipart/form-data" x-data="{ photoName: '' }">
                 @csrf
                 <input type="hidden" name="pre_order_id" value="{{ $order->id }}">
@@ -227,21 +257,30 @@
                     <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:12px;">
                         <div style="display:flex; flex-direction:column; gap:6px;">
                             <label style="font-size:11px; font-weight:800; color:#365448;">Pilih Tahap Tanaman *</label>
-                            <select name="stage_name" required
+                            <select name="stage_name" required {{ $isAllCompleted ? 'disabled' : '' }}
                                     style="outline:0; width:100%; border:1px solid #DFEAE5; padding:11px 14px; border-radius:10px; background:#fff; font-size:12px;">
-                                <option value="Fase Benih & Penyemaian" {{ $order->current_stage === 'Fase Benih & Penyemaian' ? 'selected' : '' }}>🌱 Fase Benih & Penyemaian</option>
-                                <option value="Fase Vegetatif & Pertunasan" {{ $order->current_stage === 'Fase Vegetatif & Pertunasan' ? 'selected' : '' }}>🌿 Fase Vegetatif & Pertunasan</option>
-                                <option value="Fase Pembungaan & Bakal Buah" {{ $order->current_stage === 'Fase Pembungaan & Bakal Buah' ? 'selected' : '' }}>🌼 Fase Pembungaan & Bakal Buah</option>
-                                <option value="Fase Pematangan & Siap Panen" {{ $order->current_stage === 'Fase Pematangan & Siap Panen' ? 'selected' : '' }}>🌶️ Fase Pematangan & Siap Panen</option>
+                                <option value="Fase Benih & Penyemaian" {{ 1 < $minAvailableIdx ? 'disabled' : '' }} {{ $minAvailableIdx === 1 ? 'selected' : '' }}>
+                                    🌱 Fase Benih & Penyemaian {{ 1 < $minAvailableIdx ? '🔒 (Sudah Selesai)' : '' }}
+                                </option>
+                                <option value="Fase Vegetatif & Pertunasan" {{ 2 < $minAvailableIdx ? 'disabled' : '' }} {{ $minAvailableIdx === 2 ? 'selected' : '' }}>
+                                    🌿 Fase Vegetatif & Pertunasan {{ 2 < $minAvailableIdx ? '🔒 (Sudah Selesai)' : '' }}
+                                </option>
+                                <option value="Fase Pembungaan & Bakal Buah" {{ 3 < $minAvailableIdx ? 'disabled' : '' }} {{ $minAvailableIdx === 3 ? 'selected' : '' }}>
+                                    🌼 Fase Pembungaan & Bakal Buah {{ 3 < $minAvailableIdx ? '🔒 (Sudah Selesai)' : '' }}
+                                </option>
+                                <option value="Fase Pematangan & Siap Panen" {{ 4 < $minAvailableIdx ? 'disabled' : '' }} {{ $minAvailableIdx === 4 ? 'selected' : '' }}>
+                                    🌶️ Fase Pematangan & Siap Panen {{ 4 < $minAvailableIdx ? '🔒 (Sudah Selesai)' : '' }}
+                                </option>
                             </select>
+                            <span style="font-size:10px; color:#859990;">* Fase yang telah selesai terkunci secara otomatis.</span>
                         </div>
 
                         <div style="display:flex; flex-direction:column; gap:6px;">
                             <label style="font-size:11px; font-weight:800; color:#365448;">Status Fase Ini *</label>
-                            <select name="stage_status" required
+                            <select name="stage_status" required {{ $isAllCompleted ? 'disabled' : '' }}
                                     style="outline:0; width:100%; border:1px solid #DFEAE5; padding:11px 14px; border-radius:10px; background:#fff; font-size:12px;">
-                                <option value="berlangsung" {{ ($order->current_stage_status ?? '') === 'berlangsung' ? 'selected' : '' }}>Sedang Berlangsung</option>
-                                <option value="selesai" {{ ($order->current_stage_status ?? '') === 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                <option value="berlangsung" selected>Sedang Berlangsung</option>
+                                <option value="selesai">Tandai Selesai (Otomatis Lanjut Fase) ↗</option>
                             </select>
                         </div>
                     </div>

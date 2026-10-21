@@ -42,9 +42,9 @@
         {{-- Kiri: Galeri & Info Produksi --}}
         <div style="display:flex; flex-direction:column; gap:20px;">
             
-            {{-- Foto Utama --}}
+            {{-- Foto Utama Komoditas --}}
             <div class="card" style="padding:16px;">
-                <div style="height:360px; border-radius:14px; background:linear-gradient(145deg, #FFE6D9, #FFF3E9); display:grid; place-items:center; font-size:140px; position:relative; overflow:hidden;">
+                <div style="height:380px; border-radius:14px; background:linear-gradient(145deg, #FFE6D9, #FFF3E9); display:grid; place-items:center; font-size:140px; position:relative; overflow:hidden;">
                     @if($hasImage)
                         <img src="{{ str_starts_with($imgUrl, 'http') ? $imgUrl : asset($imgUrl) }}"
                              alt="{{ $listing->commodity_name }}"
@@ -52,18 +52,15 @@
                     @else
                         {{ $emoji }}
                     @endif
-                </div>
 
-                {{-- Thumbnails --}}
-                <div style="display:flex; gap:10px; margin-top:12px;">
-                    <div style="height:70px; width:88px; border-radius:10px; background:#FFE3D8; display:grid; place-items:center; font-size:32px; border:2px solid #05C793; cursor:pointer;">
-                        {{ $emoji }}
-                    </div>
-                    <div style="height:70px; width:88px; border-radius:10px; background:#E7F7DF; display:grid; place-items:center; font-size:32px; opacity:0.75; cursor:pointer;">
-                        🌱
-                    </div>
-                    <div style="height:70px; width:88px; border-radius:10px; background:#F0EDE2; display:grid; place-items:center; font-size:32px; opacity:0.75; cursor:pointer;">
-                        🌼
+                    {{-- Badges di atas foto --}}
+                    <div style="position:absolute; top:16px; left:16px; display:flex; gap:8px;">
+                        <span style="background:rgba(23,43,41,0.85); backdrop-filter:blur(6px); color:#fff; font-size:11px; font-weight:800; padding:5px 12px; border-radius:8px;">
+                            {{ $listing->category }}
+                        </span>
+                        <span style="background:rgba(5,199,147,0.92); backdrop-filter:blur(6px); color:#033E2F; font-size:11px; font-weight:850; padding:5px 12px; border-radius:8px;">
+                            Siap Kontrak Pre-Order
+                        </span>
                     </div>
                 </div>
             </div>

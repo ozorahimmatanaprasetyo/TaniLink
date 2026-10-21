@@ -111,16 +111,18 @@
                     </span>
                 </label>
 
-                {{-- Clear, obvious Submit Button --}}
+                {{-- Tombol Pengajuan yang Jelas & Menyerupai Tombol Fisik (Button Affordance) --}}
                 <div>
-                    <button type="submit" :disabled="!agree || !qty || qty < 1 || qty > maxQty"
-                            style="width:100%; padding:15px 24px; border-radius:12px; border:2px solid #049874; background:#05C793; color:#053B2D; font-size:14px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 6px 18px rgba(5,199,147,0.35); transition:all 0.15s;"
-                            :style="(!agree || !qty || qty < 1 || qty > maxQty) ? 'opacity:0.4; cursor:not-allowed; background:#85958F; border-color:#71837C; color:#fff;' : ''"
-                            onmouseover="if(!this.disabled) { this.style.background='#04B484'; this.style.transform='translateY(-2px)'; }"
-                            onmouseout="if(!this.disabled) { this.style.background='#05C793'; this.style.transform='none'; }">
-                        <i class="fa-solid fa-file-contract" style="font-size:16px;"></i>
+                    <button type="submit"
+                            style="width:100%; padding:16px 24px; border-radius:12px; border:2px solid #038F69; background:linear-gradient(180deg, #07DC9C 0%, #05B787 100%); color:#033527; font-size:14.5px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 6px 20px rgba(5,199,147,0.38); transition:all 0.15s;"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(5,199,147,0.48)';"
+                            onmouseout="this.style.transform='none'; this.style.boxShadow='0 6px 20px rgba(5,199,147,0.38)';">
+                        <i class="fa-solid fa-file-contract" style="font-size:16px; color:#033527;"></i>
                         <span>Tinjau &amp; Konfirmasi Pengajuan Pre-Order ↗</span>
                     </button>
+                    <p style="font-size:11px; color:#859990; text-align:center; margin:8px 0 0;">
+                        Klik tombol di atas setelah menentukan kuantitas panen yang diinginkan.
+                    </p>
                 </div>
 
             </div>

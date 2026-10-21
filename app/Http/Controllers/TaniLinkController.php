@@ -229,6 +229,8 @@ class TaniLinkController extends Controller
             'price_per_kg' => $validated['price_per_kg'],
             'harvest_estimated_date' => $validated['harvest_estimated_date'],
             'location' => $petani->location ?? 'Malang, Jawa Timur',
+            'latitude' => $petani->latitude,
+            'longitude' => $petani->longitude,
             'image_url' => $imageUrl,
             'description' => $validated['description'] ?? 'Lahan produktif siap tanam.',
             'status' => 'available',
@@ -346,6 +348,25 @@ class TaniLinkController extends Controller
 
         $preOrder = PreOrder::findOrFail($validated['pre_order_id']);
 
+        // Integritas Kontrak: Validasi Penguncian Fase Lampau yang sudah 'selesai'
+        $stageOrder = [
+            'Fase Benih & Penyemaian' => 1,
+            'Fase Vegetatif & Pertunasan' => 2,
+            'Fase Pembungaan & Bakal Buah' => 3,
+            'Fase Pematangan & Siap Panen' => 4,
+        ];
+
+        $currentIdx = $stageOrder[$preOrder->current_stage] ?? 1;
+        $targetIdx = $stageOrder[$validated['stage_name']] ?? 1;
+
+        if ($targetIdx < $currentIdx) {
+            return back()->withErrors(['stage_name' => 'Fase sebelumnya telah selesai dan terkunci. Anda tidak dapat mengubah kembali fase yang sudah lampau.']);
+        }
+
+        if ($targetIdx === $currentIdx && $preOrder->current_stage_status === 'selesai' && $validated['stage_status'] !== 'selesai') {
+            return back()->withErrors(['stage_status' => 'Fase ini sudah ditandai selesai dan tidak dapat dikembalikan ke status berlangsung. Silakan pilih fase berikutnya.']);
+        }
+
         $photoUrl = null;
         if ($request->hasFile('photo')) {
             $path = $request->file('photo')->store('progress', 'public');
@@ -361,6 +382,13 @@ class TaniLinkController extends Controller
             $photoUrl = $defaultPhasePhotos[$validated['stage_name']] ?? 'https://images.unsplash.com/photo-1592417817098-8f3d6910985b?auto=format&fit=crop&w=600&q=80';
         }
 
+        $stageNames = [
+            1 => 'Fase Benih & Penyemaian',
+            2 => 'Fase Vegetatif & Pertunasan',
+            3 => 'Fase Pembungaan & Bakal Buah',
+            4 => 'Fase Pematangan & Siap Panen',
+        ];
+
         // Hitung persentase dinamis sesuai fase dan status (berlangsung / selesai)
         $pctMap = [
             'Fase Benih & Penyemaian' => ['berlangsung' => 15, 'selesai' => 25],
@@ -368,8 +396,6 @@ class TaniLinkController extends Controller
             'Fase Pembungaan & Bakal Buah' => ['berlangsung' => 70, 'selesai' => 75],
             'Fase Pematangan & Siap Panen' => ['berlangsung' => 90, 'selesai' => 100],
         ];
-
-        $newPercentage = $pctMap[$validated['stage_name']][$validated['stage_status']] ?? min(100, $preOrder->stage_percentage + 15);
 
         PlantingProgress::create([
             'pre_order_id' => $preOrder->id,
@@ -382,20 +408,44 @@ class TaniLinkController extends Controller
             'is_verified' => true,
         ]);
 
-        $orderUpdate = [
-            'current_stage' => $validated['stage_name'],
-            'current_stage_status' => $validated['stage_status'],
-            'stage_percentage' => $newPercentage,
-        ];
+        // Jika fase ditandai selesai dan belum fase ke-4, fase berikutnya otomatis aktif berstatus 'berlangsung'
+        if ($validated['stage_status'] === 'selesai' && $targetIdx < 4) {
+            $nextIdx = $targetIdx + 1;
+            $nextStageName = $stageNames[$nextIdx];
+            $nextInitialPct = [
+                2 => 35,
+                3 => 65,
+                4 => 85,
+            ];
 
-        if ($validated['stage_name'] === 'Fase Pematangan & Siap Panen' && $validated['stage_status'] === 'selesai') {
-            $orderUpdate['status'] = 'siap_panen';
+            $orderUpdate = [
+                'current_stage' => $nextStageName,
+                'current_stage_status' => 'berlangsung',
+                'stage_percentage' => $nextInitialPct[$nextIdx] ?? 50,
+            ];
+
+            $preOrder->update($orderUpdate);
+
+            return back()->with('success', $validated['stage_name'] . ' telah ditandai Selesai. ' . $nextStageName . ' otomatis aktif dengan status Sedang Berlangsung!');
+        } else {
+            $newPercentage = $pctMap[$validated['stage_name']][$validated['stage_status']] ?? min(100, $preOrder->stage_percentage + 15);
+
+            $orderUpdate = [
+                'current_stage' => $validated['stage_name'],
+                'current_stage_status' => $validated['stage_status'],
+                'stage_percentage' => $newPercentage,
+            ];
+
+            if ($validated['stage_name'] === 'Fase Pematangan & Siap Panen' && $validated['stage_status'] === 'selesai') {
+                $orderUpdate['status'] = 'siap_panen';
+                $orderUpdate['stage_percentage'] = 100;
+            }
+
+            $preOrder->update($orderUpdate);
+
+            $statusLabel = $validated['stage_status'] === 'selesai' ? 'Selesai (Siap Panen)' : 'Sedang Berlangsung';
+            return back()->with('success', 'Update progres ' . $validated['stage_name'] . ' (' . $statusLabel . ') berhasil disimpan dan dikirim ke konsumen!');
         }
-
-        $preOrder->update($orderUpdate);
-
-        $statusLabel = $validated['stage_status'] === 'selesai' ? 'Selesai' : 'Sedang Berlangsung';
-        return back()->with('success', 'Update progres ' . $validated['stage_name'] . ' (' . $statusLabel . ') berhasil disimpan dan dikirim ke konsumen!');
     }
 
     public function petaniProfile()
@@ -417,6 +467,10 @@ class TaniLinkController extends Controller
             'organization' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:50',
             'location' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'bank_name' => 'nullable|string|max:100',
+            'bank_account' => 'nullable|string|max:100',
             'bio' => 'nullable|string',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
@@ -426,6 +480,10 @@ class TaniLinkController extends Controller
             'organization' => $validated['organization'] ?? $petani->organization,
             'phone' => $validated['phone'] ?? $petani->phone,
             'location' => $validated['location'] ?? $petani->location,
+            'latitude' => $validated['latitude'] ?? $petani->latitude,
+            'longitude' => $validated['longitude'] ?? $petani->longitude,
+            'bank_name' => $validated['bank_name'] ?? $petani->bank_name,
+            'bank_account' => $validated['bank_account'] ?? $petani->bank_account,
         ];
 
         if (!empty($validated['password'])) {
@@ -623,6 +681,8 @@ class TaniLinkController extends Controller
             'organization' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:50',
             'location' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -631,6 +691,8 @@ class TaniLinkController extends Controller
             'organization' => $validated['organization'] ?? $pembeli->organization,
             'phone' => $validated['phone'] ?? $pembeli->phone,
             'location' => $validated['location'] ?? $pembeli->location,
+            'latitude' => $validated['latitude'] ?? $pembeli->latitude,
+            'longitude' => $validated['longitude'] ?? $pembeli->longitude,
         ];
 
         if (!empty($validated['password'])) {

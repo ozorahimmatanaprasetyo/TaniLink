@@ -20,6 +20,8 @@ class CommodityListing extends Model
         'price_per_kg',
         'harvest_estimated_date',
         'location',
+        'latitude',
+        'longitude',
         'image_url',
         'description',
         'status',

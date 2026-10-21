@@ -96,25 +96,130 @@
         </form>
     </div>
 
-    {{-- 2. Tab Switcher Khusus: Petani vs Konsumen (Bedakan kedua itu, jangan digabung) --}}
-    <div style="display:flex; gap:10px; margin-bottom:16px;">
+    {{-- 2. Styling Khusus Tombol Filter Tab FAQ (Murni CSS agar Solid & Konsisten) --}}
+    <style>
+        .tab-filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            height: 44px;
+            padding: 0 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            text-decoration: none;
+            outline: none;
+            background: #ffffff;
+            color: #375247;
+            border: 1.5px solid #DFEAE5;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            font-family: inherit;
+        }
+        .tab-filter-btn:hover {
+            background: #F4F8F6;
+            border-color: #B2CEBF;
+            color: #172B29;
+            transform: translateY(-1px);
+        }
+        .tab-filter-btn.active-petani {
+            background: #0C8D65 !important;
+            border-color: #0C8D65 !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 18px rgba(12,141,101,0.3) !important;
+            transform: translateY(-1px);
+        }
+        .tab-filter-btn.active-konsumen {
+            background: #0B8BAA !important;
+            border-color: #0B8BAA !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 18px rgba(11,139,170,0.3) !important;
+            transform: translateY(-1px);
+        }
+        .tab-filter-btn.active-semua {
+            background: #7257CA !important;
+            border-color: #7257CA !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 18px rgba(114,87,202,0.3) !important;
+            transform: translateY(-1px);
+        }
+        .tab-badge {
+            font-size: 11px;
+            font-weight: 850;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #E8F2EE;
+            color: #2D4C40;
+            transition: all 0.18s ease;
+        }
+        .active-petani .tab-badge,
+        .active-konsumen .tab-badge,
+        .active-semua .tab-badge {
+            background: rgba(255, 255, 255, 0.25) !important;
+            color: #ffffff !important;
+        }
+        .tab-icon-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 7px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            background: #E8F2EE;
+            transition: all 0.18s ease;
+        }
+        .active-petani .tab-icon-box,
+        .active-konsumen .tab-icon-box,
+        .active-semua .tab-icon-box {
+            background: rgba(255, 255, 255, 0.22) !important;
+            color: #ffffff !important;
+        }
+    </style>
+
+    {{-- Tombol Filter Terpisah (Button Mandiri Masing-Masing) --}}
+    <div style="display:flex; gap:12px; margin-bottom:22px; flex-wrap:wrap; align-items:center;">
+        
+        {{-- Tombol FAQ Khusus Petani --}}
         <button type="button" @click="activeTab = 'petani'"
-                style="padding:10px 20px; border-radius:11px; border:none; font-size:12.5px; font-weight:850; cursor:pointer; display:flex; align-items:center; gap:8px;"
-                :style="activeTab === 'petani' ? 'background:#0C8D65; color:#fff; box-shadow:0 3px 10px rgba(12,141,101,0.25);' : 'background:#fff; color:#50695E; border:1px solid #DFEAE5;'">
-            🌱 FAQ Khusus Petani ({{ $petaniTopics->count() }})
+                class="tab-filter-btn"
+                :class="activeTab === 'petani' ? 'active-petani' : ''">
+            <span class="tab-icon-box" style="color:#0C8D65; background:#E8FAF2;">
+                <i class="fa-solid fa-seedling"></i>
+            </span>
+            <span>FAQ Khusus Petani</span>
+            <span class="tab-badge">
+                {{ $petaniTopics->count() }}
+            </span>
         </button>
 
+        {{-- Tombol FAQ Khusus Konsumen --}}
         <button type="button" @click="activeTab = 'konsumen'"
-                style="padding:10px 20px; border-radius:11px; border:none; font-size:12.5px; font-weight:850; cursor:pointer; display:flex; align-items:center; gap:8px;"
-                :style="activeTab === 'konsumen' ? 'background:#0B8BAA; color:#fff; box-shadow:0 3px 10px rgba(11,139,170,0.25);' : 'background:#fff; color:#50695E; border:1px solid #DFEAE5;'">
-            🛒 FAQ Khusus Konsumen ({{ $konsumenTopics->count() }})
+                class="tab-filter-btn"
+                :class="activeTab === 'konsumen' ? 'active-konsumen' : ''">
+            <span class="tab-icon-box" style="color:#0B8BAA; background:#E5F7FB;">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </span>
+            <span>FAQ Khusus Konsumen</span>
+            <span class="tab-badge">
+                {{ $konsumenTopics->count() }}
+            </span>
         </button>
 
+        {{-- Tombol FAQ Umum / Semua --}}
         <button type="button" @click="activeTab = 'semua'"
-                style="padding:10px 20px; border-radius:11px; border:none; font-size:12.5px; font-weight:850; cursor:pointer; display:flex; align-items:center; gap:8px;"
-                :style="activeTab === 'semua' ? 'background:#7257CA; color:#fff; box-shadow:0 3px 10px rgba(114,87,202,0.25);' : 'background:#fff; color:#50695E; border:1px solid #DFEAE5;'">
-            👥 FAQ Umum / Semua Pengguna ({{ $semuaTopics->count() }})
+                class="tab-filter-btn"
+                :class="activeTab === 'semua' ? 'active-semua' : ''">
+            <span class="tab-icon-box" style="color:#7257CA; background:#F1EDFD;">
+                <i class="fa-solid fa-users"></i>
+            </span>
+            <span>FAQ Umum (Semua)</span>
+            <span class="tab-badge">
+                {{ $semuaTopics->count() }}
+            </span>
         </button>
+
     </div>
 
     {{-- TAB 1: FAQ PETANI --}}

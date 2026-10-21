@@ -75,10 +75,77 @@
                     </div>
 
                     <div style="display:flex; flex-direction:column; gap:6px; grid-column:span 2;">
-                        <label style="font-size:11px; font-weight:800; color:#365448;">Lokasi Kebun / Lahan Pertanian</label>
-                        <input type="text" name="location" value="{{ old('location', $petani->location) }}"
-                               placeholder="Belum diisi - Contoh: Kec. Ambarawa, Kab. Semarang, Jawa Tengah"
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Alamat Kebun / Lahan Pertanian</label>
+                        <input type="text" name="location" id="farmer-location-input" value="{{ old('location', $petani->location) }}"
+                               placeholder="Belum diisi - Contoh: Desa Banyubiru, Kec. Ambarawa, Kab. Semarang, Jawa Tengah"
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
+                        <span style="font-size:10px; color:#859990;">Masukkan nama desa, kecamatan, atau patokan yang mudah dideteksi di Google Maps.</span>
+                    </div>
+
+                    {{-- Koordinat GPS Presisi untuk Google Maps --}}
+                    <div style="grid-column:span 2; background:#F8FCFA; border:1px solid #DFEAE5; border-radius:12px; padding:16px;"
+                         x-data="{
+                             lat: '{{ old('latitude', $petani->latitude) }}',
+                             lng: '{{ old('longitude', $petani->longitude) }}',
+                             detecting: false,
+                             geoMsg: '',
+                             detectLocation() {
+                                 if (!navigator.geolocation) {
+                                     alert('Browser Anda tidak mendukung geolokasi GPS.');
+                                     return;
+                                 }
+                                 this.detecting = true;
+                                 this.geoMsg = 'Mendeteksi titik koordinat GPS dari perangkat Anda...';
+                                 navigator.geolocation.getCurrentPosition(
+                                     (pos) => {
+                                         this.lat = pos.coords.latitude.toFixed(6);
+                                         this.lng = pos.coords.longitude.toFixed(6);
+                                         this.detecting = false;
+                                         this.geoMsg = '✓ Titik GPS kebun berhasil didapatkan!';
+                                     },
+                                     (err) => {
+                                         this.detecting = false;
+                                         this.geoMsg = 'Gagal mendeteksi otomatis: ' + err.message + '. Anda bisa mengisi manual atau mencari di Google Maps.';
+                                     },
+                                     { enableHighAccuracy: true, timeout: 10000 }
+                                 );
+                             }
+                         }">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <div>
+                                <b style="font-size:12px; color:#172B29;">Titik Koordinat Google Maps Lahan</b>
+                                <p style="font-size:10.5px; color:#788E84; margin:2px 0 0;">Koordinat ini digunakan konsumen untuk mengukur jarak dan panduan rute saat pengambilan panen.</p>
+                            </div>
+                            <button type="button" @click="detectLocation()" :disabled="detecting"
+                                    style="padding:7px 14px; border-radius:8px; border:1px solid #05C793; background:#E9FBF3; color:#0A7E5E; font-size:11px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                                <span x-show="!detecting">📍 Gunakan GPS Saya</span>
+                                <span x-show="detecting">⏳ Mendeteksi...</span>
+                            </button>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div>
+                                <label style="font-size:10.5px; font-weight:750; color:#557064;">Latitude</label>
+                                <input type="number" step="any" name="latitude" x-model="lat" placeholder="Contoh: -7.261944"
+                                       style="width:100%; border:1px solid #DFEAE5; padding:8px 12px; border-radius:8px; font-size:11.5px; background:#fff; margin-top:3px;">
+                            </div>
+                            <div>
+                                <label style="font-size:10.5px; font-weight:750; color:#557064;">Longitude</label>
+                                <input type="number" step="any" name="longitude" x-model="lng" placeholder="Contoh: 110.404722"
+                                       style="width:100%; border:1px solid #DFEAE5; padding:8px 12px; border-radius:8px; font-size:11.5px; background:#fff; margin-top:3px;">
+                            </div>
+                        </div>
+
+                        <div x-show="geoMsg" style="font-size:11px; margin-top:8px;" :style="geoMsg.startsWith('✓') ? 'color:#0A7E5E; font-weight:750;' : 'color:#B45309;'" x-text="geoMsg"></div>
+
+                        <template x-if="lat && lng">
+                            <div style="margin-top:10px; font-size:11px;">
+                                <a :href="'https://www.google.com/maps?q=' + lat + ',' + lng" target="_blank"
+                                   style="color:#0C8D65; font-weight:750; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                                    ↗ Cek lokasi titik lahan di Google Maps
+                                </a>
+                            </div>
+                        </template>
                     </div>
 
                 </div>
@@ -87,20 +154,22 @@
 
                 {{-- Rekening Bank --}}
                 <div style="margin-bottom:16px;">
-                    <h3 style="font-size:13px; font-weight:850; color:#172B29; margin:0 0 4px;">Rekening Pencairan DP (30%)</h3>
-                    <p style="font-size:11px; color:#8A9A94; margin:0;">Rekening resmi kelompok tani untuk penerimaan dana operasional tanam.</p>
+                    <h3 style="font-size:13px; font-weight:850; color:#172B29; margin:0 0 4px;">Rekening Pencairan DP & Hasil Panen</h3>
+                    <p style="font-size:11px; color:#8A9A94; margin:0;">Rekening resmi kelompok tani untuk penerimaan DP 30% dan pencairan escrow 70%.</p>
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                     <div style="display:flex; flex-direction:column; gap:6px;">
                         <label style="font-size:11px; font-weight:800; color:#365448;">Nama Bank</label>
-                        <input type="text" name="bank_name" value="{{ old('bank_name', 'Bank BRI') }}"
+                        <input type="text" name="bank_name" value="{{ old('bank_name', $petani->bank_name) }}"
+                               placeholder="Belum diisi - Contoh: Bank BRI / Mandiri / BCA"
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                     </div>
 
                     <div style="display:flex; flex-direction:column; gap:6px;">
                         <label style="font-size:11px; font-weight:800; color:#365448;">Nomor Rekening</label>
-                        <input type="text" name="bank_account" value="{{ old('bank_account', '0341-01-002341-50-8') }}"
+                        <input type="text" name="bank_account" value="{{ old('bank_account', $petani->bank_account) }}"
+                               placeholder="Belum diisi - Contoh: 0341-01-002341-50-8"
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                     </div>
                 </div>

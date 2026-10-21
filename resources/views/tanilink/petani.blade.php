@@ -235,6 +235,25 @@
                 Pesanan <strong>{{ $featuredOrder->order_code }}</strong> ({{ $featuredOrder->commodityListing->commodity_name ?? 'Komoditas' }}). Laporan ini akan langsung tampil di dasbor konsumen.
             </p>
 
+            @php
+                $dashStageIdxMap = [
+                    'Fase Benih & Penyemaian' => 1,
+                    'Fase Vegetatif & Pertunasan' => 2,
+                    'Fase Pembungaan & Bakal Buah' => 3,
+                    'Fase Pematangan & Siap Panen' => 4,
+                ];
+                $dCurIdx = $dashStageIdxMap[$featuredOrder->current_stage ?? ''] ?? 1;
+                $dCurStatus = $featuredOrder->current_stage_status ?? 'berlangsung';
+                $dMinAvailableIdx = ($dCurStatus === 'selesai') ? min(4, $dCurIdx + 1) : $dCurIdx;
+                $dIsAllCompleted = ($dCurIdx === 4 && $dCurStatus === 'selesai');
+            @endphp
+
+            @if($dIsAllCompleted)
+            <div style="padding:14px; border-radius:12px; background:#EBFBF3; border:1px solid #C4EED9; color:#0A7B59; font-size:12px; margin-bottom:16px;">
+                🎉 <b>Semua fase budidaya telah selesai tuntas (100%).</b> Pesanan ini telah siap panen dan masuk tahap serah terima logistik.
+            </div>
+            @endif
+
             <form action="{{ route('petani.progress.store') }}" method="POST" enctype="multipart/form-data" x-data="{ photoName: '' }">
                 @csrf
                 <input type="hidden" name="pre_order_id" value="{{ $featuredOrder->id }}">
@@ -243,21 +262,30 @@
                     <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:12px;">
                         <div style="display:flex; flex-direction:column; gap:6px;">
                             <label style="font-size:11px; font-weight:800; color:#365448;">Fase Perkembangan *</label>
-                            <select name="stage_name" required
+                            <select name="stage_name" required {{ $dIsAllCompleted ? 'disabled' : '' }}
                                     style="outline:0; width:100%; border:1px solid #DFEAE5; padding:11px 14px; border-radius:10px; background:#fff; font-size:12px;">
-                                <option value="Fase Benih & Penyemaian" {{ ($featuredOrder->current_stage ?? '') === 'Fase Benih & Penyemaian' ? 'selected' : '' }}>🌱 Fase Benih & Penyemaian</option>
-                                <option value="Fase Vegetatif & Pertunasan" {{ ($featuredOrder->current_stage ?? '') === 'Fase Vegetatif & Pertunasan' ? 'selected' : '' }}>🌿 Fase Vegetatif & Pertunasan</option>
-                                <option value="Fase Pembungaan & Bakal Buah" {{ ($featuredOrder->current_stage ?? '') === 'Fase Pembungaan & Bakal Buah' ? 'selected' : '' }}>🌼 Fase Pembungaan & Bakal Buah</option>
-                                <option value="Fase Pematangan & Siap Panen" {{ ($featuredOrder->current_stage ?? '') === 'Fase Pematangan & Siap Panen' ? 'selected' : '' }}>🌶️ Fase Pematangan & Siap Panen</option>
+                                <option value="Fase Benih & Penyemaian" {{ 1 < $dMinAvailableIdx ? 'disabled' : '' }} {{ $dMinAvailableIdx === 1 ? 'selected' : '' }}>
+                                    🌱 Fase Benih & Penyemaian {{ 1 < $dMinAvailableIdx ? '🔒 (Sudah Selesai)' : '' }}
+                                </option>
+                                <option value="Fase Vegetatif & Pertunasan" {{ 2 < $dMinAvailableIdx ? 'disabled' : '' }} {{ $dMinAvailableIdx === 2 ? 'selected' : '' }}>
+                                    🌿 Fase Vegetatif & Pertunasan {{ 2 < $dMinAvailableIdx ? '🔒 (Sudah Selesai)' : '' }}
+                                </option>
+                                <option value="Fase Pembungaan & Bakal Buah" {{ 3 < $dMinAvailableIdx ? 'disabled' : '' }} {{ $dMinAvailableIdx === 3 ? 'selected' : '' }}>
+                                    🌼 Fase Pembungaan & Bakal Buah {{ 3 < $dMinAvailableIdx ? '🔒 (Sudah Selesai)' : '' }}
+                                </option>
+                                <option value="Fase Pematangan & Siap Panen" {{ 4 < $dMinAvailableIdx ? 'disabled' : '' }} {{ $dMinAvailableIdx === 4 ? 'selected' : '' }}>
+                                    🌶️ Fase Pematangan & Siap Panen {{ 4 < $dMinAvailableIdx ? '🔒 (Sudah Selesai)' : '' }}
+                                </option>
                             </select>
+                            <span style="font-size:10px; color:#859990;">* Fase yang telah selesai terkunci secara otomatis.</span>
                         </div>
 
                         <div style="display:flex; flex-direction:column; gap:6px;">
                             <label style="font-size:11px; font-weight:800; color:#365448;">Status Fase Ini *</label>
-                            <select name="stage_status" required
+                            <select name="stage_status" required {{ $dIsAllCompleted ? 'disabled' : '' }}
                                     style="outline:0; width:100%; border:1px solid #DFEAE5; padding:11px 14px; border-radius:10px; background:#fff; font-size:12px;">
-                                <option value="berlangsung" {{ ($featuredOrder->current_stage_status ?? '') === 'berlangsung' ? 'selected' : '' }}>Sedang Berlangsung</option>
-                                <option value="selesai" {{ ($featuredOrder->current_stage_status ?? '') === 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                <option value="berlangsung" selected>Sedang Berlangsung</option>
+                                <option value="selesai">Tandai Selesai (Otomatis Lanjut Fase) ↗</option>
                             </select>
                         </div>
                     </div>
