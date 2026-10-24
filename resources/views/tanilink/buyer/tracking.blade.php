@@ -37,7 +37,7 @@
     {{-- Notice --}}
     <div style="padding:14px 18px; display:flex; align-items:flex-start; gap:11px; border-radius:12px; background:#FFF8EA; border:1px solid #F6E3B9; color:#7F631E; font-size:11px; line-height:1.6; margin-bottom:20px;">
         <span>ⓘ</span>
-        <span><b>Sistem Escrow Terjamin:</b> DP 30% telah disalurkan untuk pembiayaan bibit dan pupuk petani. Saldo 70% diamankan di rekening escrow bersama TaniLink dan hanya diteruskan setelah barang panen diterima.</span>
+        <span><b>[SIMULASI] Sistem Escrow TaniLink:</b> DP 30% dialokasikan sebagai modal petani (simulasi). Saldo 70% diamankan dan hanya diteruskan setelah Anda mengonfirmasi penerimaan hasil panen. Angka ini merupakan ilustrasi dalam sistem demo.</span>
     </div>
 
     {{-- Grid 2 Kolom --}}
@@ -150,8 +150,8 @@
 
             {{-- Card Foto Dokumentasi Lapangan dari Petani --}}
             <div class="card" style="padding:24px;">
-                <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Dokumentasi Lapangan Realtime</h2>
-                <p style="font-size:11px; color:#91A19B; margin:0 0 16px;">Foto dan catatan kondisi tanaman yang dilaporkan langsung oleh petani.</p>
+                <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Dokumentasi Lapangan</h2>
+                <p style="font-size:11px; color:#91A19B; margin:0 0 16px;">Catatan dan foto progres yang dilaporkan petani. Foto default digunakan jika petani belum mengunggah foto asli.</p>
 
                 @if($order->plantingProgress->isEmpty())
                 <div style="text-align:center; padding:30px 10px; color:#8A9D95;">
@@ -162,10 +162,13 @@
                     @foreach($order->plantingProgress as $prog)
                     <div style="border:1px solid #E5ECEA; border-radius:12px; overflow:hidden; background:#fff;">
                         @if($prog->photo_url)
-                        <div style="height:140px; overflow:hidden; background:#F5F8F7;">
+                        <div style="height:140px; overflow:hidden; background:#F5F8F7; position:relative;">
                             <img src="{{ str_starts_with($prog->photo_url, 'http') ? $prog->photo_url : asset($prog->photo_url) }}"
                                  alt="{{ $prog->stage_name }}"
                                  style="width:100%; height:100%; object-fit:cover;">
+                            @if(str_starts_with($prog->photo_url, 'http'))
+                            <span style="position:absolute; bottom:4px; right:6px; font-size:9px; background:rgba(0,0,0,0.45); color:#fff; padding:2px 5px; border-radius:4px;">Foto Ilustrasi</span>
+                            @endif
                         </div>
                         @endif
                         <div style="padding:12px;">
@@ -182,6 +185,28 @@
                 </div>
                 @endif
             </div>
+
+            {{-- Konfirmasi Penerimaan: Hanya tampil saat panen siap atau dalam pengiriman --}}
+            @if(in_array($order->status, ['siap_panen', 'dalam_pengiriman']))
+            <div class="card" style="padding:22px; border:2px solid #05C793;">
+                <h2 style="font-size:14px; font-weight:850; margin:0 0 10px; color:#172B29;">✅ Konfirmasi Penerimaan Hasil Panen</h2>
+                <p style="font-size:11px; color:#50695E; margin:0 0 14px; line-height:1.6;">
+                    Petani telah menandai hasil panen siap diserahterimakan. Klik tombol di bawah setelah Anda benar-benar menerima barang dari petani mitra.
+                </p>
+                <form action="{{ route('pembeli.pesanan.complete', $order->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" onclick="return confirm('Konfirmasi bahwa Anda sudah menerima hasil panen ini?')"
+                            style="width:100%; padding:12px; border-radius:10px; background:#05C793; border:none; color:#053B2D; font-weight:850; font-size:13px; cursor:pointer;">
+                        Konfirmasi Penerimaan Hasil Panen
+                    </button>
+                </form>
+            </div>
+            @elseif($order->status === 'selesai')
+            <div class="card" style="padding:22px; background:#E9F9F2; border:1px solid #C5EBD9;">
+                <div style="text-align:center; color:#0C8D65; font-size:13px; font-weight:850;">✓ Pesanan Selesai</div>
+                <p style="text-align:center; font-size:11px; color:#0A765A; margin:6px 0 0;">Anda telah mengonfirmasi penerimaan hasil panen ini.</p>
+            </div>
+            @endif
 
         </div>
 
@@ -285,6 +310,28 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- Konfirmasi Penerimaan: Hanya tampil saat panen siap atau dalam pengiriman --}}
+            @if(in_array($order->status, ['siap_panen', 'dalam_pengiriman']))
+            <div class="card" style="padding:22px; border:2px solid #05C793;">
+                <h2 style="font-size:14px; font-weight:850; margin:0 0 10px; color:#172B29;">✅ Konfirmasi Penerimaan Hasil Panen</h2>
+                <p style="font-size:11px; color:#50695E; margin:0 0 14px; line-height:1.6;">
+                    Petani telah menandai hasil panen siap diserahterimakan. Klik tombol di bawah setelah Anda benar-benar menerima barang dari petani mitra.
+                </p>
+                <form action="{{ route('pembeli.pesanan.complete', $order->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" onclick="return confirm('Konfirmasi bahwa Anda sudah menerima hasil panen ini?')"
+                            style="width:100%; padding:12px; border-radius:10px; background:#05C793; border:none; color:#053B2D; font-weight:850; font-size:13px; cursor:pointer;">
+                        Konfirmasi Penerimaan Hasil Panen
+                    </button>
+                </form>
+            </div>
+            @elseif($order->status === 'selesai')
+            <div class="card" style="padding:22px; background:#E9F9F2; border:1px solid #C5EBD9;">
+                <div style="text-align:center; color:#0C8D65; font-size:13px; font-weight:850;">✓ Pesanan Selesai</div>
+                <p style="text-align:center; font-size:11px; color:#0A765A; margin:6px 0 0;">Anda telah mengonfirmasi penerimaan hasil panen ini.</p>
+            </div>
+            @endif
 
         </div>
 

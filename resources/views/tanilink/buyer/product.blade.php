@@ -76,8 +76,20 @@
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">{{ $listing->variety ?? 'Unggul Lokal' }}</td>
                         </tr>
                         <tr style="border-bottom:1px solid #EEF2F0;">
+                            <td style="padding:10px 0; color:#8A9994;">Kualitas / Grade</td>
+                            <td style="padding:10px 0; text-align:right; font-weight:800; color:#0A765A;">{{ $listing->grade ?? 'Grade A' }}</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #EEF2F0;">
                             <td style="padding:10px 0; color:#8A9994;">Luas Area Lahan</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">{{ number_format($listing->land_area_m2, 0, ',', '.') }} m²</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #EEF2F0;">
+                            <td style="padding:10px 0; color:#8A9994;">Estimasi Total Panen</td>
+                            <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">{{ number_format($listing->estimated_harvest_kg, 0, ',', '.') }} kg</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #EEF2F0;">
+                            <td style="padding:10px 0; color:#8A9994;">Alokasi Tersedia Dipesan</td>
+                            <td style="padding:10px 0; text-align:right; font-weight:800; color:#0C8D65;">{{ number_format($listing->available_kg, 0, ',', '.') }} kg</td>
                         </tr>
                         <tr style="border-bottom:1px solid #EEF2F0;">
                             <td style="padding:10px 0; color:#8A9994;">Kategori Hasil Panen</td>

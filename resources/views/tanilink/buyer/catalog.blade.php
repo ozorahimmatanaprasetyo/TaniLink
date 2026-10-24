@@ -20,7 +20,10 @@
 @section('content')
 <div x-data="{
     search: '',
-    kategori: ''
+    kategori: '',
+    lokasi: '',
+    maxPrice: '',
+    panenBulan: ''
 }">
 
     {{-- Flash Messages --}}
@@ -38,21 +41,46 @@
 
     {{-- Search / Filter Card --}}
     <div class="card" style="padding: 18px 22px; margin-bottom: 20px;">
-        <div style="display: grid; grid-template-columns: 1fr 180px; gap: 14px; align-items: center;">
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; gap: 12px; align-items: center;">
             {{-- Search --}}
             <div style="position: relative;">
                 <i class="fa-solid fa-search" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#80908D; font-size:13px;"></i>
-                <input type="text" x-model="search" placeholder="Cari komoditas, varietas benih, lokasi kebun..."
-                       style="width:100%; padding:10px 14px 10px 38px; border:1.5px solid #E5ECEA; border-radius:11px; font-size:13px; color:#172B29; font-family:inherit; outline:none; transition:border-color 0.15s;"
+                <input type="text" x-model="search" placeholder="Cari komoditas, varietas..."
+                       style="width:100%; padding:10px 14px 10px 38px; border:1.5px solid #E5ECEA; border-radius:11px; font-size:12.5px; color:#172B29; font-family:inherit; outline:none; transition:border-color 0.15s;"
                        @focus="$el.style.borderColor='#05C793'"
                        @blur="$el.style.borderColor='#E5ECEA'">
             </div>
             {{-- Kategori --}}
             <select x-model="kategori"
-                    style="padding:10px 14px; border:1.5px solid #E5ECEA; border-radius:11px; font-size:13px; color:#172B29; font-family:inherit; outline:none; background:white; cursor:pointer;">
+                    style="padding:10px 12px; border:1.5px solid #E5ECEA; border-radius:11px; font-size:12.5px; color:#172B29; font-family:inherit; outline:none; background:white; cursor:pointer;">
                 <option value="">Semua Kategori</option>
                 @foreach($catalog->pluck('category')->unique()->filter() as $kat)
                 <option value="{{ $kat }}">{{ $kat }}</option>
+                @endforeach
+            </select>
+            {{-- Lokasi Kebun --}}
+            <select x-model="lokasi"
+                    style="padding:10px 12px; border:1.5px solid #E5ECEA; border-radius:11px; font-size:12.5px; color:#172B29; font-family:inherit; outline:none; background:white; cursor:pointer;">
+                <option value="">Semua Lokasi</option>
+                @foreach($catalog->pluck('location')->unique()->filter() as $lok)
+                <option value="{{ strtolower($lok) }}">{{ $lok }}</option>
+                @endforeach
+            </select>
+            {{-- Filter Maksimal Harga --}}
+            <select x-model="maxPrice"
+                    style="padding:10px 12px; border:1.5px solid #E5ECEA; border-radius:11px; font-size:12.5px; color:#172B29; font-family:inherit; outline:none; background:white; cursor:pointer;">
+                <option value="">Semua Harga</option>
+                <option value="15000">≤ Rp 15.000 /kg</option>
+                <option value="30000">≤ Rp 30.000 /kg</option>
+                <option value="50000">≤ Rp 50.000 /kg</option>
+                <option value="100000">≤ Rp 100.000 /kg</option>
+            </select>
+            {{-- Filter Estimasi Panen --}}
+            <select x-model="panenBulan"
+                    style="padding:10px 12px; border:1.5px solid #E5ECEA; border-radius:11px; font-size:12.5px; color:#172B29; font-family:inherit; outline:none; background:white; cursor:pointer;">
+                <option value="">Semua Waktu Panen</option>
+                @foreach($catalog->map(fn($c) => \Carbon\Carbon::parse($c->harvest_estimated_date)->format('Y-m'))->unique()->sort() as $ym)
+                <option value="{{ $ym }}">{{ \Carbon\Carbon::createFromFormat('Y-m', $ym)->translatedFormat('F Y') }}</option>
                 @endforeach
             </select>
         </div>
@@ -80,9 +108,15 @@
         <div data-listing
              data-name="{{ strtolower($listing->commodity_name . ' ' . ($listing->variety ?? '') . ' ' . ($listing->location ?? '')) }}"
              data-kategori="{{ $listing->category }}"
+             data-lokasi="{{ strtolower($listing->location ?? '') }}"
+             data-harga="{{ (float)$listing->price_per_kg }}"
+             data-panen="{{ \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m') }}"
              x-show="
                 (search === '' || $el.dataset.name.includes(search.toLowerCase())) &&
-                (kategori === '' || $el.dataset.kategori === kategori)
+                (kategori === '' || $el.dataset.kategori === kategori) &&
+                (lokasi === '' || $el.dataset.lokasi.includes(lokasi)) &&
+                (maxPrice === '' || parseFloat($el.dataset.harga) <= parseFloat(maxPrice)) &&
+                (panenBulan === '' || $el.dataset.panen === panenBulan)
              "
              style="border: 1px solid #E5ECEA; border-radius: 16px; background: white; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
 
@@ -108,7 +142,7 @@
                         {{ $listing->commodity_name }}
                     </h3>
                     <div style="font-size: 10.5px; color: #80908D; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        {{ $listing->variety ?? '-' }} • {{ $listing->location ?? 'Malang' }}
+                        {{ $listing->variety ?? '-' }} • <span style="color:#0C8D65; font-weight:700;">{{ $listing->grade ?? 'Grade A' }}</span> • {{ $listing->location ?? 'Malang' }}
                     </div>
 
                     <div style="display:flex; align-items:baseline; justify-content:space-between; margin: 10px 0 6px;">

@@ -84,8 +84,13 @@
                 <select x-model="filterStatus"
                         style="padding:9px 13px; border:1px solid #E5ECEA; border-radius:10px; font-size:12px; color:#50695E; background:#fff; outline:0;">
                     <option value="">Semua status</option>
-                    <option value="dp_cair">DP Cair</option>
+                    <option value="menunggu_konfirmasi">Menunggu Konfirmasi</option>
+                    <option value="dikonfirmasi">Dikonfirmasi</option>
+                    <option value="dp_cair">DP Cair (Proses)</option>
+                    <option value="siap_panen">Siap Panen</option>
+                    <option value="dalam_pengiriman">Dalam Pengiriman</option>
                     <option value="selesai">Selesai</option>
+                    <option value="dibatalkan">Ditolak/Batal</option>
                 </select>
             </div>
         </div>
@@ -140,17 +145,47 @@
                             Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                         </td>
                         <td style="font-size:11px; padding:15px 10px;">
-                            @if($order->status === 'selesai')
+                            @if($order->status === 'menunggu_konfirmasi')
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#FFF8EA; color:#B45309; font-weight:800; font-size:10px;">Menunggu Konfirmasi</span>
+                            @elseif($order->status === 'dikonfirmasi')
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#EFF6FF; color:#1D4ED8; font-weight:800; font-size:10px;">Dikonfirmasi (Budidaya)</span>
+                            @elseif(in_array($order->status, ['dp_cair', 'tanam_berjalan']))
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10px;">Sedang Berjalan</span>
+                            @elseif($order->status === 'siap_panen')
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#E9FBF3; color:#0A765A; font-weight:800; font-size:10px;">Siap Panen</span>
+                            @elseif($order->status === 'dalam_pengiriman')
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#F0FDF4; color:#15803D; font-weight:800; font-size:10px;">Dalam Pengiriman</span>
+                            @elseif($order->status === 'selesai')
                                 <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:10px;">Selesai</span>
+                            @elseif($order->status === 'dibatalkan')
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#FEE2E2; color:#991B1B; font-weight:800; font-size:10px;">Ditolak / Batal</span>
                             @else
-                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10px;">DP Cair</span>
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#F3F4F6; color:#6B7280; font-weight:800; font-size:10px;">{{ $order->status }}</span>
                             @endif
                         </td>
                         <td style="font-size:11px; padding:15px 10px; text-align:right;">
-                            <a href="{{ route('petani.pesanan.show', $order->id) }}"
-                               style="display:inline-block; padding:5px 12px; border-radius:7px; background:#EBF9F2; border:1px solid #C6EEDC; color:#078362; font-weight:800; font-size:11px; text-decoration:none;">
-                                Detail ↗
-                            </a>
+                            <div style="display:inline-flex; gap:6px; align-items:center;">
+                                @if($order->status === 'menunggu_konfirmasi')
+                                <form action="{{ route('petani.pesanan.confirm', $order->id) }}" method="POST" style="margin:0;">
+                                    @csrf
+                                    <button type="submit" onclick="return confirm('Terima pengajuan pre-order ini?')"
+                                            style="padding:5px 10px; border-radius:7px; background:#05C793; border:none; color:#053B2D; font-weight:850; font-size:11px; cursor:pointer;">
+                                        Terima
+                                    </button>
+                                </form>
+                                <form action="{{ route('petani.pesanan.reject', $order->id) }}" method="POST" style="margin:0;">
+                                    @csrf
+                                    <button type="submit" onclick="return confirm('Tolak pengajuan pre-order ini? Stok akan dikembalikan.')"
+                                            style="padding:5px 10px; border-radius:7px; background:#FEE2E2; border:1px solid #FCA5A5; color:#991B1B; font-weight:800; font-size:11px; cursor:pointer;">
+                                        Tolak
+                                    </button>
+                                </form>
+                                @endif
+                                <a href="{{ route('petani.pesanan.show', $order->id) }}"
+                                   style="display:inline-block; padding:5px 12px; border-radius:7px; background:#EBF9F2; border:1px solid #C6EEDC; color:#078362; font-weight:800; font-size:11px; text-decoration:none;">
+                                    Detail ↗
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     @endforeach

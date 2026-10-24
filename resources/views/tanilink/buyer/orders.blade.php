@@ -137,10 +137,22 @@
                             Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                         </td>
                         <td style="font-size:11px; padding:15px 10px;">
-                            @if($order->status === 'selesai')
+                            @if($order->status === 'menunggu_konfirmasi')
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#FFF8EA; color:#B45309; font-weight:800; font-size:10px;">Menunggu Konfirmasi</span>
+                            @elseif($order->status === 'dikonfirmasi')
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#EFF6FF; color:#1D4ED8; font-weight:800; font-size:10px;">Dikonfirmasi</span>
+                            @elseif(in_array($order->status, ['dp_cair', 'tanam_berjalan']))
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10px;">Budidaya Berjalan</span>
+                            @elseif($order->status === 'siap_panen')
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#E9FBF3; color:#0A765A; font-weight:800; font-size:10px;">Siap Panen ✓</span>
+                            @elseif($order->status === 'dalam_pengiriman')
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#F0FDF4; color:#15803D; font-weight:800; font-size:10px;">Dalam Pengiriman</span>
+                            @elseif($order->status === 'selesai')
                                 <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:10px;">Selesai</span>
+                            @elseif($order->status === 'dibatalkan')
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#FEE2E2; color:#991B1B; font-weight:800; font-size:10px;">Ditolak / Batal</span>
                             @else
-                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10px;">DP Cair (30%)</span>
+                                <span style="display:inline-flex; align-items:center; padding:4px 9px; border-radius:6px; background:#F3F4F6; color:#6B7280; font-weight:800; font-size:10px;">{{ $order->status }}</span>
                             @endif
                         </td>
                         <td style="font-size:11px; padding:15px 10px; text-align:right;">

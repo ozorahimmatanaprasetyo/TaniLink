@@ -93,6 +93,17 @@
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                     </div>
 
+                    {{-- Kualitas / Grade --}}
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Standar Kualitas / Grade *</label>
+                        <select name="grade" required
+                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
+                            <option value="Grade A (Super / Ekspor)" {{ old('grade') == 'Grade A (Super / Ekspor)' ? 'selected' : '' }}>Grade A (Super / Ekspor)</option>
+                            <option value="Grade B (Standar Horeka)" {{ old('grade') == 'Grade B (Standar Horeka)' ? 'selected' : '' }}>Grade B (Standar Horeka)</option>
+                            <option value="Grade C (Lokal Pasar)" {{ old('grade') == 'Grade C (Lokal Pasar)' ? 'selected' : '' }}>Grade C (Lokal Pasar)</option>
+                        </select>
+                    </div>
+
                     {{-- Luas Lahan --}}
                     <div style="display:flex; flex-direction:column; gap:6px;">
                         <label style="font-size:11px; font-weight:800; color:#365448;">Luas lahan (m²) *</label>
@@ -101,12 +112,21 @@
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                     </div>
 
-                    {{-- Perkiraan Hasil --}}
+                    {{-- Perkiraan Total Panen --}}
                     <div style="display:flex; flex-direction:column; gap:6px;">
-                        <label style="font-size:11px; font-weight:800; color:#365448;">Perkiraan hasil panen (kg) *</label>
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Estimasi Total Panen (kg) *</label>
                         <input type="number" name="estimated_harvest_kg" value="{{ old('estimated_harvest_kg') }}" required
                                placeholder="Contoh: 1000"
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
+                    </div>
+
+                    {{-- Alokasi Siap Dipesan --}}
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Alokasi Dipesan / Pre-Order (kg) *</label>
+                        <input type="number" name="available_kg" value="{{ old('available_kg') }}"
+                               placeholder="Kosongkan jika sama dengan total panen"
+                               style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
+                        <small style="font-size:10px; color:#8A9A94;">Jumlah panen yang dibuka untuk kontrak pre-order.</small>
                     </div>
 
                     {{-- Harga Penawaran --}}

@@ -14,6 +14,7 @@ class CommodityListing extends Model
         'commodity_name',
         'category',
         'variety',
+        'grade',
         'land_area_m2',
         'estimated_harvest_kg',
         'available_kg',

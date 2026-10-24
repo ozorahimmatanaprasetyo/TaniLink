@@ -119,8 +119,16 @@ class TaniLinkController extends Controller
     public function setOnboarding(Request $request)
     {
         $request->validate(['purpose' => 'required|in:petani,pembeli']);
-        
+
         $user = Auth::user();
+
+        // Hanya boleh memilih role saat masih 'pending'
+        if ($user->role !== 'pending') {
+            session(['active_role' => $user->role]);
+            return redirect()->route('portal.' . $user->role)
+                ->with('info', 'Peran Anda sudah terdaftar sebagai ' . ucfirst($user->role) . ' dan tidak dapat diubah.');
+        }
+
         $user->role = $request->purpose;
         $user->save();
 
@@ -197,8 +205,10 @@ class TaniLinkController extends Controller
             'commodity_name' => 'required|string|max:255',
             'category' => 'required|string',
             'variety' => 'nullable|string|max:100',
+            'grade' => 'nullable|string|max:50',
             'land_area_m2' => 'required|numeric|min:1',
             'estimated_harvest_kg' => 'required|numeric|min:1',
+            'available_kg' => 'nullable|numeric|min:0',
             'price_per_kg' => 'required|numeric|min:100',
             'harvest_estimated_date' => 'required|date',
             'image' => 'nullable|image|max:2048',
@@ -218,14 +228,17 @@ class TaniLinkController extends Controller
             $imageUrl = '/storage/' . $path;
         }
 
+        $avail = $request->filled('available_kg') ? min((float)$validated['available_kg'], (float)$validated['estimated_harvest_kg']) : (float)$validated['estimated_harvest_kg'];
+
         CommodityListing::create([
             'user_id' => $petani->id,
             'commodity_name' => $validated['commodity_name'],
             'category' => $validated['category'],
             'variety' => $validated['variety'] ?? 'Unggul Lokal',
+            'grade' => $validated['grade'] ?? 'Grade A',
             'land_area_m2' => $validated['land_area_m2'],
             'estimated_harvest_kg' => $validated['estimated_harvest_kg'],
-            'available_kg' => $validated['estimated_harvest_kg'],
+            'available_kg' => $avail,
             'price_per_kg' => $validated['price_per_kg'],
             'harvest_estimated_date' => $validated['harvest_estimated_date'],
             'location' => $petani->location ?? 'Malang, Jawa Timur',
@@ -259,6 +272,7 @@ class TaniLinkController extends Controller
             'commodity_name' => 'required|string|max:255',
             'category' => 'required|string',
             'variety' => 'nullable|string|max:100',
+            'grade' => 'nullable|string|max:50',
             'land_area_m2' => 'required|numeric|min:1',
             'estimated_harvest_kg' => 'required|numeric|min:1',
             'available_kg' => 'nullable|numeric|min:0',
@@ -273,9 +287,10 @@ class TaniLinkController extends Controller
             'commodity_name' => $validated['commodity_name'],
             'category' => $validated['category'],
             'variety' => $validated['variety'] ?? $listing->variety,
+            'grade' => $validated['grade'] ?? ($listing->grade ?? 'Grade A'),
             'land_area_m2' => $validated['land_area_m2'],
             'estimated_harvest_kg' => $validated['estimated_harvest_kg'],
-            'available_kg' => $request->filled('available_kg') ? $validated['available_kg'] : $listing->available_kg,
+            'available_kg' => $request->filled('available_kg') ? min((float)$validated['available_kg'], (float)$validated['estimated_harvest_kg']) : $listing->available_kg,
             'price_per_kg' => $validated['price_per_kg'],
             'harvest_estimated_date' => $validated['harvest_estimated_date'],
             'description' => $validated['description'],
@@ -338,6 +353,8 @@ class TaniLinkController extends Controller
 
     public function storeProgress(Request $request)
     {
+        $petani = Auth::user();
+
         $validated = $request->validate([
             'pre_order_id' => 'required|exists:pre_orders,id',
             'stage_name' => 'required|string',
@@ -346,7 +363,11 @@ class TaniLinkController extends Controller
             'photo' => 'nullable|image|max:3072',
         ]);
 
-        $preOrder = PreOrder::findOrFail($validated['pre_order_id']);
+        $preOrder = PreOrder::where('farmer_id', $petani->id)->findOrFail($validated['pre_order_id']);
+
+        if (!in_array($preOrder->status, ['dikonfirmasi', 'dp_cair', 'tanam_berjalan', 'siap_panen'])) {
+            return back()->withErrors(['error' => 'Pesanan harus dikonfirmasi terlebih dahulu sebelum progres dapat diperbarui.']);
+        }
 
         // Integritas Kontrak: Validasi Penguncian Fase Lampau yang sudah 'selesai'
         $stageOrder = [
@@ -405,7 +426,7 @@ class TaniLinkController extends Controller
             'photo_url' => $photoUrl,
             'location_tag' => $preOrder->commodityListing->location ?? 'Lahan Petani',
             'reported_at' => now(),
-            'is_verified' => true,
+            'is_verified' => false,
         ]);
 
         // Jika fase ditandai selesai dan belum fase ke-4, fase berikutnya otomatis aktif berstatus 'berlangsung'
@@ -531,14 +552,31 @@ class TaniLinkController extends Controller
         $pembeli = Auth::user();
         session(['active_role' => 'pembeli']);
 
-        // HANYA komoditas yang tersedia dan stok > 0
-        $catalog = CommodityListing::with('farmer')
+        $query = CommodityListing::with('farmer')
             ->where('status', 'available')
-            ->where('available_kg', '>', 0)
-            ->latest()
-            ->get();
+            ->where('available_kg', '>', 0);
 
-        return view('tanilink.buyer.catalog', compact('pembeli', 'catalog'));
+        if ($request->filled('location')) {
+            $query->where('location', 'like', '%' . $request->location . '%');
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price_per_kg', '<=', (float)$request->max_price);
+        }
+
+        if ($request->filled('harvest_month')) {
+            $query->whereRaw("DATE_FORMAT(harvest_estimated_date, '%Y-%m') = ?", [$request->harvest_month]);
+        }
+
+        $catalog = $query->latest()->get();
+
+        $locations = CommodityListing::where('status', 'available')
+            ->where('available_kg', '>', 0)
+            ->pluck('location')
+            ->unique()
+            ->filter();
+
+        return view('tanilink.buyer.catalog', compact('pembeli', 'catalog', 'locations'));
     }
 
     public function pembeliOrders(Request $request)
@@ -599,67 +637,153 @@ class TaniLinkController extends Controller
 
         $validated = $request->validate([
             'listing_id' => 'required|exists:commodity_listings,id',
-            'quantity_kg' => 'required|numeric|min:1',
+            'quantity_kg' => 'required|numeric|min:0.1',
+            'need_date' => 'nullable|date|after_or_equal:today',
+            'notes' => 'nullable|string|max:1000',
         ]);
 
-        $listing = CommodityListing::findOrFail($validated['listing_id']);
-        $qty = (int) $validated['quantity_kg'];
+        $qty = (float) $validated['quantity_kg'];
 
-        if ($listing->status !== 'available' || $listing->available_kg <= 0) {
-            return back()->withErrors(['error' => 'Komoditas ini sudah tidak tersedia.'])->withInput();
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $qty, $pembeli) {
+            $listing = CommodityListing::where('id', $validated['listing_id'])->lockForUpdate()->firstOrFail();
+
+            if ($listing->status !== 'available' || $listing->available_kg <= 0) {
+                return back()->withErrors(['error' => 'Komoditas ini sudah tidak tersedia.'])->withInput();
+            }
+            if ($qty > $listing->available_kg) {
+                return back()->withErrors(['error' => "Stok alokasi tidak mencukupi. Tersisa: {$listing->available_kg} kg."])->withInput();
+            }
+
+            $total = $qty * $listing->price_per_kg;
+            $dp = $total * 0.3;
+            $escrowLocked = $total * 0.7;
+
+            $order = PreOrder::create([
+                'order_code' => 'TL-' . date('Y') . '-' . strtoupper(substr(uniqid(), -4)),
+                'commodity_listing_id' => $listing->id,
+                'farmer_id' => $listing->user_id,
+                'buyer_id' => $pembeli->id,
+                'quantity_kg' => $qty,
+                'price_per_kg' => $listing->price_per_kg,
+                'need_date' => $validated['need_date'] ?? $listing->harvest_estimated_date,
+                'notes' => $validated['notes'] ?? null,
+                'total_amount' => $total,
+                'dp_amount' => $dp,
+                'escrow_locked_amount' => $escrowLocked,
+                'status' => 'menunggu_konfirmasi',
+                'current_stage' => 'Menunggu Konfirmasi Petani',
+                'stage_percentage' => 10,
+            ]);
+
+            DeliveryTracking::create([
+                'pre_order_id' => $order->id,
+                'pickup_address' => 'Lahan Petani, ' . $listing->location,
+                'destination_address' => ($pembeli->organization ?? 'Lokasi Konsumen') . ', ' . ($pembeli->location ?? 'Alamat Pemesan'),
+                // Jadwal pickup dikosongkan — akan disepakati petani & pembeli setelah konfirmasi
+                'status' => 'pending',
+                'driver_name' => 'Belum ditentukan — koordinasi mandiri petani & konsumen',
+                'driver_vehicle' => 'Belum ditentukan',
+                'cargo_crates' => max(1, ceil($qty / 20)),
+            ]);
+
+            $listing->decrement('available_kg', $qty);
+            if ($listing->available_kg <= 0) {
+                $listing->update(['status' => 'booked']);
+            }
+
+            return redirect()->route('pembeli.pesanan')->with('success', 'Pengajuan pre-order berhasil dikirim! Status saat ini Menunggu Konfirmasi Petani.');
+        });
+    }
+
+    public function petaniConfirmOrder($id)
+    {
+        $petani = Auth::user();
+        $order = PreOrder::where('farmer_id', $petani->id)->findOrFail($id);
+
+        if ($order->status !== 'menunggu_konfirmasi') {
+            return back()->with('error', 'Pesanan ini sudah dikonfirmasi atau diproses sebelumnya.');
         }
-        if ($qty > $listing->available_kg) {
-            return back()->withErrors(['error' => "Stok tidak mencukupi. Tersedia: {$listing->available_kg} kg."])->withInput();
-        }
 
-        $total = $qty * $listing->price_per_kg;
-        $dp = $total * 0.3;
-        $escrowLocked = $total * 0.7;
-
-        $order = PreOrder::create([
-            'order_code' => 'TL-' . date('Y') . '-' . strtoupper(substr(uniqid(), -4)),
-            'commodity_listing_id' => $listing->id,
-            'farmer_id' => $listing->user_id,
-            'buyer_id' => $pembeli->id,
-            'quantity_kg' => $qty,
-            'price_per_kg' => $listing->price_per_kg,
-            'total_amount' => $total,
-            'dp_amount' => $dp,
-            'escrow_locked_amount' => $escrowLocked,
-            'status' => 'dp_cair',
+        $order->update([
+            'status' => 'dikonfirmasi',
+            'confirmed_at' => now(),
             'current_stage' => 'Fase Benih & Penyemaian',
+            'current_stage_status' => 'berlangsung',
             'stage_percentage' => 20,
         ]);
 
         PlantingProgress::create([
             'pre_order_id' => $order->id,
             'stage_name' => 'Fase Benih & Penyemaian',
-            'note' => 'Kontrak disepakati. DP 30% diteruskan ke petani sebagai modal benih awal.',
+            'stage_status' => 'berlangsung',
+            'note' => 'Pesanan telah diterima dan dikonfirmasi petani. Rencana alokasi lahan dan benih dipersiapkan.',
             'photo_url' => 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=600&q=80',
-            'location_tag' => $listing->location,
+            'location_tag' => $order->commodityListing->location ?? 'Lahan Petani',
             'reported_at' => now(),
-            'is_verified' => true,
+            'is_verified' => false,
         ]);
 
-        DeliveryTracking::create([
-            'pre_order_id' => $order->id,
-            'pickup_address' => 'Lahan Petani, ' . $listing->location,
-            'destination_address' => ($pembeli->organization ?? 'Lokasi Konsumen') . ', ' . ($pembeli->location ?? 'Kota Malang'),
-            'distance_km' => 18.0,
-            'estimated_time' => 'Pengambilan Langsung saat Panen',
-            'status' => 'scheduled',
-            'pickup_time' => now()->addDays(30)->setTime(7, 0),
-            'driver_name' => 'Koordinasi Mandiri Antara Petani & Konsumen',
-            'driver_vehicle' => 'Armada Mandiri / Pengambilan Langsung',
-            'cargo_crates' => max(1, ceil($qty / 20)),
-        ]);
+        return back()->with('success', 'Pesanan ' . $order->order_code . ' berhasil diterima dan masuk ke tahap budidaya!');
+    }
 
-        $listing->decrement('available_kg', min($listing->available_kg, $qty));
-        if ($listing->available_kg <= 0) {
-            $listing->update(['status' => 'booked']);
+    public function petaniRejectOrder(Request $request, $id)
+    {
+        $petani = Auth::user();
+        $order = PreOrder::where('farmer_id', $petani->id)->findOrFail($id);
+
+        if ($order->status !== 'menunggu_konfirmasi') {
+            return back()->with('error', 'Pesanan ini tidak dapat ditolak karena sudah dalam proses.');
         }
 
-        return redirect()->route('pembeli.pesanan')->with('success', 'Pre-Order berhasil diajukan! DP 30% diteruskan ke petani dan 70% saldo diamankan di rekening escrow bersama.');
+        $reason = $request->input('reason', 'Kapasitas lahan atau jadwal panen belum memungkinkan.');
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($order, $reason) {
+            $order->update([
+                'status' => 'dibatalkan',
+                'rejection_reason' => $reason,
+                'current_stage' => 'Ditolak Petani',
+                'current_stage_status' => 'selesai',
+            ]);
+
+            // Kembalikan stok alokasi komoditas
+            if ($order->commodityListing) {
+                $order->commodityListing->increment('available_kg', $order->quantity_kg);
+                if ($order->commodityListing->status === 'booked' && $order->commodityListing->available_kg > 0) {
+                    $order->commodityListing->update(['status' => 'available']);
+                }
+            }
+        });
+
+        return back()->with('success', 'Pesanan ' . $order->order_code . ' telah ditolak dan stok telah dikembalikan ke katalog.');
+    }
+
+    public function pembeliCompleteOrder($id)
+    {
+        $pembeli = Auth::user();
+        $order = PreOrder::where('buyer_id', $pembeli->id)->findOrFail($id);
+
+        if ($order->status === 'selesai') {
+            return back()->with('info', 'Pesanan ini sudah selesai.');
+        }
+
+        // Pembeli hanya bisa konfirmasi penerimaan jika hasil panen sudah siap atau dalam pengiriman
+        if (!in_array($order->status, ['siap_panen', 'dalam_pengiriman'])) {
+            return back()->with('error', 'Konfirmasi penerimaan hanya dapat dilakukan setelah proses panen selesai dan hasil siap diserahkan.');
+        }
+
+        $order->update([
+            'status' => 'selesai',
+            'completed_at' => now(),
+            'current_stage' => 'Fase Pematangan & Siap Panen',
+            'current_stage_status' => 'selesai',
+            'stage_percentage' => 100,
+        ]);
+
+        if ($order->deliveryTracking) {
+            $order->deliveryTracking->update(['status' => 'delivered']);
+        }
+
+        return back()->with('success', 'Terima kasih! Anda telah mengonfirmasi penerimaan hasil panen. Transaksi pre-order selesai.');
     }
 
     public function pembeliProfile()
@@ -835,16 +959,18 @@ class TaniLinkController extends Controller
         }
 
         $order = PreOrder::findOrFail($orderId);
+
+        // Escrow hanya dapat dicairkan jika pesanan sudah selesai (dikonfirmasi pembeli)
+        if ($order->status !== 'selesai') {
+            return back()->with('error', 'Escrow hanya dapat dicairkan setelah pembeli mengonfirmasi penerimaan (status: Selesai).');
+        }
+
+        // Simulasi pencairan: zeroing escrow, status tetap 'selesai'
         $order->update([
-            'status' => 'selesai',
             'escrow_locked_amount' => 0,
         ]);
 
-        if ($order->deliveryTracking) {
-            $order->deliveryTracking->update(['status' => 'delivered']);
-        }
-
-        return back()->with('success', 'Dana escrow berhasil dirilis penuh ke petani!');
+        return back()->with('success', '[SIMULASI] Dana escrow 70% berhasil dirilis ke petani. Proses ini adalah simulasi dalam sistem TaniLink.');
     }
 
     public function adminHelp()

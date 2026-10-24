@@ -13,8 +13,6 @@ class DeliveryTracking extends Model
         'pre_order_id',
         'pickup_address',
         'destination_address',
-        'distance_km',
-        'estimated_time',
         'fuel_saving_percentage',
         'status',
         'pickup_time',

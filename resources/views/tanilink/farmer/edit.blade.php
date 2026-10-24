@@ -85,6 +85,17 @@
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                     </div>
 
+                    {{-- Kualitas / Grade --}}
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Standar Kualitas / Grade *</label>
+                        <select name="grade" required
+                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
+                            <option value="Grade A (Super / Ekspor)" {{ old('grade', $listing->grade) == 'Grade A (Super / Ekspor)' ? 'selected' : '' }}>Grade A (Super / Ekspor)</option>
+                            <option value="Grade B (Standar Horeka)" {{ old('grade', $listing->grade) == 'Grade B (Standar Horeka)' ? 'selected' : '' }}>Grade B (Standar Horeka)</option>
+                            <option value="Grade C (Lokal Pasar)" {{ old('grade', $listing->grade) == 'Grade C (Lokal Pasar)' ? 'selected' : '' }}>Grade C (Lokal Pasar)</option>
+                        </select>
+                    </div>
+
                     {{-- Luas Lahan --}}
                     <div style="display:flex; flex-direction:column; gap:6px;">
                         <label style="font-size:11px; font-weight:800; color:#365448;">Luas lahan (m²) *</label>
@@ -92,10 +103,17 @@
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                     </div>
 
-                    {{-- Perkiraan Hasil --}}
+                    {{-- Perkiraan Total Hasil --}}
                     <div style="display:flex; flex-direction:column; gap:6px;">
-                        <label style="font-size:11px; font-weight:800; color:#365448;">Perkiraan hasil / Kapasitas (kg) *</label>
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Estimasi Total Hasil (kg) *</label>
                         <input type="number" name="estimated_harvest_kg" value="{{ old('estimated_harvest_kg', $listing->estimated_harvest_kg) }}" required
+                               style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
+                    </div>
+
+                    {{-- Alokasi Dipesan --}}
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Sisa Alokasi Dipesan (kg) *</label>
+                        <input type="number" name="available_kg" value="{{ old('available_kg', $listing->available_kg) }}" required
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                     </div>
 

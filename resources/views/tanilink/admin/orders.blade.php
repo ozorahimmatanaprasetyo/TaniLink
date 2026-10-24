@@ -153,22 +153,41 @@
                                 <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:10px;">
                                     Selesai
                                 </span>
+                            @elseif($order->status === 'dikonfirmasi')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#EFF6FF; color:#1D4ED8; font-weight:800; font-size:10px;">
+                                    Dikonfirmasi
+                                </span>
+                            @elseif($order->status === 'menunggu_konfirmasi')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#FFF8EA; color:#B45309; font-weight:800; font-size:10px;">
+                                    Menunggu Konfirmasi
+                                </span>
+                            @elseif($order->status === 'siap_panen')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#E9FBF3; color:#0A765A; font-weight:800; font-size:10px;">
+                                    Siap Panen
+                                </span>
+                            @elseif($order->status === 'dibatalkan')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#FEE2E2; color:#991B1B; font-weight:800; font-size:10px;">
+                                    Dibatalkan
+                                </span>
                             @else
                                 <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10px;">
-                                    Terkunci
+                                    Terkunci (Budidaya)
                                 </span>
                             @endif
                         </td>
                         <td style="font-size:11px; padding:15px 10px;">
-                            @if($order->status !== 'selesai')
-                            <form action="{{ route('admin.escrow.release', $order->id) }}" method="POST" onsubmit="return confirm('Rilis dana escrow 70% sebesar Rp {{ number_format($order->escrow_locked_amount, 0, ',', '.') }} ke petani?')">
+                            {{-- Escrow hanya bisa dirilis setelah pembeli konfirmasi penerimaan (selesai) --}}
+                            @if($order->status === 'selesai' && $order->escrow_locked_amount > 0)
+                            <form action="{{ route('admin.escrow.release', $order->id) }}" method="POST" onsubmit="return confirm('[SIMULASI] Rilis dana escrow 70% ke petani?')">
                                 @csrf
                                 <button type="submit" style="padding:6px 12px; border-radius:8px; border:none; background:#7257CA; color:#fff; font-size:11px; font-weight:800; cursor:pointer;">
                                     Rilis Escrow 🔓
                                 </button>
                             </form>
-                            @else
+                            @elseif($order->status === 'selesai')
                             <span style="font-size:11px; color:#85958F; font-weight:700;">Dana Dirilis ✓</span>
+                            @else
+                            <span style="font-size:10px; color:#AABBB5; font-style:italic;">Tunggu konfirmasi pembeli</span>
                             @endif
                         </td>
                     </tr>
