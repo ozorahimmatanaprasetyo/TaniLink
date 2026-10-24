@@ -4,16 +4,16 @@
 
 @section('sidebar_nav')
 <a href="{{ route('portal.pembeli') }}" class="nav-btn {{ request()->routeIs('portal.pembeli') ? 'active' : '' }}">
-    <span class="nav-icon">▦</span> Dashboard
+    <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span> Beranda
 </a>
 <a href="{{ route('pembeli.katalog') }}" class="nav-btn {{ request()->routeIs('pembeli.katalog*') || request()->routeIs('pembeli.komoditas*') || request()->routeIs('pembeli.preorder*') ? 'active' : '' }}">
-    <span class="nav-icon">▧</span> Marketplace
+    <span class="nav-icon"><i class="fa-solid fa-store"></i></span> Marketplace
 </a>
 <a href="{{ route('pembeli.pesanan') }}" class="nav-btn {{ request()->routeIs('pembeli.pesanan*') ? 'active' : '' }}">
-    <span class="nav-icon">▤</span> Pesanan Saya
+    <span class="nav-icon"><i class="fa-solid fa-bag-shopping"></i></span> Pesanan Saya
 </a>
 <a href="{{ route('pembeli.profil') }}" class="nav-btn {{ request()->routeIs('pembeli.profil*') ? 'active' : '' }}">
-    <span class="nav-icon">♙</span> Profil Konsumen
+    <span class="nav-icon"><i class="fa-solid fa-user"></i></span> Profil Konsumen
 </a>
 @endsection
 
@@ -37,7 +37,7 @@
             </p>
         </div>
         <a href="{{ route('pembeli.komoditas.show', $listing->id) }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; border:1px solid #DFE8E5; background:#fff; color:#365249; font-size:12px; font-weight:800; text-decoration:none;">
-            ← Kembali ke detail
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke detail
         </a>
     </div>
 
@@ -60,30 +60,31 @@
             
             {{-- Kiri: Detail Kebutuhan Bisnis --}}
             <div class="card" style="padding:26px;">
-                <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Detail Kebutuhan Bisnis</h2>
-                <p style="font-size:11px; color:#91A19B; margin:0 0 20px;">Pastikan jumlah dan jadwal pemenuhan sesuai rencana dapur hotel/restoran Anda.</p>
+                <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Detail Kebutuhan Pesanan</h2>
+                <p style="font-size:11px; color:#91A19B; margin:0 0 20px;">Pastikan jumlah dan jadwal pemenuhan sesuai rencana kebutuhan usaha Anda.</p>
 
-                {{-- Fake field commodity --}}
+                {{-- Field commodity --}}
                 <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:16px;">
                     <label style="font-size:11px; font-weight:800; color:#365448;">Komoditas Terpilih</label>
-                    <div style="border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#F8FCFA; color:#172B29; font-size:12px; font-weight:750;">
-                        🌱 &nbsp; {{ $listing->commodity_name }} &bull; Varietas {{ $listing->variety ?? '-' }} &bull; Lokasi {{ $listing->location ?? 'Malang' }}
+                    <div style="border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#F8FCFA; color:#172B29; font-size:12px; font-weight:750; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-seedling" style="color:#0C8D65;"></i>
+                        <span>{{ $listing->commodity_name }} &bull; Varietas {{ $listing->variety ?? '-' }} &bull; Lokasi {{ $listing->location ?? 'Malang' }}</span>
                     </div>
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                     {{-- Jumlah kg --}}
                     <div style="display:flex; flex-direction:column; gap:6px;">
-                        <label style="font-size:11px; font-weight:800; color:#365448;">Jumlah Pemesanan (kg) *</label>
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Jumlah Pemesanan (kg) <span style="color:#E11D48;">*</span></label>
                         <input type="number" name="quantity_kg" x-model.number="qty" min="1" :max="maxQty" required
                                placeholder="Contoh: 100"
-                               style="outline:0; width:100%; border:1.5px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:14px; font-weight:800; color:#172B29;">
+                               style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                         <small style="color:#87968F; font-size:10px;">Tersedia maksimal: <b x-text="maxQty"></b> kg</small>
                     </div>
 
                     {{-- Tanggal dibutuhkan --}}
                     <div style="display:flex; flex-direction:column; gap:6px;">
-                        <label style="font-size:11px; font-weight:800; color:#365448;">Tanggal Dibutuhkan *</label>
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Tanggal Dibutuhkan <span style="color:#E11D48;">*</span></label>
                         <input type="date" name="need_date" value="{{ $listing->harvest_estimated_date ? \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d') : now()->addDays(20)->format('Y-m-d') }}" required
                                min="{{ $listing->harvest_estimated_date ? \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d') : '' }}"
                                style="outline:0; width:100%; border:1.5px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:12px;">
@@ -94,31 +95,29 @@
                 {{-- Catatan untuk petani --}}
                 <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:18px;">
                     <label style="font-size:11px; font-weight:800; color:#365448;">Catatan Khusus untuk Kelompok Tani</label>
-                    <textarea name="notes" rows="3" placeholder="Contoh: Kualitas segar, sortir ukuran grade A, dan pengemasan krat standar..."
+                    <textarea name="notes" rows="3" placeholder="Contoh: Kualitas segar, sortir ukuran seragam, dan pengemasan krat standar..."
                               style="outline:0; width:100%; border:1.5px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:12px; resize:vertical;"></textarea>
                 </div>
 
                 {{-- Notice cyan --}}
                 <div style="padding:14px 16px; border-radius:12px; background:#EEF9FB; border:1px solid #CCEBF2; color:#287B8A; font-size:11px; line-height:1.6; margin-bottom:18px;">
-                    ⓘ <b>Mekanisme Keamanan Escrow:</b> Pengajuan ini mengunci 30% DP sebagai modal kerja kelompok tani dan 70% saldo diamankan di rekening escrow bersama TaniLink sampai serah terima tuntas.
+                    <i class="fa-solid fa-circle-info"></i> <b>Skema Kesepakatan Pemesanan:</b> Pengajuan ini merupakan komitmen kuantitas dan harga tetap sebelum panen. Petani akan mengonfirmasi ketersediaan lahan sebelum pesanan diproses.
                 </div>
 
                 {{-- Checkbox --}}
                 <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; margin-bottom:24px;">
-                    <input type="checkbox" x-model="agree" required style="width:18px; height:18px; margin-top:2px; accent-color:#05C793;">
+                    <input type="checkbox" x-model="" required style="width:18px; height:18px; margin-top:2px; accent-color:#05C793;">
                     <span style="font-size:11.5px; color:#50695E; line-height:1.6;">
-                        Saya memahami bahwa jadwal panen, harga fixed-price, dan spesifikasi pesanan terikat dalam kontrak pre-order agrikultur TaniLink.
+                        Saya menyetujui bahwa jadwal panen, harga penawaran, dan spesifikasi pesanan terikat dalam pemesanan sebelum panen TaniLink.
                     </span>
                 </label>
 
-                {{-- Tombol Pengajuan yang Jelas & Menyerupai Tombol Fisik (Button Affordance) --}}
+                {{-- Tombol Pengajuan --}}
                 <div>
                     <button type="submit"
-                            style="width:100%; padding:16px 24px; border-radius:12px; border:2px solid #038F69; background:linear-gradient(180deg, #07DC9C 0%, #05B787 100%); color:#033527; font-size:14.5px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 6px 20px rgba(5,199,147,0.38); transition:all 0.15s;"
-                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(5,199,147,0.48)';"
-                            onmouseout="this.style.transform='none'; this.style.boxShadow='0 6px 20px rgba(5,199,147,0.38)';">
-                        <i class="fa-solid fa-file-contract" style="font-size:16px; color:#033527;"></i>
-                        <span>Tinjau &amp; Konfirmasi Pengajuan Pre-Order ↗</span>
+                            style="width:100%; padding:15px 24px; border-radius:11px; border:none; background:#05C793; color:#033527; font-size:14px; font-weight:850; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 14px rgba(5,199,147,0.3); transition:all 0.15s;">
+                        <i class="fa-solid fa-file-signature"></i>
+                        <span>Kirim Pengajuan Pesanan</span>
                     </button>
                     <p style="font-size:11px; color:#859990; text-align:center; margin:8px 0 0;">
                         Klik tombol di atas setelah menentukan kuantitas panen yang diinginkan.

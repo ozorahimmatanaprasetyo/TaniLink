@@ -21,6 +21,7 @@ class User extends Authenticatable
         'organization',
         'bank_name',
         'bank_account',
+        'bank_holder',
         'password',
     ];
 

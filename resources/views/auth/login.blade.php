@@ -175,63 +175,6 @@
             align-items: flex-start;
             gap: 10px;
         }
-
-        /* Demo panel */
-        .demo-panel {
-            margin-top: 28px;
-            padding: 16px;
-            background: #F9FBFA;
-            border: 1.5px dashed #D0E5DC;
-            border-radius: 12px;
-        }
-        .demo-panel-title {
-            font-size: 11px;
-            font-weight: 800;
-            color: #172B29;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .demo-credentials {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .demo-item {
-            background: #fff;
-            border: 1px solid #E5ECEA;
-            border-radius: 8px;
-            padding: 8px 10px;
-        }
-        .demo-item-role {
-            font-size: 10.5px;
-            font-weight: 800;
-            color: #172B29;
-            margin-bottom: 2px;
-        }
-        .demo-item-email {
-            font-size: 10.5px;
-            color: #71837C;
-            font-family: monospace;
-            word-break: break-all;
-        }
-        .demo-item-full {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .demo-password {
-            font-size: 10.5px;
-            font-weight: 700;
-            color: #172B29;
-        }
-        .demo-password-val {
-            font-family: monospace;
-            font-size: 10.5px;
-            color: #71837C;
-        }
     </style>
 </head>
 <body>
@@ -249,7 +192,7 @@
             Hubungkan<br>Panen &amp; Peluang.
         </h1>
         <p class="login-left-para">
-            TaniLink adalah platform pre-order agrikultur yang mempertemukan petani dan konsumen secara langsung — transparan, efisien, dan tanpa perantara.
+            TaniLink adalah platform pemesanan komoditas pertanian yang mempertemukan petani dan konsumen secara langsung — transparan, efisien, dan tanpa perantara.
         </p>
 
         {{-- Decoration --}}
@@ -290,14 +233,14 @@
                            value="{{ old('login', old('email')) }}"
                            required autofocus
                            class="form-input"
-                           placeholder="nama@email.com atau 08123456789">
+                           placeholder="Masukkan email atau nomor HP">
                 </div>
 
                 {{-- Password with Eye Toggle --}}
                 <div style="margin-bottom:20px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:7px;">
                         <label for="password" class="form-label" style="margin-bottom:0;">Password</label>
-                        <a href="#" style="font-size:12px; font-weight:700; color:#05C793; text-decoration:none;">Lupa Password?</a>
+                        <a href="{{ route('password.request') }}" style="font-size:12px; font-weight:700; color:#05C793; text-decoration:none;">Lupa Password?</a>
                     </div>
                     <div style="position:relative;">
                         <input :type="showPass ? 'text' : 'password'" name="password" id="password"
@@ -326,35 +269,6 @@
                     Belum punya akun?
                     <a href="{{ route('register') }}" style="color:#05C793; font-weight:700; text-decoration:none;">Daftar sekarang</a>
                 </p>
-            </div>
-
-            {{-- Demo credentials panel --}}
-            <div class="demo-panel">
-                <div class="demo-panel-title">
-                    <i class="fa-solid fa-flask" style="color:#05C793;"></i>
-                    Kredensial Demo
-                </div>
-                <div class="demo-credentials">
-                    <div class="demo-item">
-                        <div class="demo-item-role">Petani</div>
-                        <div class="demo-item-email">raden@tanilink.id</div>
-                    </div>
-                    <div class="demo-item">
-                        <div class="demo-item-role">Konsumen</div>
-                        <div class="demo-item-email">maya@grandhotel.com</div>
-                    </div>
-                    <div class="demo-item">
-                        <div class="demo-item-role">Admin</div>
-                        <div class="demo-item-email">admin@tanilink.id</div>
-                    </div>
-                    <div class="demo-item demo-item-full">
-                        <div>
-                            <div class="demo-password">Password semua akun</div>
-                            <div class="demo-password-val">password123</div>
-                        </div>
-                        <i class="fa-solid fa-key" style="color:#C8D8D3;"></i>
-                    </div>
-                </div>
             </div>
 
         </div>

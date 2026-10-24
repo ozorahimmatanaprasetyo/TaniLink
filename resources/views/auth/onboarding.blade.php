@@ -208,7 +208,7 @@
                     <div class="role-card-icon">🌱</div>
                     <div>
                         <div class="role-card-title">Saya Petani</div>
-                        <div class="role-card-desc">Tawarkan hasil panen, terima pesanan pre-order, dan kelola proses tanam hingga panen.</div>
+                        <div class="role-card-desc">Tawarkan hasil panen, terima pesanan dari konsumen, dan kelola proses tanam hingga panen.</div>
                     </div>
                 </div>
 
@@ -217,7 +217,7 @@
                     <div class="role-card-icon">🏢</div>
                     <div>
                         <div class="role-card-title">Saya Konsumen</div>
-                        <div class="role-card-desc">Cari komoditas terbaik langsung dari petani, lakukan pre-order, dan pantau progres tanam.</div>
+                        <div class="role-card-desc">Cari komoditas terbaik langsung dari petani, pesan sebelum panen, dan pantau progres tanam.</div>
                     </div>
                 </div>
 

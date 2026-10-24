@@ -4,157 +4,252 @@
 
 @section('sidebar_nav')
 <a href="{{ route('portal.admin') }}" class="nav-btn {{ request()->routeIs('portal.admin') ? 'active' : '' }}">
-    <span class="nav-icon">▦</span> Dashboard Admin
+    <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span> Beranda Admin
 </a>
 <a href="{{ route('admin.pengguna') }}" class="nav-btn {{ request()->routeIs('admin.pengguna*') ? 'active' : '' }}">
-    <span class="nav-icon">♧</span> Kelola Pengguna
+    <span class="nav-icon"><i class="fa-solid fa-users"></i></span> Kelola Pengguna
 </a>
 <a href="{{ route('admin.komoditas') }}" class="nav-btn {{ request()->routeIs('admin.komoditas*') ? 'active' : '' }}">
-    <span class="nav-icon">▤</span> Kelola Komoditas
+    <span class="nav-icon"><i class="fa-solid fa-boxes-stacked"></i></span> Kelola Komoditas
 </a>
 <a href="{{ route('admin.pesanan') }}" class="nav-btn {{ request()->routeIs('admin.pesanan*') ? 'active' : '' }}">
-    <span class="nav-icon">▣</span> Pesanan & Escrow
+    <span class="nav-icon"><i class="fa-solid fa-receipt"></i></span> Pesanan &amp; Transaksi
 </a>
 <a href="{{ route('admin.laporan') }}" class="nav-btn {{ request()->routeIs('admin.laporan*') ? 'active' : '' }}">
-    <span class="nav-icon">▥</span> Laporan & Statistik
+    <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Laporan &amp; Statistik
 </a>
 <a href="{{ route('admin.bantuan') }}" class="nav-btn {{ request()->routeIs('admin.bantuan*') ? 'active' : '' }}">
-    <span class="nav-icon">❓</span> Kelola Pusat Bantuan
+    <span class="nav-icon"><i class="fa-solid fa-circle-question"></i></span> Kelola Pusat Bantuan
 </a>
 @endsection
 
 @section('content')
+<div x-data="{
+    stats: {{ json_encode($stats) }},
+    lastSync: '{{ now('Asia/Jakarta')->translatedFormat('d M Y, H:i:s') }} WIB',
+    isSyncing: false,
+    pollTimer: null,
+    fetchStats() {
+        if (this.isSyncing) return;
+        this.isSyncing = true;
+        fetch('{{ route('admin.stats.api') }}', { credentials: 'same-origin' })
+            .then(res => {
+                if (!res.ok) throw new Error('Network error');
+                return res.json();
+            })
+            .then(data => {
+                if (data && data.data) {
+                    this.stats = data.data;
+                    this.lastSync = data.timestamp;
+                }
+            })
+            .catch(err => {
+                // Tangani kegagalan tanpa menampilkan error fatal
+                console.warn('Auto-sync status:', err.message);
+            })
+            .finally(() => {
+                this.isSyncing = false;
+            });
+    },
+    startPolling() {
+        this.pollTimer = setInterval(() => {
+            if (!document.hidden) {
+                this.fetchStats();
+            }
+        }, 30000);
+    }
+}" x-init="startPolling()" @visibilitychange.window="if (!document.hidden) fetchStats()">
 
-    {{-- Headline --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
+    {{-- Headline & Live Indicator --}}
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:22px; flex-wrap:wrap; gap:14px;">
         <div>
-            <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Ringkasan Operasional</h1>
-            <p style="font-size:12px; color:#8A9A94; margin:0;">Pantau aktivitas pengguna, penawaran komoditas, dan simulasi kontrak TaniLink.</p>
-        </div>
-        <a href="{{ route('admin.laporan') }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; background:#7257CA; color:#fff; font-size:12px; font-weight:800; text-decoration:none; box-shadow:0 3px 10px rgba(114,87,202,0.25);">
-            Lihat Laporan Lengkap ↗
-        </a>
-    </div>
-
-    {{-- 4 Metric Cards --}}
-    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:20px;">
-        <div class="card" style="padding:19px 20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
-                <span>Pengguna Terdaftar</span>
-                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#F1EFFB; color:#7257CA; font-size:16px;">👥</span>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0;">Ringkasan Operasional Admin</h1>
+                <span style="font-size:10px; font-weight:800; padding:2px 8px; border-radius:6px; background:#E9FBF3; color:#0A765A; display:inline-flex; align-items:center; gap:5px;">
+                    <span style="width:6px; height:6px; border-radius:50%; background:#05C793; display:inline-block;" :class="{ 'animate-ping': isSyncing }"></span>
+                    <span x-text="isSyncing ? 'Memperbarui...' : 'Data Aktual Database'">Data Aktual Database</span>
+                </span>
             </div>
-            <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
-                {{ $allUsers->count() }}
-            </div>
-            <div style="font-size:10px; color:#7B9187;">Petani & Konsumen aktif</div>
+            <p style="font-size:12px; color:#8A9A94; margin:0;">
+                Pantau ekosistem petani, pesanan aktif, pergerakan DP langsung, dan pemenuhan panen. Terakhir sinkron: <span x-text="lastSync" style="color:#50695E; font-weight:700;"></span>
+            </p>
         </div>
 
-        <div class="card" style="padding:19px 20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
-                <span>Komoditas Aktif</span>
-                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:16px;">▤</span>
-            </div>
-            <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
-                {{ $allListings->count() }}
-            </div>
-            <div style="font-size:10px; color:#7B9187;">Penawaran di marketplace</div>
-        </div>
-
-        <div class="card" style="padding:19px 20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
-                <span>Pesanan Pre-Order</span>
-                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E8F9FC; color:#0B8BAA; font-size:16px;">▦</span>
-            </div>
-            <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
-                {{ $allOrders->count() }}
-            </div>
-            <div style="font-size:10px; color:#7B9187;">Seluruh status kontrak</div>
-        </div>
-
-        <div class="card" style="padding:19px 20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
-                <span>Nilai GMV Platform</span>
-                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#FFF5E8; color:#BA7A1F; font-size:16px;">▥</span>
-            </div>
-            <div style="font-weight:850; font-size:23px; letter-spacing:-0.8px; margin:12px 0 6px; color:#172B29;">
-                Rp {{ number_format($totalGmv, 0, ',', '.') }}
-            </div>
-            <div style="font-size:10px; color:#7B9187;">Escrow locked: Rp {{ number_format($totalEscrowLocked, 0, ',', '.') }}</div>
+        <div style="display:flex; gap:10px;">
+            <button type="button" @click="fetchStats()" class="btn btn-secondary" style="font-size:12px; padding:8px 14px;">
+                <i class="fa-solid fa-arrows-rotate" :class="{ 'fa-spin': isSyncing }"></i> Perbarui Sekarang
+            </button>
+            <a href="{{ route('admin.laporan') }}" class="btn btn-primary" style="font-size:12px; padding:8px 16px;">
+                Lihat Laporan Lengkap
+            </a>
         </div>
     </div>
 
-    {{-- Grid 2 Kolom --}}
-    <div style="display:grid; grid-template-columns:minmax(0, 1.6fr) minmax(300px, 1fr); gap:18px;">
+    {{-- 4 Primary Metric Cards --}}
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:22px;">
+        {{-- Total Pengguna --}}
+        <div class="card" style="padding:19px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
+                <span>Total Pengguna Mitra</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#F1EFFB; color:#7257CA; font-size:15px;"><i class="fa-solid fa-users"></i></span>
+            </div>
+            <div style="font-weight:850; font-size:26px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;" x-text="stats.total_users">
+                {{ $stats['total_users'] }}
+            </div>
+            <div style="font-size:10.5px; color:#7B9187;">
+                <span x-text="stats.total_farmers" style="font-weight:700; color:#0A765A;">{{ $stats['total_farmers'] }}</span> Petani &bull; 
+                <span x-text="stats.total_buyers" style="font-weight:700; color:#075985;">{{ $stats['total_buyers'] }}</span> Konsumen
+            </div>
+        </div>
+
+        {{-- Komoditas & Batch Panen --}}
+        <div class="card" style="padding:19px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
+                <span>Komoditas &amp; Batch Aktif</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:15px;"><i class="fa-solid fa-boxes-stacked"></i></span>
+            </div>
+            <div style="font-weight:850; font-size:26px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
+                <span x-text="stats.active_listings">{{ $stats['active_listings'] }}</span>
+                <span style="font-size:14px; font-weight:700; color:#85958F;">Listing</span>
+            </div>
+            <div style="font-size:10.5px; color:#7B9187;">
+                <span x-text="stats.active_batches" style="font-weight:700; color:#0A765A;">{{ $stats['active_batches'] }}</span> Batch panen aktif berjalan
+            </div>
+        </div>
+
+        {{-- Pesanan Aktif --}}
+        <div class="card" style="padding:19px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
+                <span>Pesanan Aktif Berjalan</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E8F9FC; color:#0B8BAA; font-size:15px;"><i class="fa-solid fa-clipboard-list"></i></span>
+            </div>
+            <div style="font-weight:850; font-size:26px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;" x-text="stats.active_orders">
+                {{ $stats['active_orders'] }}
+            </div>
+            <div style="font-size:10.5px; color:#7B9187;">
+                <span x-text="stats.pending_confirmation" style="font-weight:700; color:#B45309;">{{ $stats['pending_confirmation'] }}</span> Butuh persetujuan
+            </div>
+        </div>
+
+        {{-- Total Nilai Pesanan Sah --}}
+        <div class="card" style="padding:19px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
+                <span>Total Nilai Pesanan</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#FFF5E8; color:#BA7A1F; font-size:15px;"><i class="fa-solid fa-receipt"></i></span>
+            </div>
+            <div style="font-weight:850; font-size:22px; letter-spacing:-0.8px; margin:12px 0 6px; color:#172B29; white-space:nowrap;" x-text="stats.total_order_value_formatted">
+                {{ $stats['total_order_value_formatted'] }}
+            </div>
+            <div style="font-size:10.5px; color:#7B9187;">
+                DP Dikonfirmasi: <b style="color:#0C8D65;" x-text="stats.confirmed_dp_formatted">{{ $stats['confirmed_dp_formatted'] }}</b>
+            </div>
+        </div>
+    </div>
+
+    {{-- 4 Status Breakdown Strip --}}
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:22px;">
+        <div style="background:#fff; border:1px solid #E5ECEA; border-radius:14px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <span style="font-size:10.5px; color:#7B8C86; font-weight:700; text-transform:uppercase;">Menunggu DP</span>
+                <div style="font-size:16px; font-weight:850; color:#92400E;" x-text="stats.pending_dp_payment">{{ $stats['pending_dp_payment'] }}</div>
+            </div>
+            <span style="width:28px; height:28px; border-radius:8px; background:#FEF3C7; color:#92400E; display:grid; place-items:center; font-size:12px;"><i class="fa-solid fa-clock"></i></span>
+        </div>
+
+        <div style="background:#fff; border:1px solid #E5ECEA; border-radius:14px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <span style="font-size:10.5px; color:#7B8C86; font-weight:700; text-transform:uppercase;">Pemeriksaan DP</span>
+                <div style="font-size:16px; font-weight:850; color:#1E40AF;" x-text="stats.pending_dp_verification">{{ $stats['pending_dp_verification'] }}</div>
+            </div>
+            <span style="width:28px; height:28px; border-radius:8px; background:#DBEAFE; color:#1E40AF; display:grid; place-items:center; font-size:12px;"><i class="fa-solid fa-magnifying-glass"></i></span>
+        </div>
+
+        <div style="background:#fff; border:1px solid #E5ECEA; border-radius:14px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <span style="font-size:10.5px; color:#7B8C86; font-weight:700; text-transform:uppercase;">Pesanan Selesai</span>
+                <div style="font-size:16px; font-weight:850; color:#065F46;" x-text="stats.completed_orders">{{ $stats['completed_orders'] }}</div>
+            </div>
+            <span style="width:28px; height:28px; border-radius:8px; background:#D1FAE5; color:#065F46; display:grid; place-items:center; font-size:12px;"><i class="fa-solid fa-check"></i></span>
+        </div>
+
+        <div style="background:#fff; border:1px solid #E5ECEA; border-radius:14px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <span style="font-size:10.5px; color:#7B8C86; font-weight:700; text-transform:uppercase;">Ditolak / Batal</span>
+                <div style="font-size:16px; font-weight:850; color:#991B1B;" x-text="stats.cancelled_orders">{{ $stats['cancelled_orders'] }}</div>
+            </div>
+            <span style="width:28px; height:28px; border-radius:8px; background:#FEE2E2; color:#991B1B; display:grid; place-items:center; font-size:12px;"><i class="fa-solid fa-xmark"></i></span>
+        </div>
+    </div>
+
+    {{-- Grid 2 Kolom: Kiri Panduan Operasional & Kanan Pesanan Terkini --}}
+    <div style="display:grid; grid-template-columns:minmax(0, 1.4fr) minmax(360px, 1fr); gap:20px;">
         
-        {{-- Kiri: Tren Pre-Order Bar Chart Pure CSS with HOVER TOOLTIP (Not static text) --}}
-        <div class="card" style="padding:22px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        {{-- Kiri: Transparansi Pembayaran & Alur Batch --}}
+        <div class="card" style="padding:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <div>
-                    <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Tren Volume Pre-Order</h2>
-                    <p style="font-size:11px; color:#91A19B; margin:0;">Arahkan kursor pada batang untuk melihat nominal lengkap & tonase per bulan.</p>
+                    <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Tata Kelola Transaksi &amp; Perkembangan Tanaman</h2>
+                    <p style="font-size:11px; color:#91A19B; margin:0;">Status operasional sistem pre-order langsung ke petani.</p>
                 </div>
-                <span style="font-size:11px; font-weight:800; color:#07946C; background:#EBF9F2; padding:4px 9px; border-radius:8px;">+18.4% MoM</span>
             </div>
 
-            {{-- Rock-Solid CSS Grid Bar Chart with Tooltips on Hover --}}
-            <div style="height:210px; display:grid; grid-template-columns:repeat(7, 1fr); gap:14px; padding:20px 12px 10px; border-bottom:1px solid #E5ECEA; margin-bottom:20px;">
-                @php
-                    $monthsData = [
-                        ['Apr', 45, '45 Ton', 1125000000],
-                        ['Mei', 65, '65 Ton', 1625000000],
-                        ['Jun', 52, '52 Ton', 1300000000],
-                        ['Jul', 80, '80 Ton', 2000000000],
-                        ['Agt', 70, '70 Ton', 1750000000],
-                        ['Sep', 95, '95 Ton', 2375000000],
-                        ['Okt', 85, '85 Ton', 2125000000]
-                    ];
-                @endphp
-                @foreach($monthsData as $m)
-                <div style="display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; position:relative;">
-                    <div x-data="{ hovered: false }"
-                         @mouseenter="hovered = true"
-                         @mouseleave="hovered = false"
-                         style="width:100%; max-width:44px; height:{{ round($m[1] * 1.55) }}px; background:linear-gradient(180deg, #05C793, #7257CA); border-radius:8px 8px 0 0; position:relative; cursor:pointer; transition:transform 0.15s, filter 0.15s;"
-                         onmouseover="this.style.transform='scaleY(1.05)'; this.style.filter='brightness(1.1)';"
-                         onmouseout="this.style.transform='scaleY(1)'; this.style.filter='none';">
-                        
-                        {{-- Tooltip only on hover --}}
-                        <div x-show="hovered" x-cloak
-                             style="position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#1E293B; color:#fff; padding:7px 12px; border-radius:8px; font-size:11px; white-space:nowrap; z-index:50; pointer-events:none; box-shadow:0 8px 24px rgba(0,0,0,0.28); text-align:center;">
-                            <div style="font-weight:800; color:#34D399;">{{ $m[0] }}: {{ $m[2] }}</div>
-                            <div style="font-size:10px; color:#E2E8F0; margin-top:2px;">Rp {{ number_format($m[3], 0, ',', '.') }}</div>
-                            <div style="position:absolute; top:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:#1E293B;"></div>
-                        </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="padding:14px; border-radius:12px; background:#F8FCFA; border:1px solid #DCECE5; display:flex; gap:12px;">
+                    <div style="width:32px; height:32px; border-radius:10px; background:#DCF8EB; color:#007B55; display:grid; place-items:center; font-size:14px; flex-shrink:0;">
+                        <i class="fa-solid fa-building-columns"></i>
                     </div>
-                    <span style="font-size:11px; font-weight:750; color:#85958F; margin-top:8px; text-align:center; display:block;">{{ $m[0] }}</span>
+                    <div>
+                        <b style="font-size:12.5px; color:#172B29;">Pembayaran DP Langsung ke Rekening Petani</b>
+                        <p style="font-size:11px; color:#50695E; margin:3px 0 0; line-height:1.5;">
+                            Konsumen melakukan transfer 30% langsung ke rekening bank atas nama petani atau kelompok tani. Status DP dikonfirmasi secara mandiri oleh petani setelah memeriksa mutasi rekening.
+                        </p>
+                    </div>
                 </div>
-                @endforeach
-            </div>
 
-            <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#85958F; flex-wrap:wrap; gap:8px;">
-                <span>Total Escrow Diamankan: <b style="color:#6953B5;">Rp {{ number_format($totalEscrowLocked, 0, ',', '.') }}</b></span>
-                <span>Total DP Tersalurkan: <b style="color:#0C8D65;">Rp {{ number_format($totalDpDisbursed, 0, ',', '.') }}</b></span>
+                <div style="padding:14px; border-radius:12px; background:#F8FCFA; border:1px solid #DCECE5; display:flex; gap:12px;">
+                    <div style="width:32px; height:32px; border-radius:10px; background:#E0F2FE; color:#0369A1; display:grid; place-items:center; font-size:14px; flex-shrink:0;">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <div>
+                        <b style="font-size:12.5px; color:#172B29;">Perkembangan Berbasis Batch Panen</b>
+                        <p style="font-size:11px; color:#50695E; margin:3px 0 0; line-height:1.5;">
+                            Dokumentasi foto dan catatan lapangan dikelola per batch panen (4 fase terstruktur). Seluruh konsumen yang terikat pada batch yang sama otomatis memantau pembaruan secara transparan.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="padding:14px; border-radius:12px; background:#F8FCFA; border:1px solid #DCECE5; display:flex; gap:12px;">
+                    <div style="width:32px; height:32px; border-radius:10px; background:#FEF3C7; color:#B45309; display:grid; place-items:center; font-size:14px; flex-shrink:0;">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <b style="font-size:12.5px; color:#172B29;">Integritas &amp; Netralitas Platform Admin</b>
+                        <p style="font-size:11px; color:#50695E; margin:3px 0 0; line-height:1.5;">
+                            Admin bertindak sebagai pengawas ekosistem, moderator komoditas, dan fasilitator pusat bantuan. Admin tidak memegang saldo dana atau menyelesaikan transaksi secara sepihak.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
         {{-- Kanan: Pesanan Terkini --}}
-        <div class="card" style="padding:22px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <div class="card" style="padding:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <div>
                     <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Pesanan Terkini</h2>
-                    <p style="font-size:11px; color:#91A19B; margin:0;">Status transaksi escrow platform.</p>
+                    <p style="font-size:11px; color:#91A19B; margin:0;">Aktivitas kontrak teranyar di sistem.</p>
                 </div>
-                <a href="{{ route('admin.pesanan') }}" style="display:inline-flex; align-items:center; gap:4px; padding:5px 12px; border-radius:8px; background:#F1EFFB; border:1px solid #D8D1F5; color:#7257CA; font-size:11px; font-weight:800; text-decoration:none;">
-                    Kelola →
+                <a href="{{ route('admin.pesanan') }}" class="btn btn-secondary" style="font-size:11px; padding:6px 12px;">
+                    Kelola Semua
                 </a>
             </div>
 
-            <div style="display:flex; flex-direction:column; gap:12px;">
-                @forelse($allOrders->take(4) as $o)
-                <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:1px solid #EEF3F0;">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                @forelse($allOrders as $o)
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:10px; background:#F8FCFA; border:1px solid #EEF2F0;">
                     <div>
                         <b style="font-size:12px; color:#172B29;">{{ $o->order_code }}</b>
-                        <div style="font-size:10px; color:#8A9994; margin-top:2px;">
+                        <div style="font-size:10.5px; color:#6B8077; margin-top:2px;">
                             {{ $o->commodityListing->commodity_name ?? 'Komoditas' }} &bull; {{ $o->buyer->name ?? 'Konsumen' }}
                         </div>
                     </div>
@@ -162,9 +257,13 @@
                         <b style="font-size:12px; color:#0A765A;">Rp {{ number_format($o->total_amount, 0, ',', '.') }}</b>
                         <div style="margin-top:2px;">
                             @if($o->status === 'selesai')
-                                <span style="display:inline-flex; align-items:center; padding:2px 7px; border-radius:5px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:9px;">Selesai</span>
+                                <span style="display:inline-flex; align-items:center; padding:2px 7px; border-radius:5px; background:#D1FAE5; color:#065F46; font-weight:800; font-size:9.5px;">Selesai</span>
+                            @elseif($o->status === 'dibatalkan')
+                                <span style="display:inline-flex; align-items:center; padding:2px 7px; border-radius:5px; background:#FEE2E2; color:#991B1B; font-weight:800; font-size:9.5px;">Ditolak / Batal</span>
+                            @elseif($o->status === 'menunggu_verifikasi_dp')
+                                <span style="display:inline-flex; align-items:center; padding:2px 7px; border-radius:5px; background:#DBEAFE; color:#1E40AF; font-weight:800; font-size:9.5px;">Pemeriksaan DP</span>
                             @else
-                                <span style="display:inline-flex; align-items:center; padding:2px 7px; border-radius:5px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:9px;">DP Cair</span>
+                                <span style="display:inline-flex; align-items:center; padding:2px 7px; border-radius:5px; background:#EFF6FF; color:#1D4ED8; font-weight:800; font-size:9.5px;">{{ $o->status_label }}</span>
                             @endif
                         </div>
                     </div>
@@ -177,4 +276,5 @@
 
     </div>
 
+</div>
 @endsection

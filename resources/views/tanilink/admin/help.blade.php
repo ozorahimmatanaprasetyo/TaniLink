@@ -4,22 +4,22 @@
 
 @section('sidebar_nav')
 <a href="{{ route('portal.admin') }}" class="nav-btn {{ request()->routeIs('portal.admin') ? 'active' : '' }}">
-    <span class="nav-icon">▦</span> Dashboard Admin
+    <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span> Beranda Admin
 </a>
 <a href="{{ route('admin.pengguna') }}" class="nav-btn {{ request()->routeIs('admin.pengguna*') ? 'active' : '' }}">
-    <span class="nav-icon">♧</span> Kelola Pengguna
+    <span class="nav-icon"><i class="fa-solid fa-users"></i></span> Kelola Pengguna
 </a>
 <a href="{{ route('admin.komoditas') }}" class="nav-btn {{ request()->routeIs('admin.komoditas*') ? 'active' : '' }}">
-    <span class="nav-icon">▤</span> Kelola Komoditas
+    <span class="nav-icon"><i class="fa-solid fa-boxes-stacked"></i></span> Kelola Komoditas
 </a>
 <a href="{{ route('admin.pesanan') }}" class="nav-btn {{ request()->routeIs('admin.pesanan*') ? 'active' : '' }}">
-    <span class="nav-icon">▣</span> Pesanan & Escrow
+    <span class="nav-icon"><i class="fa-solid fa-receipt"></i></span> Pesanan & Transaksi
 </a>
 <a href="{{ route('admin.laporan') }}" class="nav-btn {{ request()->routeIs('admin.laporan*') ? 'active' : '' }}">
-    <span class="nav-icon">▥</span> Laporan & Statistik
+    <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Laporan & Statistik
 </a>
 <a href="{{ route('admin.bantuan') }}" class="nav-btn {{ request()->routeIs('admin.bantuan*') ? 'active' : '' }}">
-    <span class="nav-icon">❓</span> Kelola Pusat Bantuan
+    <span class="nav-icon"><i class="fa-solid fa-circle-question"></i></span> Kelola Pusat Bantuan
 </a>
 @endsection
 
@@ -72,154 +72,58 @@
             @csrf
             <div style="display:grid; grid-template-columns:1fr 1fr 1.3fr auto; gap:12px; align-items:flex-end;">
                 <div>
-                    <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Nomor HP / WhatsApp Admin *</label>
+                    <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Nomor HP / WhatsApp Admin <span style="color:#E11D48;">*</span></label>
                     <input type="text" name="admin_phone" value="{{ old('admin_phone', $adminPhone ?? '+62 812-3456-7890') }}" required
                            style="width:100%; border:1.5px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12.5px; font-weight:700; color:#172B29;">
                 </div>
                 <div>
-                    <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Email Resmi Admin *</label>
+                    <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Email Resmi Admin <span style="color:#E11D48;">*</span></label>
                     <input type="email" name="admin_email" value="{{ old('admin_email', $adminEmail ?? 'support@tanilink.id') }}" required
                            style="width:100%; border:1.5px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12.5px; font-weight:700; color:#172B29;">
                 </div>
                 <div>
-                    <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Waktu Operasional Admin *</label>
+                    <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Waktu Operasional Admin <span style="color:#E11D48;">*</span></label>
                     <input type="text" name="admin_hours" value="{{ old('admin_hours', $adminHours ?? 'Senin - Sabtu (08.00 - 17.00 WIB)') }}" required
                            style="width:100%; border:1.5px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12.5px; font-weight:700; color:#172B29;">
                 </div>
                 <div>
                     <button type="submit"
                             style="padding:11px 20px; border-radius:10px; border:none; background:#05C793; color:#053B2D; font-size:12.5px; font-weight:850; cursor:pointer; box-shadow:0 3px 10px rgba(5,199,147,0.25); white-space:nowrap;">
-                        Simpan Kontak Operasional ↗
+                        Simpan Kontak Operasional
                     </button>
                 </div>
             </div>
         </form>
     </div>
 
-    {{-- 2. Styling Khusus Tombol Filter Tab FAQ (Murni CSS agar Solid & Konsisten) --}}
-    <style>
-        .tab-filter-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            height: 44px;
-            padding: 0 20px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.18s ease;
-            text-decoration: none;
-            outline: none;
-            background: #ffffff;
-            color: #375247;
-            border: 1.5px solid #DFEAE5;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-            font-family: inherit;
-        }
-        .tab-filter-btn:hover {
-            background: #F4F8F6;
-            border-color: #B2CEBF;
-            color: #172B29;
-            transform: translateY(-1px);
-        }
-        .tab-filter-btn.active-petani {
-            background: #0C8D65 !important;
-            border-color: #0C8D65 !important;
-            color: #ffffff !important;
-            box-shadow: 0 6px 18px rgba(12,141,101,0.3) !important;
-            transform: translateY(-1px);
-        }
-        .tab-filter-btn.active-konsumen {
-            background: #0B8BAA !important;
-            border-color: #0B8BAA !important;
-            color: #ffffff !important;
-            box-shadow: 0 6px 18px rgba(11,139,170,0.3) !important;
-            transform: translateY(-1px);
-        }
-        .tab-filter-btn.active-semua {
-            background: #7257CA !important;
-            border-color: #7257CA !important;
-            color: #ffffff !important;
-            box-shadow: 0 6px 18px rgba(114,87,202,0.3) !important;
-            transform: translateY(-1px);
-        }
-        .tab-badge {
-            font-size: 11px;
-            font-weight: 850;
-            padding: 2px 8px;
-            border-radius: 6px;
-            background: #E8F2EE;
-            color: #2D4C40;
-            transition: all 0.18s ease;
-        }
-        .active-petani .tab-badge,
-        .active-konsumen .tab-badge,
-        .active-semua .tab-badge {
-            background: rgba(255, 255, 255, 0.25) !important;
-            color: #ffffff !important;
-        }
-        .tab-icon-box {
-            width: 24px;
-            height: 24px;
-            border-radius: 7px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            background: #E8F2EE;
-            transition: all 0.18s ease;
-        }
-        .active-petani .tab-icon-box,
-        .active-konsumen .tab-icon-box,
-        .active-semua .tab-icon-box {
-            background: rgba(255, 255, 255, 0.22) !important;
-            color: #ffffff !important;
-        }
-    </style>
-
-    {{-- Tombol Filter Terpisah (Button Mandiri Masing-Masing) --}}
-    <div style="display:flex; gap:12px; margin-bottom:22px; flex-wrap:wrap; align-items:center;">
-        
-        {{-- Tombol FAQ Khusus Petani --}}
+    {{-- Segmented Navigation Tabs FAQ --}}
+    <div class="segmented-tabs-wrapper" style="margin-bottom:22px;">
         <button type="button" @click="activeTab = 'petani'"
-                class="tab-filter-btn"
-                :class="activeTab === 'petani' ? 'active-petani' : ''">
-            <span class="tab-icon-box" style="color:#0C8D65; background:#E8FAF2;">
-                <i class="fa-solid fa-seedling"></i>
-            </span>
+                class="segmented-tab-btn" :class="{ 'active': activeTab === 'petani' }">
+            <i class="fa-solid fa-seedling segmented-tab-icon"></i>
             <span>FAQ Khusus Petani</span>
-            <span class="tab-badge">
+            <span class="segmented-tab-badge">
                 {{ $petaniTopics->count() }}
             </span>
         </button>
 
-        {{-- Tombol FAQ Khusus Konsumen --}}
         <button type="button" @click="activeTab = 'konsumen'"
-                class="tab-filter-btn"
-                :class="activeTab === 'konsumen' ? 'active-konsumen' : ''">
-            <span class="tab-icon-box" style="color:#0B8BAA; background:#E5F7FB;">
-                <i class="fa-solid fa-cart-shopping"></i>
-            </span>
+                class="segmented-tab-btn" :class="{ 'active': activeTab === 'konsumen' }">
+            <i class="fa-solid fa-cart-shopping segmented-tab-icon"></i>
             <span>FAQ Khusus Konsumen</span>
-            <span class="tab-badge">
+            <span class="segmented-tab-badge">
                 {{ $konsumenTopics->count() }}
             </span>
         </button>
 
-        {{-- Tombol FAQ Umum / Semua --}}
         <button type="button" @click="activeTab = 'semua'"
-                class="tab-filter-btn"
-                :class="activeTab === 'semua' ? 'active-semua' : ''">
-            <span class="tab-icon-box" style="color:#7257CA; background:#F1EDFD;">
-                <i class="fa-solid fa-users"></i>
-            </span>
+                class="segmented-tab-btn" :class="{ 'active': activeTab === 'semua' }">
+            <i class="fa-solid fa-users segmented-tab-icon"></i>
             <span>FAQ Umum (Semua)</span>
-            <span class="tab-badge">
+            <span class="segmented-tab-badge">
                 {{ $semuaTopics->count() }}
             </span>
         </button>
-
     </div>
 
     {{-- TAB 1: FAQ PETANI --}}
@@ -423,7 +327,7 @@
                 @csrf
                 <div style="display:flex; flex-direction:column; gap:12px;">
                     <div>
-                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Target Peran Sasaran FAQ *</label>
+                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Target Peran Sasaran FAQ <span style="color:#E11D48;">*</span></label>
                         <select name="target_role" required
                                 style="width:100%; border:1px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12px;">
                             <option value="petani">🌱 Khusus Petani</option>
@@ -433,13 +337,13 @@
                     </div>
 
                     <div>
-                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Pertanyaan FAQ *</label>
+                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Pertanyaan FAQ <span style="color:#E11D48;">*</span></label>
                         <input type="text" name="question" required placeholder="Contoh: Bagaimana mekanisme pengambilan hasil panen?"
                                style="width:100%; border:1px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12px;">
                     </div>
 
                     <div>
-                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Jawaban Lengkap *</label>
+                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Jawaban Lengkap <span style="color:#E11D48;">*</span></label>
                         <textarea name="answer" rows="4" required placeholder="Tuliskan penjelasan detail yang jelas dan informatif..."
                                   style="width:100%; border:1px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12px; resize:vertical;"></textarea>
                     </div>
@@ -452,7 +356,7 @@
                     </button>
                     <button type="submit"
                             style="padding:10px 20px; border-radius:11px; border:none; background:#7257CA; font-size:12px; font-weight:800; color:#fff; cursor:pointer; box-shadow:0 3px 10px rgba(114,87,202,0.25);">
-                        Simpan Topik FAQ ↗
+                        Simpan Topik FAQ
                     </button>
                 </div>
             </form>
@@ -476,7 +380,7 @@
                 @method('PUT')
                 <div style="display:flex; flex-direction:column; gap:12px;">
                     <div>
-                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Target Peran Sasaran FAQ *</label>
+                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Target Peran Sasaran FAQ <span style="color:#E11D48;">*</span></label>
                         <select name="target_role" x-model="editRole" required
                                 style="width:100%; border:1px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12px;">
                             <option value="petani">🌱 Khusus Petani</option>
@@ -486,13 +390,13 @@
                     </div>
 
                     <div>
-                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Pertanyaan FAQ *</label>
+                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Pertanyaan FAQ <span style="color:#E11D48;">*</span></label>
                         <input type="text" name="question" x-model="editQuestion" required
                                 style="width:100%; border:1px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12px;">
                     </div>
 
                     <div>
-                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Jawaban Lengkap *</label>
+                        <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Jawaban Lengkap <span style="color:#E11D48;">*</span></label>
                         <textarea name="answer" rows="4" x-model="editAnswer" required
                                   style="width:100%; border:1px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12px; resize:vertical;"></textarea>
                     </div>
@@ -505,7 +409,7 @@
                     </button>
                     <button type="submit"
                             style="padding:10px 20px; border-radius:11px; border:none; background:#7257CA; font-size:12px; font-weight:800; color:#fff; cursor:pointer; box-shadow:0 3px 10px rgba(114,87,202,0.25);">
-                        Perbarui Topik FAQ ↗
+                        Perbarui Topik FAQ
                     </button>
                 </div>
             </form>

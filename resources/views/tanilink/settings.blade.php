@@ -8,48 +8,45 @@
 @endphp
 @if($role === 'petani')
 <a href="{{ route('portal.petani') }}" class="nav-btn">
-    <span class="nav-icon">▦</span> Dashboard
+    <span class="nav-icon"><i class="fa-solid fa-gauge"></i></span> Dashboard
 </a>
 <a href="{{ route('petani.komoditas') }}" class="nav-btn">
-    <span class="nav-icon">♧</span> Komoditas Saya
-</a>
-<a href="{{ route('petani.komoditas.create') }}" class="nav-btn">
-    <span class="nav-icon">⊕</span> Tambah Komoditas
+    <span class="nav-icon"><i class="fa-solid fa-wheat-awn"></i></span> Komoditas Saya
 </a>
 <a href="{{ route('petani.pesanan') }}" class="nav-btn">
-    <span class="nav-icon">▤</span> Pesanan Masuk
+    <span class="nav-icon"><i class="fa-solid fa-basket-shopping"></i></span> Pesanan Masuk
 </a>
 <a href="{{ route('petani.profil') }}" class="nav-btn">
-    <span class="nav-icon">♙</span> Profil Petani
+    <span class="nav-icon"><i class="fa-solid fa-user"></i></span> Profil Petani
 </a>
 @elseif($role === 'pembeli')
 <a href="{{ route('portal.pembeli') }}" class="nav-btn">
-    <span class="nav-icon">▦</span> Dashboard
+    <span class="nav-icon"><i class="fa-solid fa-gauge"></i></span> Dashboard
 </a>
 <a href="{{ route('pembeli.katalog') }}" class="nav-btn">
-    <span class="nav-icon">▧</span> Marketplace
+    <span class="nav-icon"><i class="fa-solid fa-store"></i></span> Marketplace
 </a>
 <a href="{{ route('pembeli.pesanan') }}" class="nav-btn">
-    <span class="nav-icon">▤</span> Pesanan Saya
+    <span class="nav-icon"><i class="fa-solid fa-basket-shopping"></i></span> Pesanan Saya
 </a>
 <a href="{{ route('pembeli.profil') }}" class="nav-btn">
-    <span class="nav-icon">♙</span> Profil Konsumen
+    <span class="nav-icon"><i class="fa-solid fa-user"></i></span> Profil Konsumen
 </a>
 @else
 <a href="{{ route('portal.admin') }}" class="nav-btn">
-    <span class="nav-icon">▦</span> Dashboard Admin
+    <span class="nav-icon"><i class="fa-solid fa-gauge"></i></span> Dashboard Admin
 </a>
 <a href="{{ route('admin.pengguna') }}" class="nav-btn">
-    <span class="nav-icon">♧</span> Kelola Pengguna
+    <span class="nav-icon"><i class="fa-solid fa-users"></i></span> Kelola Pengguna
 </a>
 <a href="{{ route('admin.komoditas') }}" class="nav-btn">
-    <span class="nav-icon">▤</span> Kelola Komoditas
+    <span class="nav-icon"><i class="fa-solid fa-wheat-awn"></i></span> Kelola Komoditas
 </a>
 <a href="{{ route('admin.pesanan') }}" class="nav-btn">
-    <span class="nav-icon">▣</span> Pesanan & Escrow
+    <span class="nav-icon"><i class="fa-solid fa-basket-shopping"></i></span> Pesanan & Pelunasan
 </a>
 <a href="{{ route('admin.laporan') }}" class="nav-btn">
-    <span class="nav-icon">▥</span> Laporan & Statistik
+    <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Laporan & Statistik
 </a>
 @endif
 @endsection
@@ -68,8 +65,8 @@
     </div>
 
     @if(session('success'))
-    <div style="background:#ECFDF5; border:1px solid #A7F3D0; color:#065F46; padding:12px 16px; border-radius:12px; font-size:13px; font-weight:600; margin-bottom:20px;">
-        ✓ {{ session('success') }}
+    <div style="background:#ECFDF5; border:1px solid #A7F3D0; color:#065F46; padding:12px 16px; border-radius:12px; font-size:13px; font-weight:600; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+        <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
     </div>
     @endif
 
@@ -90,7 +87,7 @@
             <div style="display:flex; flex-direction:column; gap:16px;">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                     <div style="display:flex; flex-direction:column; gap:6px;">
-                        <label style="font-size:11px; font-weight:800; color:#365448;">Nama Lengkap *</label>
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Nama Lengkap <span style="color:#E11D48;">*</span></label>
                         <input type="text" name="name" value="{{ old('name', $user->name) }}" required
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:12px;">
                     </div>

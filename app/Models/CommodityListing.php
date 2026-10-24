@@ -42,5 +42,32 @@ class CommodityListing extends Model
     {
         return $this->hasMany(PreOrder::class, 'commodity_listing_id');
     }
+
+    public function harvestBatches()
+    {
+        return $this->hasMany(HarvestBatch::class, 'commodity_listing_id');
+    }
+
+    public function activeBatch()
+    {
+        return $this->hasOne(HarvestBatch::class, 'commodity_listing_id')->where('status', '!=', 'selesai')->latest();
+    }
+
+    public function getGradeLabelAttribute()
+    {
+        $map = [
+            'Grade A' => 'Kualitas Pilihan',
+            'Grade A (Ekspor & Supermarket)' => 'Kualitas Pilihan',
+            'Grade B' => 'Kualitas Standar',
+            'Grade B (Pasar Swalayan & Resto)' => 'Kualitas Standar',
+            'Grade C' => 'Kualitas Campuran',
+            'Grade C (Lokal Pasar)' => 'Kualitas Campuran',
+            'Kualitas Pilihan' => 'Kualitas Pilihan',
+            'Kualitas Standar' => 'Kualitas Standar',
+            'Kualitas Campuran' => 'Kualitas Campuran',
+            'Belum Ditentukan' => 'Belum Ditentukan',
+        ];
+        return $map[$this->grade] ?? ($this->grade ?: 'Belum Ditentukan');
+    }
 }
 

@@ -4,22 +4,22 @@
 
 @section('sidebar_nav')
 <a href="{{ route('portal.admin') }}" class="nav-btn {{ request()->routeIs('portal.admin') ? 'active' : '' }}">
-    <span class="nav-icon">▦</span> Dashboard Admin
+    <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span> Beranda Admin
 </a>
 <a href="{{ route('admin.pengguna') }}" class="nav-btn {{ request()->routeIs('admin.pengguna*') ? 'active' : '' }}">
-    <span class="nav-icon">♧</span> Kelola Pengguna
+    <span class="nav-icon"><i class="fa-solid fa-users"></i></span> Kelola Pengguna
 </a>
 <a href="{{ route('admin.komoditas') }}" class="nav-btn {{ request()->routeIs('admin.komoditas*') ? 'active' : '' }}">
-    <span class="nav-icon">▤</span> Kelola Komoditas
+    <span class="nav-icon"><i class="fa-solid fa-boxes-stacked"></i></span> Kelola Komoditas
 </a>
 <a href="{{ route('admin.pesanan') }}" class="nav-btn {{ request()->routeIs('admin.pesanan*') ? 'active' : '' }}">
-    <span class="nav-icon">▣</span> Pesanan & Escrow
+    <span class="nav-icon"><i class="fa-solid fa-receipt"></i></span> Pesanan &amp; Transaksi
 </a>
 <a href="{{ route('admin.laporan') }}" class="nav-btn {{ request()->routeIs('admin.laporan*') ? 'active' : '' }}">
-    <span class="nav-icon">▥</span> Laporan & Statistik
+    <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Laporan &amp; Statistik
 </a>
 <a href="{{ route('admin.bantuan') }}" class="nav-btn {{ request()->routeIs('admin.bantuan*') ? 'active' : '' }}">
-    <span class="nav-icon">❓</span> Kelola Pusat Bantuan
+    <span class="nav-icon"><i class="fa-solid fa-circle-question"></i></span> Kelola Pusat Bantuan
 </a>
 @endsection
 
@@ -45,7 +45,7 @@
         <div class="card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
                 <span>Total Pengguna Aktif</span>
-                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#F1EFFB; color:#7257CA; font-size:16px;">👥</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#F1EFFB; color:#7257CA; font-size:15px;"><i class="fa-solid fa-users"></i></span>
             </div>
             <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
                 {{ $allUsers->count() }}
@@ -56,23 +56,23 @@
         <div class="card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
                 <span>Petani Produsen</span>
-                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:16px;">🌱</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:15px;"><i class="fa-solid fa-sprout"></i></span>
             </div>
             <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
                 {{ $allUsers->where('role', 'petani')->count() }}
             </div>
-            <div style="font-size:10px; color:#7B9187;">Produsen pertanian terverifikasi</div>
+            <div style="font-size:10px; color:#7B9187;">Produsen komoditas terdaftar</div>
         </div>
 
         <div class="card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
                 <span>Pembeli (Konsumen)</span>
-                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E8F9FC; color:#0B8BAA; font-size:16px;">🏢</span>
+                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E8F9FC; color:#0B8BAA; font-size:15px;"><i class="fa-solid fa-building"></i></span>
             </div>
             <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
                 {{ $allUsers->where('role', 'pembeli')->count() }}
             </div>
-            <div style="font-size:10px; color:#7B9187;">Hotel, restoran, katering & usaha</div>
+            <div style="font-size:10px; color:#7B9187;">Konsumen horeka &amp; perorangan</div>
         </div>
     </div>
 
@@ -81,7 +81,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
             <div>
                 <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Daftar Akun Pengguna</h2>
-                <p style="font-size:11px; color:#91A19B; margin:0;">Otorisasi dan peran akun pengguna di dalam platform.</p>
+                <p style="font-size:11px; color:#91A19B; margin:0;">Otorisasi dan data profil pengguna di dalam platform.</p>
             </div>
 
             <div style="display:flex; gap:10px;">
@@ -118,7 +118,7 @@
                         style="border-bottom:1px solid #EEF2F0;">
                         <td style="font-size:11px; font-weight:800; color:#183B30; padding:15px 10px;">
                             <div style="display:flex; align-items:center; gap:9px;">
-                                <div style="width:30px; height:30px; border-radius:8px; background:#F5F8F7; display:grid; place-items:center; font-size:12px;">
+                                <div style="width:30px; height:30px; border-radius:8px; background:#F5F8F7; display:grid; place-items:center; font-size:12px; font-weight:800; color:#0A765A;">
                                     {{ strtoupper(substr($u->name, 0, 1)) }}
                                 </div>
                                 <div>
@@ -145,7 +145,7 @@
                             {{ $u->phone ?? '-' }}
                         </td>
                         <td style="font-size:11px; color:#85958F; padding:15px 10px;">
-                            {{ $u->created_at ? $u->created_at->format('d M Y') : '-' }}
+                            {{ $u->created_at ? $u->created_at->timezone('Asia/Jakarta')->translatedFormat('d M Y') : '-' }}
                         </td>
                         <td style="font-size:11px; padding:15px 10px; text-align:right;">
                             <form action="{{ route('admin.pengguna.destroy', $u->id) }}" method="POST"

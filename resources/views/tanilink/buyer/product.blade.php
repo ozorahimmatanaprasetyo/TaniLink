@@ -4,17 +4,25 @@
 
 @section('sidebar_nav')
 <a href="{{ route('portal.pembeli') }}" class="nav-btn {{ request()->routeIs('portal.pembeli') ? 'active' : '' }}">
-    <span class="nav-icon">▦</span> Dashboard
+    <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span> Beranda
 </a>
 <a href="{{ route('pembeli.katalog') }}" class="nav-btn {{ request()->routeIs('pembeli.katalog*') || request()->routeIs('pembeli.komoditas*') ? 'active' : '' }}">
-    <span class="nav-icon">▧</span> Marketplace
+    <span class="nav-icon"><i class="fa-solid fa-store"></i></span> Marketplace
 </a>
 <a href="{{ route('pembeli.pesanan') }}" class="nav-btn {{ request()->routeIs('pembeli.pesanan*') ? 'active' : '' }}">
-    <span class="nav-icon">▤</span> Pesanan Saya
+    <span class="nav-icon"><i class="fa-solid fa-bag-shopping"></i></span> Pesanan Saya
 </a>
 <a href="{{ route('pembeli.profil') }}" class="nav-btn {{ request()->routeIs('pembeli.profil*') ? 'active' : '' }}">
-    <span class="nav-icon">♙</span> Profil Konsumen
+    <span class="nav-icon"><i class="fa-solid fa-user"></i></span> Profil Konsumen
 </a>
+@endsection
+
+@section('breadcrumb')
+    <a href="{{ route('pembeli.katalog') }}" style="color:#07946C; text-decoration:none; font-weight:700;">Marketplace</a>
+    <span style="margin:0 5px; color:#A2AEAA;">&rsaquo;</span>
+    <span style="color:#50695E;">{{ $listing->category }}</span>
+    <span style="margin:0 5px; color:#A2AEAA;">&rsaquo;</span>
+    <strong>{{ $listing->commodity_name }}</strong>
 @endsection
 
 @section('content')
@@ -24,17 +32,6 @@
     $imgUrl = $listing->image_url ?? '';
     $hasImage = !empty($imgUrl);
 @endphp
-
-    {{-- Breadcrumb back --}}
-    <div style="font-size:12px; color:#8A9D95; margin-bottom:20px;">
-        <a href="{{ route('pembeli.katalog') }}" style="color:#07946C; font-weight:800; text-decoration:none;">
-            ← Kembali ke Marketplace
-        </a>
-        <span style="margin:0 6px;">/</span>
-        <span>{{ $listing->category }}</span>
-        <span style="margin:0 6px;">/</span>
-        <b style="color:#172B29;">{{ $listing->commodity_name }}</b>
-    </div>
 
     {{-- Grid 2 Kolom --}}
     <div style="display:grid; grid-template-columns:minmax(0, 1.4fr) minmax(340px, 1fr); gap:24px;">
@@ -75,10 +72,7 @@
                             <td style="padding:10px 0; color:#8A9994;">Varietas / Bibit</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">{{ $listing->variety ?? 'Unggul Lokal' }}</td>
                         </tr>
-                        <tr style="border-bottom:1px solid #EEF2F0;">
-                            <td style="padding:10px 0; color:#8A9994;">Kualitas / Grade</td>
-                            <td style="padding:10px 0; text-align:right; font-weight:800; color:#0A765A;">{{ $listing->grade ?? 'Grade A' }}</td>
-                        </tr>
+
                         <tr style="border-bottom:1px solid #EEF2F0;">
                             <td style="padding:10px 0; color:#8A9994;">Luas Area Lahan</td>
                             <td style="padding:10px 0; text-align:right; font-weight:750; color:#172B29;">{{ number_format($listing->land_area_m2, 0, ',', '.') }} m²</td>
@@ -154,7 +148,7 @@
                         </tr>
                         <tr style="border-bottom:1px solid #EEF2F0;">
                             <td style="padding:8px 0; color:#8A9994;">Skema Pembayaran</td>
-                            <td style="padding:8px 0; text-align:right; font-weight:750; color:#172B29;">30% DP Modal + 70% Escrow</td>
+                            <td style="padding:8px 0; text-align:right; font-weight:750; color:#172B29;">30% Uang Muka Petani + 70% Pelunasan Panen</td>
                         </tr>
                         <tr>
                             <td style="padding:8px 0; color:#8A9994;">Jadwal Pengiriman</td>
@@ -165,7 +159,7 @@
 
                 {{-- Notice --}}
                 <div style="padding:12px 14px; border-radius:10px; background:#EEF9FB; border:1px solid #CCEBF2; color:#287B8A; font-size:11px; line-height:1.6; margin-bottom:20px;">
-                    ⓘ <b>Pemberitahuan Pre-Order:</b> Jadwal panen bersifat perkiraan dan kuantitas akan dikonfirmasi oleh petani. Tidak sama dengan stok gudang ritel siap kirim.
+                    <i class="fa-solid fa-circle-info"></i> <b>Pemberitahuan Pesan Sebelum Panen:</b> Jadwal panen bersifat perkiraan dan kuantitas akan dikonfirmasi oleh petani mitra.
                 </div>
 
                 {{-- Aksi --}}
@@ -173,7 +167,7 @@
                 <div style="display:flex; gap:10px;">
                     <a href="{{ route('pembeli.preorder', $listing->id) }}"
                        style="flex:1; text-align:center; padding:12px 20px; border-radius:11px; background:#05C793; color:#053B2D; font-size:13px; font-weight:850; text-decoration:none; box-shadow:0 3px 12px rgba(5,199,147,0.3);">
-                        Ajukan Pre-Order →
+                        Ajukan Pesanan Pre-Order
                     </a>
                 </div>
                 @else
@@ -188,13 +182,13 @@
                 <h2 style="font-size:15px; font-weight:850; margin:0 0 14px; color:#172B29;">Profil Produsen</h2>
                 
                 <div style="display:flex; align-items:center; gap:14px;">
-                    <div style="width:48px; height:48px; border-radius:14px; background:#DCF8EB; color:#007B55; display:grid; place-items:center; font-size:22px; font-weight:850; flex-shrink:0;">
-                        🌱
+                    <div style="width:48px; height:48px; border-radius:14px; background:#DCF8EB; color:#007B55; display:grid; place-items:center; font-size:20px; font-weight:850; flex-shrink:0;">
+                        <i class="fa-solid fa-seedling"></i>
                     </div>
                     <div>
                         <b style="font-size:13px; color:#172B29;">{{ $listing->farmer->organization ?? ($listing->farmer->name ?? 'Gapoktan') }}</b>
                         <div style="font-size:11px; color:#8A9994; margin-top:2px;">{{ $listing->location ?? 'Malang, Jawa Timur' }}</div>
-                        <div style="font-size:10px; color:#0C8D65; font-weight:750; margin-top:4px;">✓ Produsen Terverifikasi TaniLink</div>
+                        <div style="font-size:10px; color:#0C8D65; font-weight:750; margin-top:4px;"><i class="fa-solid fa-circle-check"></i> Produsen Mitra Terdaftar TaniLink</div>
                     </div>
                 </div>
             </div>

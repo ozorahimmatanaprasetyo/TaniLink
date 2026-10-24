@@ -204,7 +204,7 @@
             Mulai Perjalanan<br>Agrikultur Anda.
         </h1>
         <p class="register-left-para">
-            Bergabunglah bersama ribuan petani produsen dan konsumen usaha dalam ekosistem pre-order pertanian dengan kepastian harga dan escrow terpercaya.
+            Bergabunglah bersama petani produsen dan konsumen usaha dalam ekosistem pemesanan pertanian dengan kepastian harga dan pembayaran terjamin.
         </p>
 
         {{-- Features list --}}
@@ -215,7 +215,7 @@
             </div>
             <div class="register-left-feat-item">
                 <div class="register-left-feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                <span>Rekening Bersama Escrow Terjamin</span>
+                <span>Rekening Bersama Terjamin</span>
             </div>
             <div class="register-left-feat-item">
                 <div class="register-left-feat-icon"><i class="fa-solid fa-chart-line"></i></div>

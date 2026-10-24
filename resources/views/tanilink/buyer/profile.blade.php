@@ -4,16 +4,16 @@
 
 @section('sidebar_nav')
 <a href="{{ route('portal.pembeli') }}" class="nav-btn {{ request()->routeIs('portal.pembeli') ? 'active' : '' }}">
-    <span class="nav-icon">▦</span> Dashboard
+    <span class="nav-icon"><i class="fa-solid fa-gauge"></i></span> Dashboard
 </a>
 <a href="{{ route('pembeli.katalog') }}" class="nav-btn {{ request()->routeIs('pembeli.katalog*') ? 'active' : '' }}">
-    <span class="nav-icon">▧</span> Marketplace
+    <span class="nav-icon"><i class="fa-solid fa-store"></i></span> Marketplace
 </a>
 <a href="{{ route('pembeli.pesanan') }}" class="nav-btn {{ request()->routeIs('pembeli.pesanan*') ? 'active' : '' }}">
-    <span class="nav-icon">▤</span> Pesanan Saya
+    <span class="nav-icon"><i class="fa-solid fa-basket-shopping"></i></span> Pesanan Saya
 </a>
 <a href="{{ route('pembeli.profil') }}" class="nav-btn {{ request()->routeIs('pembeli.profil*') ? 'active' : '' }}">
-    <span class="nav-icon">♙</span> Profil Konsumen
+    <span class="nav-icon"><i class="fa-solid fa-user"></i></span> Profil Konsumen
 </a>
 @endsection
 
@@ -48,7 +48,7 @@
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                     
                     <div style="display:flex; flex-direction:column; gap:6px;">
-                        <label style="font-size:11px; font-weight:800; color:#365448;">Nama penanggung jawab *</label>
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Nama penanggung jawab <span style="color:#E11D48;">*</span></label>
                         <input type="text" name="name" value="{{ old('name', $pembeli->name) }}" required
                                placeholder="Nama penanggung jawab"
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
@@ -79,71 +79,14 @@
                         <input type="text" name="location" value="{{ old('location', $pembeli->location) }}"
                                placeholder="Belum diisi - Contoh: Jl. Raya Ijen No. 45, Kota Malang, Jawa Timur"
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
-                        <span style="font-size:10px; color:#859990;">Alamat ini menjadi titik referensi penghitungan jarak logistik dari kebun petani mitra.</span>
-                    </div>
-
-                    {{-- Koordinat GPS Presisi untuk Penghitungan Jarak ke Petani --}}
-                    <div style="grid-column:span 2; background:#F8FCFA; border:1px solid #DFEAE5; border-radius:12px; padding:16px;"
-                         x-data="{
-                             lat: '{{ old('latitude', $pembeli->latitude) }}',
-                             lng: '{{ old('longitude', $pembeli->longitude) }}',
-                             detecting: false,
-                             geoMsg: '',
-                             detectLocation() {
-                                 if (!navigator.geolocation) {
-                                     alert('Browser Anda tidak mendukung geolokasi GPS.');
-                                     return;
-                                 }
-                                 this.detecting = true;
-                                 this.geoMsg = 'Mendeteksi titik koordinat GPS perangkat Anda...';
-                                 navigator.geolocation.getCurrentPosition(
-                                     (pos) => {
-                                         this.lat = pos.coords.latitude.toFixed(6);
-                                         this.lng = pos.coords.longitude.toFixed(6);
-                                         this.detecting = false;
-                                         this.geoMsg = '✓ Titik GPS berhasil didapatkan!';
-                                     },
-                                     (err) => {
-                                         this.detecting = false;
-                                         this.geoMsg = 'Gagal mendeteksi otomatis: ' + err.message + '. Anda bisa mengisi manual.';
-                                     },
-                                     { enableHighAccuracy: true, timeout: 10000 }
-                                 );
-                             }
-                         }">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <div>
-                                <b style="font-size:12px; color:#172B29;">Titik Koordinat Lokasi Konsumen</b>
-                                <p style="font-size:10.5px; color:#788E84; margin:2px 0 0;">Digunakan oleh sistem untuk otomatis menghitung jarak (km) ke lahan kebun petani mitra.</p>
-                            </div>
-                            <button type="button" @click="detectLocation()" :disabled="detecting"
-                                    style="padding:7px 14px; border-radius:8px; border:1px solid #05C793; background:#E9FBF3; color:#0A7E5E; font-size:11px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px;">
-                                <span x-show="!detecting">📍 Gunakan GPS Saya</span>
-                                <span x-show="detecting">⏳ Mendeteksi...</span>
-                            </button>
-                        </div>
-
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                            <div>
-                                <label style="font-size:10.5px; font-weight:750; color:#557064;">Latitude</label>
-                                <input type="number" step="any" name="latitude" x-model="lat" placeholder="Contoh: -7.9786"
-                                       style="width:100%; border:1px solid #DFEAE5; padding:8px 12px; border-radius:8px; font-size:11.5px; background:#fff; margin-top:3px;">
-                            </div>
-                            <div>
-                                <label style="font-size:10.5px; font-weight:750; color:#557064;">Longitude</label>
-                                <input type="number" step="any" name="longitude" x-model="lng" placeholder="Contoh: 112.6317"
-                                       style="width:100%; border:1px solid #DFEAE5; padding:8px 12px; border-radius:8px; font-size:11.5px; background:#fff; margin-top:3px;">
-                            </div>
-                        </div>
-
-                        <div x-show="geoMsg" style="font-size:11px; margin-top:8px;" :style="geoMsg.startsWith('✓') ? 'color:#0A7E5E; font-weight:750;' : 'color:#B45309;'" x-text="geoMsg"></div>
+                        <span style="font-size:10px; color:#859990;">Alamat pengiriman / penerimaan pasokan hasil panen.</span>
                     </div>
 
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; margin-top:24px;">
                     <button type="submit" style="padding:11px 24px; border-radius:11px; border:none; background:#05C793; font-size:12px; font-weight:800; color:#053B2D; cursor:pointer; box-shadow:0 3px 10px rgba(5,199,147,0.25);">
-                        Simpan Profil Konsumen ↗
+                        Simpan Profil Konsumen
                     </button>
                 </div>
             </form>
@@ -155,10 +98,10 @@
                 <h3 style="font-size:15px; font-weight:850; margin:0 0 14px; color:#172B29;">Status Pembeli</h3>
                 
                 <div style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:12px; background:#E8F9FC; border:1px solid #BFEBF3; margin-bottom:16px;">
-                    <span style="font-size:24px;">🏢</span>
+                    <i class="fa-solid fa-building" style="font-size:22px; color:#087894;"></i>
                     <div>
                         <b style="font-size:13px; color:#087894;">Konsumen Terverifikasi</b>
-                        <p style="font-size:10px; color:#085568; margin:2px 0 0;">Akun berhak memesan pre-order komoditas dengan rekening escrow bersama.</p>
+                        <p style="font-size:10px; color:#085568; margin:2px 0 0;">Akun berhak memesan pre-order komoditas dengan rekening bersama terjamin.</p>
                     </div>
                 </div>
 
@@ -172,7 +115,7 @@
                         <b style="color:#172B29;">Konsumen</b>
                     </div>
                     <div style="display:flex; justify-content:space-between; padding:6px 0;">
-                        <span>Status Rekening Escrow</span>
+                        <span>Status Rekening Bersama</span>
                         <b style="color:#0C8D65;">Aktif & Siap Transaksi</b>
                     </div>
                 </div>

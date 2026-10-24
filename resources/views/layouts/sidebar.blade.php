@@ -64,6 +64,7 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
+            color: #ffffff;
             flex-shrink: 0;
         }
         .sidebar-brand-text {
@@ -160,9 +161,18 @@
             color: #008764;
         }
         .nav-btn .nav-icon {
-            width: 18px;
-            text-align: center;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
+        }
+        .nav-btn .nav-icon svg {
+            display: block;
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
         }
 
         /* Bottom spacer */
@@ -194,10 +204,43 @@
             font-size: 12px;
             color: #83938D;
             line-height: 1.4;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .header-breadcrumb a {
+            color: #07946C;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .header-breadcrumb a:hover {
+            text-decoration: underline;
         }
         .header-breadcrumb strong {
             color: #1B3B32;
             font-weight: 700;
+        }
+        @media (max-width: 768px) {
+            .main-header {
+                padding: 0 16px;
+                height: auto;
+                min-height: 56px;
+                flex-wrap: wrap;
+                gap: 8px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+            .header-breadcrumb {
+                flex-basis: 100%;
+                order: 2;
+                white-space: normal;
+                font-size: 11px;
+            }
+            .header-right {
+                order: 1;
+                margin-left: auto;
+            }
         }
         .header-right {
             display: flex;
@@ -265,6 +308,139 @@
             border-radius: 18px;
             border: 1px solid var(--border-color);
         }
+
+        /* ── Design Tokens & Shared Component Styles ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 800;
+            border-radius: 11px;
+            padding: 10px 18px;
+            min-height: 42px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: none;
+        }
+        .btn-primary {
+            background: var(--brand-primary);
+            color: #053B2D;
+            box-shadow: 0 3px 10px rgba(5,199,147,0.25);
+        }
+        .btn-primary:hover {
+            filter: brightness(0.96);
+        }
+        .btn-secondary {
+            background: #ffffff;
+            color: #365249;
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover {
+            background: #F9FBFA;
+        }
+        .btn-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+        .btn-danger:hover {
+            background: #FCA5A5;
+        }
+        .form-label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #365448;
+            margin-bottom: 6px;
+        }
+        .form-label .req {
+            color: #E11D48;
+        }
+        .form-input {
+            outline: 0;
+            width: 100%;
+            border: 1px solid #DFEAE5;
+            padding: 11px 14px;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #172B29;
+            font-size: 12.5px;
+            min-height: 43px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus {
+            border-color: var(--brand-primary);
+        }
+
+        /* ── Segmented Navigation Tabs (Orders & Portal) ── */
+        .segmented-tabs-wrapper {
+            display: inline-flex;
+            align-items: center;
+            background: #EBF2EE;
+            padding: 5px;
+            border-radius: 12px;
+            gap: 6px;
+            border: 1px solid #DCE6E1;
+            margin-bottom: 24px;
+            max-width: 100%;
+        }
+        .segmented-tab-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            font-family: inherit !important;
+            font-size: 13px !important;
+            padding: 9px 18px !important;
+            border-radius: 9px !important;
+            border: 1px solid transparent !important;
+            cursor: pointer !important;
+            transition: all 0.18s ease !important;
+            background: transparent !important;
+            color: #556B62 !important;
+            font-weight: 650 !important;
+            line-height: 1.3 !important;
+            text-decoration: none !important;
+            outline: none !important;
+            white-space: nowrap !important;
+        }
+        .segmented-tab-btn:hover {
+            color: #172B29 !important;
+            background: rgba(255, 255, 255, 0.5) !important;
+        }
+        .segmented-tab-btn.active {
+            background: #ffffff !important;
+            color: #0A765A !important;
+            font-weight: 800 !important;
+            border-color: #D3E2DA !important;
+            box-shadow: 0 2px 6px rgba(10, 118, 90, 0.08) !important;
+        }
+        .segmented-tab-badge {
+            font-size: 11px !important;
+            font-weight: 800 !important;
+            padding: 2px 7px !important;
+            border-radius: 6px !important;
+            background: #D8E5DF !important;
+            color: #485E55 !important;
+            display: inline-block !important;
+            line-height: 1.2 !important;
+            transition: all 0.18s ease !important;
+        }
+        .segmented-tab-btn.active .segmented-tab-badge {
+            background: #E8F8F1 !important;
+            color: #0A765A !important;
+        }
+        .segmented-tab-icon {
+            font-size: 13px !important;
+            color: inherit !important;
+            display: inline-block !important;
+            line-height: 1 !important;
+        }
     </style>
     @stack('styles')
 </head>
@@ -325,7 +501,7 @@
 
         {{-- Brand --}}
         <a href="{{ $authUser ? route('portal.' . $currentRole) : route('login') }}" class="sidebar-brand">
-            <div class="sidebar-brand-mark">🌿</div>
+            <div class="sidebar-brand-mark"><i class="fa-solid fa-leaf"></i></div>
             <div class="sidebar-brand-text">Tani<span>Link</span></div>
         </a>
 
@@ -343,21 +519,29 @@
         {{-- MENU UTAMA --}}
         <div class="sidebar-nav-label">MENU UTAMA</div>
         <nav class="sidebar-nav">
-            @yield('sidebar_nav')
+            @include('layouts.sidebar-nav')
         </nav>
 
         {{-- SIDEBAR BOTTOM --}}
         <nav class="sidebar-bottom">
             @if($currentRole !== 'admin')
             <a href="{{ route('bantuan') }}" class="nav-btn {{ request()->routeIs('bantuan') ? 'active' : '' }}">
-                <span class="nav-icon"><i class="fa-regular fa-circle-question"></i></span>
+                <span class="nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>
+                    </svg>
+                </span>
                 Pusat Bantuan
             </a>
             @endif
             @auth
             <a href="{{ route('logout') }}" class="nav-btn" style="color:#B85C5C;"
                onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();">
-                <span class="nav-icon"><i class="fa-regular fa-right-from-bracket"></i></span>
+                <span class="nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>
+                    </svg>
+                </span>
                 Keluar
             </a>
             <form id="sidebar-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
@@ -387,26 +571,40 @@
                             'title' => 'Pesanan baru: ' . $ord->order_code,
                             'desc' => ($ord->buyer->name ?? 'Konsumen') . ' memesan ' . ($ord->commodityListing->commodity_name ?? 'komoditas') . ' (' . number_format($ord->quantity_kg, 0, ',', '.') . ' kg)',
                             'time' => $ord->created_at ? $ord->created_at->diffForHumans() : 'Baru saja',
-                            'icon' => '📦',
+                            'icon' => '<i class="fa-solid fa-box"></i>',
                             'url' => route('petani.pesanan'),
                         ];
                     }
                 } elseif ($u->role === 'pembeli') {
-                    $progs = \App\Models\PlantingProgress::whereHas('preOrder', function($q) use ($u) {
-                            $q->where('buyer_id', $u->id);
+                    // Get buyer notifications from both direct pre_order link and batch-based docs
+                    $buyerBatchIds = \App\Models\PreOrder::where('buyer_id', $u->id)
+                        ->whereNotNull('harvest_batch_id')
+                        ->pluck('harvest_batch_id')
+                        ->unique();
+                    
+                    $progs = \App\Models\PlantingProgress::where(function($q) use ($u, $buyerBatchIds) {
+                            $q->whereHas('preOrder', function($q2) use ($u) {
+                                $q2->where('buyer_id', $u->id);
+                            })->orWhereIn('harvest_batch_id', $buyerBatchIds);
                         })
-                        ->with('preOrder.commodityListing')
                         ->latest()
                         ->take(5)
                         ->get();
                     foreach ($progs as $pr) {
                         $latestNotifId = max($latestNotifId, $pr->id);
+                        // Get commodity name from preOrder or from harvestBatch
+                        $commodityName = 'Pesanan';
+                        if ($pr->preOrder && $pr->preOrder->commodityListing) {
+                            $commodityName = $pr->preOrder->commodityListing->commodity_name;
+                        } elseif ($pr->harvestBatch && $pr->harvestBatch->commodityListing) {
+                            $commodityName = $pr->harvestBatch->commodityListing->commodity_name;
+                        }
                         $notifItems[] = [
                             'id' => $pr->id,
                             'title' => 'Update ' . $pr->stage_name,
-                            'desc' => ($pr->preOrder->commodityListing->commodity_name ?? 'Pesanan') . ': ' . \Illuminate\Support\Str::limit($pr->note, 45),
+                            'desc' => $commodityName . ': ' . \Illuminate\Support\Str::limit($pr->note, 45),
                             'time' => $pr->created_at ? $pr->created_at->diffForHumans() : 'Baru saja',
-                            'icon' => '🌱',
+                            'icon' => '<i class="fa-solid fa-seedling"></i>',
                             'url' => route('pembeli.pesanan'),
                         ];
                     }
@@ -416,10 +614,10 @@
                         $latestNotifId = max($latestNotifId, $ord->id);
                         $notifItems[] = [
                             'id' => $ord->id,
-                            'title' => 'Kontrak Pre-Order ' . $ord->order_code,
-                            'desc' => 'Escrow locked Rp ' . number_format($ord->escrow_locked_amount, 0, ',', '.'),
+                            'title' => 'Pesanan Baru ' . $ord->order_code,
+                            'desc' => 'Total nilai pesanan Rp ' . number_format($ord->total_amount, 0, ',', '.'),
                             'time' => $ord->created_at ? $ord->created_at->diffForHumans() : 'Baru saja',
-                            'icon' => '🔒',
+                            'icon' => '<i class="fa-solid fa-shield-halved"></i>',
                             'url' => route('admin.pesanan'),
                         ];
                     }
@@ -484,7 +682,7 @@
                         <div style="max-height:300px; overflow-y:auto; display:flex; flex-direction:column;">
                             @forelse($notifItems as $item)
                             <a href="{{ $item['url'] }}" style="padding:12px 16px; border-bottom:1px solid #F0F4F2; display:flex; gap:10px; text-decoration:none; color:inherit; background:#F8FCFA; transition:background 0.15s;" onmouseover="this.style.background='#F0FAF5'" onmouseout="this.style.background='#F8FCFA'">
-                                <div style="width:30px; height:30px; border-radius:8px; background:#DCF8EB; color:#007B55; display:grid; place-items:center; font-size:13px; flex-shrink:0;">{{ $item['icon'] }}</div>
+                                <div style="width:30px; height:30px; border-radius:8px; background:#DCF8EB; color:#007B55; display:grid; place-items:center; font-size:13px; flex-shrink:0;">{!! $item['icon'] !!}</div>
                                 <div>
                                     <div style="font-size:11.5px; font-weight:750; color:#172B29;">{{ $item['title'] }}</div>
                                     <div style="font-size:10.5px; color:#6B8077; margin-top:2px;">{{ $item['desc'] }}</div>
