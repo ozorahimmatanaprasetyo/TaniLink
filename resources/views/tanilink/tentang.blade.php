@@ -80,7 +80,7 @@
                     </li>
                     <li class="flex items-start gap-2">
                         <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
-                        <span><strong>Modal Awal Tanpa Utang:</strong> Petani menerima DP 30% via escrow dari pembeli untuk membeli benih unggul & pupuk.</span>
+                        <span><strong>Modal Awal Tanpa Utang:</strong> Petani menerima DP 30% melalui rekening bersama dari pembeli untuk membeli benih unggul & pupuk.</span>
                     </li>
                     <li class="flex items-start gap-2">
                         <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
@@ -173,7 +173,7 @@
             <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
                 <strong class="text-slate-900 text-sm block mb-1">Visibility of System Status</strong>
                 <p class="text-slate-600 leading-relaxed">
-                    Setiap transaksi dan dana escrow memiliki badge status transparan: <em>Menunggu DP, DP Masuk, Fase Tanam, Siap Panen, Lunas</em>.
+                    Setiap transaksi dan pembayaran memiliki badge status transparan: <em>Menunggu DP, DP Masuk, Fase Tanam, Siap Panen, Lunas</em>.
                 </p>
             </div>
             <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">

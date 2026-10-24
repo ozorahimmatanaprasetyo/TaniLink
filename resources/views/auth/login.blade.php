@@ -6,156 +6,273 @@
     <title>Masuk - TaniLink</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ── Left panel ── */
+        .login-left {
+            width: 50%;
+            background: linear-gradient(140deg, #064737, #08a881);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 48px 56px;
+            overflow: hidden;
+        }
+        .login-left-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .login-left-mark {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: rgba(255,255,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+        .login-left-brand-text {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: #ffffff;
+        }
+        .login-left-brand-text span { color: #A7F3D0; }
+        .login-left-heading {
+            margin-top: 100px;
+            font-size: 46px;
+            font-weight: 900;
+            letter-spacing: -1.8px;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+        .login-left-para {
+            margin-top: 22px;
+            color: #C9F5E4;
+            font-size: 15px;
+            line-height: 1.8;
+            max-width: 400px;
+        }
+        .login-left-deco {
+            position: absolute;
+            bottom: -30px;
+            left: -20px;
+            font-size: 255px;
+            opacity: 0.65;
+            pointer-events: none;
+            user-select: none;
+            line-height: 1;
+        }
+
+        /* ── Right panel ── */
+        .login-right {
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 70px 60px;
+            background: #ffffff;
+            overflow-y: auto;
+        }
+        .login-right-inner {
+            width: 100%;
+            max-width: 390px;
+        }
+        .login-heading {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: #172B29;
+            margin-bottom: 8px;
+        }
+        .login-subheading {
+            font-size: 14px;
+            color: #8A9D96;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+
+        /* Form fields */
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #172B29;
+            margin-bottom: 7px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #DFEAE5;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #172B29;
+            background: #fff;
+            outline: none;
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .form-input::placeholder { color: #A2AEAA; font-weight: 400; }
+        .form-input:focus {
+            border-color: #05C793;
+            box-shadow: 0 0 0 3px #05C79320;
+        }
+
+        /* Submit button */
+        .login-btn {
+            width: 100%;
+            padding: 13px;
+            background: #163D34;
+            color: #ffffff;
+            border: none;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.18s;
+            margin-top: 4px;
+        }
+        .login-btn:hover { background: #0f2b24; }
+
+        /* Alert */
+        .alert-success {
+            background: #EDFFF7;
+            border: 1px solid #A7F3D0;
+            color: #065F46;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .alert-error {
+            background: #FFF1F0;
+            border: 1px solid #FECACA;
+            color: #9B1C1C;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 flex">
-    
-    {{-- Left Side: Image/Branding (Hidden on mobile) --}}
-    <div class="hidden lg:flex w-1/2 bg-slate-900 relative items-center justify-center overflow-hidden">
-        {{-- Background Image with Overlay --}}
-        <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1592982537447-6f23f663cb64?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Agriculture" class="w-full h-full object-cover opacity-40">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
+<body>
+
+    {{-- ── LEFT PANEL ── --}}
+    <div class="login-left">
+        {{-- Brand --}}
+        <div class="login-left-brand">
+            <div class="login-left-mark">🌿</div>
+            <div class="login-left-brand-text">Tani<span>Link</span></div>
         </div>
-        
-        <div class="relative z-10 w-full max-w-lg p-12 text-white">
-            <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#05C793] to-[#06B6D4] flex items-center justify-center shadow-xl shadow-emerald-500/30 mb-8 border border-white/10">
-                <i class="fa-solid fa-leaf text-4xl text-white"></i>
-            </div>
-            
-            <h1 class="text-5xl font-extrabold tracking-tight mb-6 leading-tight">
-                Hubungkan Panen<br>dengan Peluang.
-            </h1>
-            <p class="text-lg text-slate-300 leading-relaxed mb-8">
-                TaniLink adalah platform pre-order agrikultur yang mempertemukan petani dan Horeka secara langsung.
-            </p>
-            
-            <div class="flex items-center gap-4 text-sm font-semibold text-slate-400">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-shield-check text-[#05C793]"></i> Transaksi Aman
-                </div>
-                <div class="w-1.5 h-1.5 rounded-full bg-slate-700"></div>
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-handshake text-[#05C793]"></i> Tanpa Perantara
-                </div>
-            </div>
-        </div>
+
+        {{-- Headline --}}
+        <h1 class="login-left-heading">
+            Hubungkan<br>Panen &amp; Peluang.
+        </h1>
+        <p class="login-left-para">
+            TaniLink adalah platform pemesanan komoditas pertanian yang mempertemukan petani dan konsumen secara langsung — transparan, efisien, dan tanpa perantara.
+        </p>
+
+        {{-- Decoration --}}
+        <div class="login-left-deco" aria-hidden="true">🌿</div>
     </div>
 
-    {{-- Right Side: Form --}}
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative overflow-hidden">
-        {{-- Decorative blobs for mobile background --}}
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-[#05C793]/10 blur-3xl lg:hidden"></div>
-        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-[#06B6D4]/10 blur-3xl lg:hidden"></div>
-        
-        <div class="w-full max-w-md relative z-10">
-            
-            {{-- Mobile Brand --}}
-            <div class="lg:hidden text-center mb-10">
-                <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#05C793] to-[#06B6D4] flex items-center justify-center shadow-lg shadow-emerald-500/20 mb-4">
-                    <i class="fa-solid fa-leaf text-2xl text-white"></i>
-                </div>
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Tani<span class="text-[#05C793]">Link</span></h2>
-            </div>
-            
-            <div class="mb-8">
-                <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Selamat Datang 👋</h2>
-                <p class="text-slate-500 font-medium">Silakan masuk ke akun Anda untuk melanjutkan.</p>
-            </div>
+    {{-- ── RIGHT PANEL ── --}}
+    <div class="login-right">
+        <div class="login-right-inner">
 
+            <h2 class="login-heading">Masuk ke TaniLink</h2>
+            <p class="login-subheading">Masukkan kredensial Anda untuk melanjutkan.</p>
+
+            {{-- Success alert --}}
             @if(session('success'))
-                <div class="bg-emerald-50 text-emerald-700 p-4 rounded-2xl text-sm mb-6 border border-emerald-100 flex items-start gap-3">
-                    <i class="fa-solid fa-circle-check mt-0.5 text-emerald-500"></i>
-                    <div>{{ session('success') }}</div>
-                </div>
+            <div class="alert-success">
+                <i class="fa-solid fa-circle-check" style="margin-top:1px; color:#059669;"></i>
+                <div>{{ session('success') }}</div>
+            </div>
             @endif
 
+            {{-- Error alert --}}
             @if($errors->any())
-                <div class="bg-red-50 text-red-700 p-4 rounded-2xl text-sm mb-6 border border-red-100 flex items-start gap-3">
-                    <i class="fa-solid fa-circle-exclamation mt-0.5 text-red-500"></i>
-                    <div>{{ $errors->first() }}</div>
-                </div>
+            <div class="alert-error">
+                <i class="fa-solid fa-circle-exclamation" style="margin-top:1px; color:#DC2626;"></i>
+                <div>{{ $errors->first() }}</div>
+            </div>
             @endif
 
-            <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
+            {{-- Login form --}}
+            <form action="{{ route('login.post') }}" method="POST" x-data="{ showPass: false }">
                 @csrf
 
-                <div class="space-y-4">
-                    {{-- Email --}}
-                    <div>
-                        <label for="email" class="block text-sm font-bold text-slate-700 mb-2">Alamat Email</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                            </div>
-                            <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus
-                                class="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 bg-white focus:bg-white focus:border-[#05C793] focus:ring-4 focus:ring-[#05C793]/10 transition-all outline-none font-medium placeholder:text-slate-400 placeholder:font-normal"
-                                placeholder="nama@email.com">
-                        </div>
-                    </div>
+                {{-- Email / Phone --}}
+                <div style="margin-bottom:16px;">
+                    <label for="login_input" class="form-label">Alamat Email atau Nomor HP</label>
+                    <input type="text" name="login" id="login_input"
+                           value="{{ old('login', old('email')) }}"
+                           required autofocus
+                           class="form-input"
+                           placeholder="Masukkan email atau nomor HP">
+                </div>
 
-                    {{-- Password --}}
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <label for="password" class="block text-sm font-bold text-slate-700">Password</label>
-                            <a href="#" class="text-xs font-bold text-[#05C793] hover:text-[#04b383]">Lupa Password?</a>
-                        </div>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">  
-                            </div>
-                            <input type="password" name="password" id="password" required
-                                class="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 bg-white focus:bg-white focus:border-[#05C793] focus:ring-4 focus:ring-[#05C793]/10 transition-all outline-none font-medium placeholder:text-slate-400 placeholder:font-normal"
-                                placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
-                        </div>
+                {{-- Password with Eye Toggle --}}
+                <div style="margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:7px;">
+                        <label for="password" class="form-label" style="margin-bottom:0;">Password</label>
+                        <a href="{{ route('password.request') }}" style="font-size:12px; font-weight:700; color:#05C793; text-decoration:none;">Lupa Password?</a>
+                    </div>
+                    <div style="position:relative;">
+                        <input :type="showPass ? 'text' : 'password'" name="password" id="password"
+                               required
+                               class="form-input"
+                               style="padding-right:42px;"
+                               placeholder="••••••••">
+                        <button type="button" @click="showPass = !showPass"
+                                tabindex="-1"
+                                style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#8A9D96; cursor:pointer; font-size:14px; padding:4px;"
+                                title="Lihat password">
+                            <i :class="showPass ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
+                        </button>
                     </div>
                 </div>
 
                 {{-- Submit --}}
-                <button type="submit" class="w-full py-4 mt-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-xl shadow-slate-900/20 transition-all duration-200 flex justify-center items-center gap-2">
-                    Masuk ke TaniLink <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                <button type="submit" class="login-btn">
+                    Masuk <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </button>
             </form>
 
-            <div class="mt-8 text-center">
-                <p class="text-sm font-medium text-slate-500">
-                    Belum punya akun? 
-                    <a href="{{ route('register') }}" class="text-[#05C793] font-bold hover:underline">Daftar sekarang</a>
+            {{-- Register link --}}
+            <div style="text-align:center; margin-top:20px;">
+                <p style="font-size:13px; color:#8A9D96; font-weight:500;">
+                    Belum punya akun?
+                    <a href="{{ route('register') }}" style="color:#05C793; font-weight:700; text-decoration:none;">Daftar sekarang</a>
                 </p>
-            </div>
-            
-            {{-- Test Accounts Panel --}}
-            <div class="mt-10 p-5 bg-slate-100/80 rounded-2xl border border-slate-200 border-dashed">
-                <p class="text-xs font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-flask text-[#05C793]"></i> Kredensial Demo
-                </p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-600">
-                    <div class="bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
-                        <span class="block font-bold text-slate-800 mb-0.5">Petani</span>
-                        <span class="text-slate-500 select-all">raden@tanilink.id</span>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
-                        <span class="block font-bold text-slate-800 mb-0.5">Pembeli</span>
-                        <span class="text-slate-500 select-all">maya@grandhotel.com</span>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
-                        <span class="block font-bold text-slate-800 mb-0.5">Admin</span>
-                        <span class="text-slate-500 select-all">admin@tanilink.id</span>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm sm:col-span-3 flex justify-between items-center">
-                        <div>
-                            <span class="block font-bold text-slate-800 mb-0.5">Password Semua Akun</span>
-                            <span class="text-slate-500 font-mono select-all">password123</span>
-                        </div>
-                        <i class="fa-solid fa-key text-slate-300"></i>
-                    </div>
-                </div>
             </div>
 
         </div>
     </div>
+
 </body>
 </html>

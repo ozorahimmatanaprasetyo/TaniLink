@@ -16,7 +16,12 @@ class User extends Authenticatable
         'role', // 'petani', 'pembeli', 'admin'
         'phone',
         'location',
+        'latitude',
+        'longitude',
         'organization',
+        'bank_name',
+        'bank_account',
+        'bank_holder',
         'password',
     ];
 

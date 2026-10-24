@@ -12,8 +12,10 @@ class PlantingProgress extends Model
     protected $table = 'planting_progress';
 
     protected $fillable = [
+        'harvest_batch_id',
         'pre_order_id',
         'stage_name',
+        'stage_status',
         'note',
         'photo_url',
         'location_tag',
@@ -25,6 +27,11 @@ class PlantingProgress extends Model
         'reported_at' => 'datetime',
         'is_verified' => 'boolean',
     ];
+
+    public function harvestBatch()
+    {
+        return $this->belongsTo(HarvestBatch::class, 'harvest_batch_id');
+    }
 
     public function preOrder()
     {

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'TaniLink - Platform Pre-Order Pertanian')
+@section('title', 'TaniLink - Platform Pemesanan Komoditas Pertanian')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8" x-data="{
@@ -12,13 +12,13 @@
         <div class="absolute -right-12 -top-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
         <div class="relative z-10 max-w-2xl">
             <span class="inline-block px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-white/20 backdrop-blur-md mb-3">
-                Pre-Order Agriculture B2B
+                Marketplace Pertanian B2B
             </span>
             <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
                 Kepastian Harga & Pasokan Sebelum Musim Tanam
             </h1>
             <p class="text-white/90 text-xs sm:text-sm mt-2 font-medium leading-relaxed">
-                Hubungkan petani lokal dengan industri Horeka melalui kontrak harga tetap dan rekening bersama escrow.
+                Hubungkan petani lokal dengan industri Horeka melalui kontrak harga pasti dan sistem pembayaran rekening bersama yang aman.
             </p>
         </div>
     </div>
@@ -27,7 +27,7 @@
     <div class="flex items-center justify-between gap-3 flex-wrap">
         <div>
             <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Pilih Portal Pengguna</h2>
-            <p class="text-xs text-slate-400">Pilih peran untuk melihat simulasi antarmuka</p>
+            <p class="text-xs text-slate-400">Pilih peran untuk melihat fitur antarmuka</p>
         </div>
 
         <!-- 3 Role Tabs -->
