@@ -254,12 +254,6 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;">
         @forelse($availableListings as $listing)
         @php
-            $categoryEmojis = [
-                'Sayuran' => '🥬', 'Buah' => '🍊', 'Rempah' => '🌶️',
-                'Biji-bijian' => '🌾', 'Umbi' => '🥕', 'Kacang' => '🫘',
-                'Herbal' => '🌿', 'Palawija' => '🌽', 'Cabai & Bumbu' => '🌶️'
-            ];
-            $emoji = $categoryEmojis[$listing->category] ?? '🌱';
             $imgUrl = $listing->image_url ?? '';
             $hasImage = !empty($imgUrl);
             $harvestDateYmd = \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d');

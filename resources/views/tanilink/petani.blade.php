@@ -24,7 +24,7 @@
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px;">
         <div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">
-                Selamat datang kembali, {{ $petani->name }} 👋
+                Selamat datang kembali, {{ $petani->name }} !
             </h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">
                 Pantau hasil panen, kontrak, dan progres tanaman dalam satu tempat.
@@ -105,7 +105,7 @@
 
             @if($activeOrders->isEmpty())
             <div style="text-align:center; padding:40px 10px; color:#8A9D95;">
-                <div style="font-size:32px; margin-bottom:8px;">📦</div>
+                <div style="font-size:32px; margin-bottom:8px; color:#A7D7C5;"><i class="fa-solid fa-box-open"></i></div>
                 <div style="font-size:13px; font-weight:700;">Belum Ada Pesanan</div>
                 <p style="font-size:11px; margin-top:4px;">Pesanan dari konsumen akan muncul di sini setelah komoditas dibooking.</p>
             </div>

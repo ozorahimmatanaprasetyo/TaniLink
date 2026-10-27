@@ -177,8 +177,8 @@
                     <h2 style="font-size:15px; font-weight:850; margin:0 0 12px; color:#172B29;">Estimasi Siap Panen</h2>
                     
                     <div style="display:flex; gap:12px; align-items:flex-start;">
-                        <div style="width:34px; height:34px; border-radius:10px; background:#E9FBF3; color:#139B78; display:grid; place-items:center; font-size:16px; flex-shrink:0;">
-                            📅
+                        <div style="width:34px; height:34px; border-radius:10px; background:#E9FBF3; color:#139B78; display:grid; place-items:center; font-size:15px; flex-shrink:0;">
+                            <i class="fa-regular fa-calendar-days"></i>
                         </div>
                         <div>
                             <b style="font-size:13px; color:#172B29;">

@@ -74,7 +74,7 @@
         <div class="card" style="padding:18px 20px;">
             <div style="font-size:11px; color:#7B8C86; font-weight:750; margin-bottom:8px;">Jumlah yang Sudah Dipesan</div>
             <div style="font-size:18px; font-weight:850; color:#0A765A;">
-                {{ number_format($batch->allocated_kg, 0, ',', '.') }} kg
+                {{ number_format($batch->ordered_kg, 0, ',', '.') }} kg
             </div>
             <div style="font-size:10px; color:#7B9187; margin-top:4px;">{{ $batch->preOrders->count() }} pesanan terikat</div>
         </div>

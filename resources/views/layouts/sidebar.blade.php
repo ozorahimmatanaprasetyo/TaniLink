@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'TaniLink - Platform Pre-Order Pertanian')</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/tanilink-icon.png') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,30 +52,31 @@
         .sidebar-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 28px 15px 20px;
+            padding: 24px 18px 20px;
             text-decoration: none;
+            overflow: hidden;
         }
-        .sidebar-brand-mark {
-            width: 34px;
+        .sidebar-brand .logo-full {
+            height: 38px;
+            width: auto;
+            max-width: 190px;
+            object-fit: contain;
+            display: block;
+        }
+        .sidebar-brand .logo-icon {
             height: 34px;
-            border-radius: 11px;
-            background: linear-gradient(135deg, #05C793, #07876B);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            color: #ffffff;
-            flex-shrink: 0;
+            width: auto;
+            object-fit: contain;
+            display: none;
         }
-        .sidebar-brand-text {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -1.2px;
-            color: var(--text-main);
-            line-height: 1;
+        .sidebar.collapsed .sidebar-brand .logo-full,
+        .sidebar-compact .sidebar-brand .logo-full {
+            display: none !important;
         }
-        .sidebar-brand-text span { color: var(--brand-primary); }
+        .sidebar.collapsed .sidebar-brand .logo-icon,
+        .sidebar-compact .sidebar-brand .logo-icon {
+            display: block !important;
+        }
 
         /* Workspace pill */
         .sidebar-workspace {
@@ -222,6 +224,42 @@
             font-weight: 700;
         }
         @media (max-width: 768px) {
+            .sidebar {
+                width: 68px !important;
+            }
+            .sidebar .sidebar-brand {
+                padding: 16px 8px !important;
+                justify-content: center !important;
+            }
+            .sidebar .sidebar-brand .logo-full {
+                display: none !important;
+            }
+            .sidebar .sidebar-brand .logo-icon {
+                display: block !important;
+            }
+            .sidebar .sidebar-workspace,
+            .sidebar .sidebar-nav-label,
+            .sidebar .sidebar-nav-text,
+            .sidebar .sidebar-bottom-link span {
+                display: none !important;
+            }
+            .sidebar .sidebar-nav-link,
+            .sidebar .sidebar-bottom-link {
+                justify-content: center !important;
+                padding: 12px 8px !important;
+                margin: 2px 8px !important;
+                position: relative;
+            }
+            .sidebar .sidebar-nav-badge {
+                position: absolute;
+                top: 4px;
+                right: 4px;
+                padding: 2px 5px;
+                font-size: 9px;
+            }
+            .main-content {
+                padding: 20px 16px !important;
+            }
             .main-header {
                 padding: 0 16px;
                 height: auto;
@@ -501,8 +539,8 @@
 
         {{-- Brand --}}
         <a href="{{ $authUser ? route('portal.' . $currentRole) : route('login') }}" class="sidebar-brand">
-            <div class="sidebar-brand-mark"><i class="fa-solid fa-leaf"></i></div>
-            <div class="sidebar-brand-text">Tani<span>Link</span></div>
+            <img src="{{ asset('images/tanilink-logo.png') }}" alt="TaniLink" class="logo-full">
+            <img src="{{ asset('images/tanilink-icon.png') }}" alt="TaniLink" class="logo-icon">
         </a>
 
         {{-- Workspace pill --}}

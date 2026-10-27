@@ -155,7 +155,7 @@
         <table>
             <tr>
                 <td style="width: 50%; vertical-align: middle;">
-                    <div class="brand-title">TaniLink</div>
+                    <img src="{{ public_path('images/tanilink-logo.png') }}" alt="TaniLink" style="height:32px; width:auto; max-width:180px; object-fit:contain; margin-bottom:4px;">
                     <div class="brand-subtitle">Platform Pre-Order &amp; Kolaborasi Komoditas Pertanian</div>
                 </td>
                 <td style="width: 50%; vertical-align: middle;" class="doc-title">
