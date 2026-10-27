@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'TaniLink - Platform Pre-Order Pertanian')</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/tanilink-icon.png') }}">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,13 +76,8 @@
             <div class="flex items-center justify-between h-14 sm:h-16">
                 
                 {{-- Left: Logo --}}
-                <a href="{{ $currentRole === 'pending' ? route('onboarding') : route('portal.' . $currentRole) }}" class="flex items-center gap-2.5 group">
-                    <div class="w-9 h-9 rounded-xl bg-brand-gradient flex items-center justify-center text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-200">
-                        <i class="fa-solid fa-leaf text-sm"></i>
-                    </div>
-                    <span class="font-extrabold text-lg tracking-tight text-slate-900 leading-none">
-                        Tani<span class="text-brand">Link</span>
-                    </span>
+                <a href="{{ $currentRole === 'pending' ? route('onboarding') : route('portal.' . $currentRole) }}" class="flex items-center group">
+                    <x-brand-logo variant="full" height="36px" alt="TaniLink" />
                 </a>
 
                 {{-- Right: Role Badge + Logout --}}

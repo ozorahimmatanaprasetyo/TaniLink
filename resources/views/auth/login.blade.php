@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk - TaniLink</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/tanilink-icon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -14,109 +15,114 @@
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
+            background-color: #ffffff;
         }
 
         /* ── Left panel ── */
         .login-left {
             width: 50%;
-            background: linear-gradient(140deg, #064737, #08a881);
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: linear-gradient(140deg, #04614a, #16ca9d);
             position: relative;
-            display: flex;
-            flex-direction: column;
-            padding: 48px 56px;
-            overflow: hidden;
-        }
-        .login-left-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .login-left-mark {
-            width: 38px;
-            height: 38px;
-            border-radius: 11px;
-            background: rgba(255,255,255,0.18);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 17px;
+            padding: 48px 56px;
+            overflow: hidden;
         }
-        .login-left-brand-text {
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: -0.8px;
-            color: #ffffff;
+        .login-left-inner {
+            width: 100%;
+            max-width: 440px;
         }
-        .login-left-brand-text span { color: #A7F3D0; }
+        .login-left-brand {
+            margin-bottom: 28px;
+        }
         .login-left-heading {
-            margin-top: 100px;
-            font-size: 46px;
+            font-size: 38px;
             font-weight: 900;
-            letter-spacing: -1.8px;
+            letter-spacing: -1.4px;
             color: #ffffff;
-            line-height: 1.1;
+            line-height: 1.15;
+            margin-bottom: 16px;
         }
         .login-left-para {
-            margin-top: 22px;
             color: #C9F5E4;
-            font-size: 15px;
-            line-height: 1.8;
-            max-width: 400px;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 28px;
         }
-        .login-left-deco {
-            position: absolute;
-            bottom: -30px;
-            left: -20px;
-            font-size: 255px;
-            opacity: 0.65;
-            pointer-events: none;
-            user-select: none;
-            line-height: 1;
+        .login-left-features {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .login-left-feat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .login-left-feat-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.18);
+            display: grid;
+            place-items: center;
+            font-size: 12px;
+            color: #A7F3D0;
+            flex-shrink: 0;
         }
 
         /* ── Right panel ── */
         .login-right {
             width: 50%;
+            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 70px 60px;
+            padding: 48px 56px;
             background: #ffffff;
             overflow-y: auto;
         }
         .login-right-inner {
             width: 100%;
-            max-width: 390px;
+            max-width: 400px;
         }
         .login-heading {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
-            letter-spacing: -0.8px;
+            letter-spacing: -0.6px;
             color: #172B29;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .login-subheading {
-            font-size: 14px;
+            font-size: 13.5px;
             color: #8A9D96;
             font-weight: 500;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
 
         /* Form fields */
         .form-label {
             display: block;
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 700;
             color: #172B29;
-            margin-bottom: 7px;
+            margin-bottom: 6px;
         }
         .form-input {
             width: 100%;
-            padding: 12px 14px;
+            padding: 11px 14px;
             border: 1.5px solid #DFEAE5;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 13.5px;
             font-family: inherit;
             color: #172B29;
             background: #fff;
@@ -132,7 +138,7 @@
         /* Submit button */
         .login-btn {
             width: 100%;
-            padding: 13px;
+            padding: 12px;
             background: #163D34;
             color: #ffffff;
             border: none;
@@ -146,7 +152,7 @@
             justify-content: center;
             gap: 8px;
             transition: background 0.18s;
-            margin-top: 4px;
+            margin-top: 6px;
         }
         .login-btn:hover { background: #0f2b24; }
 
@@ -155,10 +161,10 @@
             background: #EDFFF7;
             border: 1px solid #A7F3D0;
             color: #065F46;
-            padding: 12px 14px;
+            padding: 10px 14px;
             border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 18px;
+            font-size: 12.5px;
+            margin-bottom: 16px;
             display: flex;
             align-items: flex-start;
             gap: 10px;
@@ -167,13 +173,24 @@
             background: #FFF1F0;
             border: 1px solid #FECACA;
             color: #9B1C1C;
-            padding: 12px 14px;
+            padding: 10px 14px;
             border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 18px;
+            font-size: 12.5px;
+            margin-bottom: 16px;
             display: flex;
             align-items: flex-start;
             gap: 10px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .login-left { display: none; }
+            .login-right { width: 100%; min-height: 100dvh; padding: 48px 24px; }
+            .login-mobile-brand { display: flex !important; justify-content: center; margin-bottom: 24px; }
+        }
+        @media (max-width: 480px) {
+            .login-right { padding: 36px 18px; }
         }
     </style>
 </head>
@@ -181,30 +198,49 @@
 
     {{-- ── LEFT PANEL ── --}}
     <div class="login-left">
-        {{-- Brand --}}
-        <div class="login-left-brand">
-            <div class="login-left-mark">🌿</div>
-            <div class="login-left-brand-text">Tani<span>Link</span></div>
+        <div class="login-left-inner">
+            {{-- Brand: logo original langsung tanpa background box --}}
+            <div class="login-left-brand">
+                <x-brand-logo variant="full" height="62px" alt="TaniLink" />
+            </div>
+
+            {{-- Headline --}}
+            <h1 class="login-left-heading">
+                Hubungkan<br>Panen &amp; Peluang.
+            </h1>
+            <p class="login-left-para">
+                TaniLink adalah platform pemesanan komoditas pertanian yang mempertemukan petani dan konsumen secara langsung — transparan, efisien, dan tanpa perantara.
+            </p>
+
+            {{-- Features list --}}
+            <div class="login-left-features">
+                <div class="login-left-feat-item">
+                    <div class="login-left-feat-icon"><i class="fa-solid fa-handshake"></i></div>
+                    <span>Kontrak Langsung Produsen &amp; Pembeli</span>
+                </div>
+                <div class="login-left-feat-item">
+                    <div class="login-left-feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <span>Rekening Bersama Terjamin</span>
+                </div>
+                <div class="login-left-feat-item">
+                    <div class="login-left-feat-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <span>Stabilitas Harga Sebelum Musim Tanam</span>
+                </div>
+            </div>
         </div>
-
-        {{-- Headline --}}
-        <h1 class="login-left-heading">
-            Hubungkan<br>Panen &amp; Peluang.
-        </h1>
-        <p class="login-left-para">
-            TaniLink adalah platform pemesanan komoditas pertanian yang mempertemukan petani dan konsumen secara langsung — transparan, efisien, dan tanpa perantara.
-        </p>
-
-        {{-- Decoration --}}
-        <div class="login-left-deco" aria-hidden="true">🌿</div>
     </div>
 
     {{-- ── RIGHT PANEL ── --}}
     <div class="login-right">
         <div class="login-right-inner">
 
+            {{-- Mobile Brand Logo --}}
+            <div class="login-mobile-brand" style="display:none;">
+                <x-brand-logo variant="full" height="40px" alt="TaniLink" />
+            </div>
+
             <h2 class="login-heading">Masuk ke TaniLink</h2>
-            <p class="login-subheading">Masukkan kredensial Anda untuk melanjutkan.</p>
+            <p class="login-subheading">Masukkan data Anda untuk melanjutkan.</p>
 
             {{-- Success alert --}}
             @if(session('success'))
@@ -227,7 +263,7 @@
                 @csrf
 
                 {{-- Email / Phone --}}
-                <div style="margin-bottom:16px;">
+                <div style="margin-bottom:14px;">
                     <label for="login_input" class="form-label">Alamat Email atau Nomor HP</label>
                     <input type="text" name="login" id="login_input"
                            value="{{ old('login', old('email')) }}"
@@ -237,21 +273,25 @@
                 </div>
 
                 {{-- Password with Eye Toggle --}}
-                <div style="margin-bottom:20px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:7px;">
-                        <label for="password" class="form-label" style="margin-bottom:0;">Password</label>
-                        <a href="{{ route('password.request') }}" style="font-size:12px; font-weight:700; color:#05C793; text-decoration:none;">Lupa Password?</a>
+                <div style="margin-bottom:18px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <label for="password" class="form-label" style="margin-bottom:0;">Kata Sandi</label>
+                        <a href="{{ route('password.request') }}"
+                           style="font-size:12px; font-weight:600; color:#05C793; text-decoration:none;">
+                            Lupa password?
+                        </a>
                     </div>
                     <div style="position:relative;">
-                        <input :type="showPass ? 'text' : 'password'" name="password" id="password"
+                        <input :type="showPass ? 'text' : 'password'"
+                               name="password" id="password"
                                required
                                class="form-input"
                                style="padding-right:42px;"
-                               placeholder="••••••••">
+                               placeholder="Masukkan kata sandi (minimal 8 karakter)">
                         <button type="button" @click="showPass = !showPass"
                                 tabindex="-1"
                                 style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#8A9D96; cursor:pointer; font-size:14px; padding:4px;"
-                                title="Lihat password">
+                                title="Lihat kata sandi">
                             <i :class="showPass ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
                         </button>
                     </div>
@@ -259,16 +299,13 @@
 
                 {{-- Submit --}}
                 <button type="submit" class="login-btn">
-                    Masuk <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    Masuk ke Akun
                 </button>
             </form>
 
-            {{-- Register link --}}
-            <div style="text-align:center; margin-top:20px;">
-                <p style="font-size:13px; color:#8A9D96; font-weight:500;">
-                    Belum punya akun?
-                    <a href="{{ route('register') }}" style="color:#05C793; font-weight:700; text-decoration:none;">Daftar sekarang</a>
-                </p>
+            <div style="margin-top:20px; text-align:center; font-size:13px; color:#71837C;">
+                Belum punya akun?
+                <a href="{{ route('register') }}" style="font-weight:700; color:#05C793; text-decoration:none;">Daftar sekarang</a>
             </div>
 
         </div>

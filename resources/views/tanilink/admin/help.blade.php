@@ -150,8 +150,8 @@
                             #{{ $t->id }}
                         </td>
                         <td style="font-size:11px; padding:15px 10px; vertical-align:top;">
-                            <span style="display:inline-flex; align-items:center; gap:4px; padding:4px 9px; border-radius:6px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:10.5px;">
-                                🌱 Khusus Petani
+                            <span style="display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:6px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:10.5px;">
+                                <i class="fa-solid fa-person-digging"></i> Khusus Petani
                             </span>
                         </td>
                         <td style="font-size:12px; padding:15px 10px; vertical-align:top;">
@@ -212,8 +212,8 @@
                             #{{ $t->id }}
                         </td>
                         <td style="font-size:11px; padding:15px 10px; vertical-align:top;">
-                            <span style="display:inline-flex; align-items:center; gap:4px; padding:4px 9px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10.5px;">
-                                🛒 Khusus Konsumen
+                            <span style="display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10.5px;">
+                                <i class="fa-solid fa-hotel"></i> Khusus Konsumen
                             </span>
                         </td>
                         <td style="font-size:12px; padding:15px 10px; vertical-align:top;">
@@ -274,8 +274,8 @@
                             #{{ $t->id }}
                         </td>
                         <td style="font-size:11px; padding:15px 10px; vertical-align:top;">
-                            <span style="display:inline-flex; align-items:center; gap:4px; padding:4px 9px; border-radius:6px; background:#F1EFFB; color:#7257CA; font-weight:800; font-size:10.5px;">
-                                👥 Semua Pengguna
+                            <span style="display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:6px; background:#F1EFFB; color:#7257CA; font-weight:800; font-size:10.5px;">
+                                <i class="fa-solid fa-users"></i> Semua Pengguna
                             </span>
                         </td>
                         <td style="font-size:12px; padding:15px 10px; vertical-align:top;">
@@ -330,9 +330,9 @@
                         <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Target Peran Sasaran FAQ <span style="color:#E11D48;">*</span></label>
                         <select name="target_role" required
                                 style="width:100%; border:1px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12px;">
-                            <option value="petani">🌱 Khusus Petani</option>
-                            <option value="konsumen">🛒 Khusus Konsumen</option>
-                            <option value="semua">👥 Semua Pengguna (Petani & Konsumen)</option>
+                            <option value="petani">Khusus Petani</option>
+                            <option value="konsumen">Khusus Konsumen</option>
+                            <option value="semua">Semua Pengguna (Petani &amp; Konsumen)</option>
                         </select>
                     </div>
 
@@ -383,9 +383,9 @@
                         <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Target Peran Sasaran FAQ <span style="color:#E11D48;">*</span></label>
                         <select name="target_role" x-model="editRole" required
                                 style="width:100%; border:1px solid #DFEAE5; padding:10px 14px; border-radius:10px; font-size:12px;">
-                            <option value="petani">🌱 Khusus Petani</option>
-                            <option value="konsumen">🛒 Khusus Konsumen</option>
-                            <option value="semua">👥 Semua Pengguna (Petani & Konsumen)</option>
+                            <option value="petani">Khusus Petani</option>
+                            <option value="konsumen">Khusus Konsumen</option>
+                            <option value="semua">Semua Pengguna (Petani &amp; Konsumen)</option>
                         </select>
                     </div>
 

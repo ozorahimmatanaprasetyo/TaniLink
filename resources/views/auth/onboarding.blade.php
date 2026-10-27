@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pilih Peran - TaniLink</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/tanilink-icon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -176,9 +177,8 @@
     <div class="onboard-card">
 
         {{-- Brand --}}
-        <div class="onboard-brand">
-            <div class="onboard-brand-mark">🌿</div>
-            <div class="onboard-brand-text">Tani<span>Link</span></div>
+        <div class="onboard-brand" style="justify-content:center; margin-bottom:24px;">
+            <x-brand-logo variant="full" height="42px" alt="TaniLink" />
         </div>
 
         {{-- Heading --}}
@@ -205,7 +205,9 @@
 
                 {{-- Petani --}}
                 <div class="role-card" :class="{ selected: selectedRole === 'petani' }" @click="selectedRole = 'petani'">
-                    <div class="role-card-icon">🌱</div>
+                    <div class="role-card-icon" style="font-size:22px;">
+                        <i class="fa-solid fa-person-digging" style="color:#0C8D65;"></i>
+                    </div>
                     <div>
                         <div class="role-card-title">Saya Petani</div>
                         <div class="role-card-desc">Tawarkan hasil panen, terima pesanan dari konsumen, dan kelola proses tanam hingga panen.</div>
@@ -214,7 +216,9 @@
 
                 {{-- Konsumen / Pembeli --}}
                 <div class="role-card" :class="{ selected: selectedRole === 'pembeli' }" @click="selectedRole = 'pembeli'">
-                    <div class="role-card-icon">🏢</div>
+                    <div class="role-card-icon" style="font-size:22px;">
+                        <i class="fa-solid fa-hotel" style="color:#087894;"></i>
+                    </div>
                     <div>
                         <div class="role-card-title">Saya Konsumen</div>
                         <div class="role-card-desc">Cari komoditas terbaik langsung dari petani, pesan sebelum panen, dan pantau progres tanam.</div>

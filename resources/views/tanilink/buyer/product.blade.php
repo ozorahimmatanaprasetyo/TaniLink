@@ -27,8 +27,6 @@
 
 @section('content')
 @php
-    $emojis = ['Sayuran' => '🍅', 'Cabai & Bumbu' => '🌶️', 'Palawija' => '🌽', 'Buah' => '🍊'];
-    $emoji = $emojis[$listing->category] ?? '🌱';
     $imgUrl = $listing->image_url ?? '';
     $hasImage = !empty($imgUrl);
 @endphp
@@ -41,13 +39,13 @@
             
             {{-- Foto Utama Komoditas --}}
             <div class="card" style="padding:16px;">
-                <div style="height:380px; border-radius:14px; background:linear-gradient(145deg, #FFE6D9, #FFF3E9); display:grid; place-items:center; font-size:140px; position:relative; overflow:hidden;">
+                <div style="height:380px; border-radius:14px; background:linear-gradient(145deg, #FFE6D9, #FFF3E9); display:grid; place-items:center; position:relative; overflow:hidden;">
                     @if($hasImage)
                         <img src="{{ str_starts_with($imgUrl, 'http') ? $imgUrl : asset($imgUrl) }}"
                              alt="{{ $listing->commodity_name }}"
                              style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;">
                     @else
-                        {{ $emoji }}
+                        <i class="fa-solid fa-leaf" style="font-size:72px; color:#10B981;"></i>
                     @endif
 
                     {{-- Badges di atas foto --}}

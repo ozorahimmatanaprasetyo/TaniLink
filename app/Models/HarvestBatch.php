@@ -79,7 +79,18 @@ class HarvestBatch extends Model
 
     public function getAvailableKgAttribute()
     {
-        return max(0, $this->estimated_harvest_kg - $this->allocated_kg);
+        return max(0, $this->estimated_harvest_kg - $this->ordered_kg);
+    }
+
+    public function getOrderedKgAttribute()
+    {
+        // Hitung akumulasi pesanan riil dari preOrders (tidak termasuk yang dibatalkan/ditolak)
+        if ($this->relationLoaded('preOrders')) {
+            $actualSum = (float) $this->preOrders->whereNotIn('status', ['dibatalkan', 'ditolak'])->sum('quantity_kg');
+        } else {
+            $actualSum = (float) $this->preOrders()->whereNotIn('status', ['dibatalkan', 'ditolak'])->sum('quantity_kg');
+        }
+        return max($actualSum, (float) ($this->allocated_kg ?? 0));
     }
 
     public function getCurrentPhaseIndexAttribute()

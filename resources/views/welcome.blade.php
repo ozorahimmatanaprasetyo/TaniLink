@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaniLink — Ekosistem Agrikultur Terencana & Escrow Bersama</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/tanilink-icon.png') }}">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,13 +38,8 @@
     <header style="border-bottom:1px solid #E5ECEA; background:#ffffff; position:sticky; top:0; z-index:40;">
         <div style="max-width:1200px; margin:0 auto; padding:18px 30px; display:flex; align-items:center; justify-content:space-between;">
             {{-- Brand --}}
-            <a href="/" style="display:flex; align-items:center; gap:10px;">
-                <div style="width:34px; height:34px; border-radius:11px; background:linear-gradient(135deg, #05C793, #07876B); display:grid; place-items:center; font-size:16px; color:#fff;">
-                    🌿
-                </div>
-                <strong style="font-size:22px; font-weight:850; letter-spacing:-1.2px; color:#172B29;">
-                    Tani<span style="color:#05C793;">Link</span>
-                </strong>
+            <a href="/" style="display:flex; align-items:center;">
+                <x-brand-logo variant="full" height="38px" alt="TaniLink" />
             </a>
 
             {{-- Nav links urut dari atas halaman ke bawah --}}
@@ -61,14 +57,14 @@
                         $role = Auth::user()->role;
                     @endphp
                     <a href="{{ route('portal.' . $role) }}" style="padding:10px 20px; border-radius:11px; font-size:12px; font-weight:850; color:#053B2D; background:#05C793; box-shadow:0 3px 10px rgba(5,199,147,0.25);">
-                        Buka Dashboard ↗
+                        Buka Dashboard
                     </a>
                 @else
                     <a href="{{ route('login') }}" style="padding:10px 18px; border-radius:11px; font-size:12px; font-weight:800; color:#163D34; border:1px solid #DFE8E5; background:#fff; transition:all 0.15s;">
                         Masuk
                     </a>
                     <a href="{{ route('register') }}" style="padding:10px 20px; border-radius:11px; font-size:12px; font-weight:850; color:#053B2D; background:#05C793; border:none; transition:all 0.15s; box-shadow:0 3px 10px rgba(5,199,147,0.25);">
-                        Daftar Kemitraan ↗
+                        Daftar Kemitraan
                     </a>
                 @endauth
             </div>
@@ -90,16 +86,16 @@
                 </p>
                 <div style="display:flex; gap:14px; flex-wrap:wrap;">
                     <a href="{{ route('register') }}" style="padding:14px 26px; border-radius:12px; background:#05C793; color:#053B2D; font-size:13px; font-weight:850; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(5,199,147,0.35);">
-                        Mulai Kemitraan TaniLink ↗
+                        Mulai Kemitraan TaniLink
                     </a>
                     <a href="#ekosistem" style="padding:14px 26px; border-radius:12px; background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.25); font-size:13px; font-weight:800; backdrop-filter:blur(8px);">
-                        Pelajari Ekosistem ↓
+                        Pelajari Ekosistem
                     </a>
                 </div>
             </div>
 
-            <div style="font-size:180px; filter:drop-shadow(0 25px 20px rgba(1,45,28,0.5)); z-index:2; user-select:none;">
-                🌾
+            <div style="font-size:130px; color:rgba(255,255,255,0.22); z-index:2; user-select:none; display:flex; align-items:center; justify-content:center;">
+                <i class="fa-solid fa-wheat-awn"></i>
             </div>
         </div>
     </section>
@@ -115,8 +111,8 @@
         <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:28px;">
             {{-- Card Petani --}}
             <div style="background:#fff; border:1px solid #E5ECEA; border-radius:20px; padding:32px; box-shadow:0 4px 20px rgba(31,61,45,0.04);">
-                <div style="width:52px; height:52px; border-radius:14px; background:#E9FBF3; color:#0C8D65; display:grid; place-items:center; font-size:26px; margin-bottom:18px;">
-                    🌱
+                <div style="width:52px; height:52px; border-radius:14px; background:#E9FBF3; color:#0C8D65; display:grid; place-items:center; font-size:22px; margin-bottom:18px;">
+                    <i class="fa-solid fa-person-digging"></i>
                 </div>
                 <h3 style="font-size:20px; font-weight:850; color:#172B29; margin:0 0 10px;">Untuk Petani (Produsen)</h3>
                 <p style="font-size:13px; color:#50695E; line-height:1.75; margin:0 0 20px;">
@@ -140,8 +136,8 @@
 
             {{-- Card Konsumen --}}
             <div style="background:#fff; border:1px solid #E5ECEA; border-radius:20px; padding:32px; box-shadow:0 4px 20px rgba(31,61,45,0.04);">
-                <div style="width:52px; height:52px; border-radius:14px; background:#E8F9FC; color:#0B8BAA; display:grid; place-items:center; font-size:26px; margin-bottom:18px;">
-                    🏢
+                <div style="width:52px; height:52px; border-radius:14px; background:#E8F9FC; color:#0B8BAA; display:grid; place-items:center; font-size:22px; margin-bottom:18px;">
+                    <i class="fa-solid fa-hotel"></i>
                 </div>
                 <h3 style="font-size:20px; font-weight:850; color:#172B29; margin:0 0 10px;">Untuk Konsumen (Industri & Usaha)</h3>
                 <p style="font-size:13px; color:#50695E; line-height:1.75; margin:0 0 20px;">
@@ -269,7 +265,7 @@
                     <p style="font-size:13px; color:#80908D; margin:0;">Pesan langsung sebelum jadwal panen untuk mengunci pasokan dengan harga terbaik.</p>
                 </div>
                 <a href="{{ route('login') }}" style="display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border-radius:10px; background:#EBF9F2; color:#078362; font-size:12px; font-weight:800; text-decoration:none;">
-                    Lihat Semua Komoditas ↗
+                    Lihat Semua Komoditas
                 </a>
             </div>
 
@@ -279,20 +275,16 @@
                 @endphp
 
                 @forelse($showListings as $item)
-                @php
-                    $emojis = ['Sayuran' => '🍅', 'Cabai & Bumbu' => '🌶️', 'Palawija' => '🌽', 'Buah' => '🍊', 'Biji-bijian' => '🌾'];
-                    $emoji = $emojis[$item->category] ?? '🧅';
-                @endphp
                 <div style="border:1px solid #E5ECEA; border-radius:18px; background:#fff; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; transition:transform 0.2s, box-shadow 0.2s; box-shadow:0 3px 12px rgba(0,0,0,0.03);"
                      onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.08)';"
                      onmouseout="this.style.transform='none'; this.style.boxShadow='0 3px 12px rgba(0,0,0,0.03)';">
                     
-                    <div style="height:140px; display:grid; place-items:center; font-size:46px; background:linear-gradient(145deg, #F0FDF4, #E2F8EE); position:relative; overflow:hidden;">
+                    <div style="height:140px; display:grid; place-items:center; background:linear-gradient(145deg, #F0FDF4, #E2F8EE); position:relative; overflow:hidden;">
                         @if($item->image_url)
                             <img src="{{ str_starts_with($item->image_url, 'http') ? $item->image_url : asset($item->image_url) }}"
                                  alt="{{ $item->commodity_name }}" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;">
                         @else
-                            {{ $emoji }}
+                            <i class="fa-solid fa-seedling" style="font-size:38px; color:#05C793;"></i>
                         @endif
                         <span style="position:absolute; top:10px; left:10px; font-size:9.5px; font-weight:850; background:#fff; color:#0C8D65; border-radius:7px; padding:3px 8px; box-shadow:0 2px 5px rgba(0,0,0,0.08);">
                             Stok {{ number_format($item->available_kg, 0, ',', '.') }} kg
@@ -318,7 +310,7 @@
                 </div>
                 @empty
                 <div style="grid-column:span 4; text-align:center; padding:50px; background:#fff; border-radius:16px; border:1px solid #E5ECEA;">
-                    <div style="font-size:36px; margin-bottom:8px;">🌾</div>
+                    <div style="font-size:36px; margin-bottom:8px; color:#05C793;"><i class="fa-solid fa-seedling"></i></div>
                     <h3 style="font-size:15px; font-weight:800; color:#172B29;">Katalog Komoditas Sedang Dimuat</h3>
                     <p style="font-size:12px; color:#8A9A94; margin:4px 0 16px;">Silakan login atau daftar untuk melihat penawaran aktif kelompok tani mitra.</p>
                     <a href="{{ route('login') }}" style="display:inline-block; padding:10px 18px; border-radius:10px; background:#05C793; color:#053B2D; font-size:12px; font-weight:800;">
@@ -333,11 +325,8 @@
     {{-- Footer --}}
     <footer style="background:#ffffff; padding:40px 30px; text-align:center;">
         <div style="max-width:1200px; margin:0 auto;">
-            <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:12px;">
-                <div style="width:26px; height:26px; border-radius:8px; background:linear-gradient(135deg, #05C793, #07876B); display:grid; place-items:center; font-size:12px; color:#fff;">
-                    🌿
-                </div>
-                <strong style="font-size:18px; font-weight:850; color:#172B29;">Tani<span style="color:#05C793;">Link</span></strong>
+            <div style="display:flex; justify-content:center; align-items:center; margin-bottom:12px;">
+                <x-brand-logo variant="full" height="34px" alt="TaniLink" />
             </div>
             <p style="font-size:11.5px; color:#8A9D95; margin:0 0 10px;">
                 Platform Agrikultur Terencana &bull; Kepastian Suplai Panen & Rekening Bersama Escrow

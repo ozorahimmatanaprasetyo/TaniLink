@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lupa Password - TaniLink</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/tanilink-icon.png') }}">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -113,13 +114,8 @@
     <div class="card-container">
         {{-- Logo Brand --}}
         <div style="text-align:center; margin-bottom:24px;">
-            <a href="/" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none;">
-                <div style="width:32px; height:32px; border-radius:10px; background:linear-gradient(135deg, #05C793, #07876B); display:grid; place-items:center; font-size:15px; color:#fff;">
-                    🌿
-                </div>
-                <strong style="font-size:20px; font-weight:850; letter-spacing:-1px; color:#172B29;">
-                    Tani<span style="color:#05C793;">Link</span>
-                </strong>
+            <a href="/" style="display:inline-block; text-decoration:none;">
+                <x-brand-logo variant="full" height="40px" alt="TaniLink" />
             </a>
         </div>
 

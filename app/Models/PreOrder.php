@@ -89,25 +89,25 @@ class PreOrder extends Model
             1 => [
                 'name' => 'Fase Benih & Penyemaian',
                 'short' => 'Penyemaian & Benih',
-                'icon' => '🌱',
+                'icon' => 'fa-solid fa-seedling',
                 'desc' => 'Bibit disemai dengan media organik dan persiapan lahan tanam.'
             ],
             2 => [
                 'name' => 'Fase Vegetatif & Pertunasan',
                 'short' => 'Pertumbuhan Vegetatif',
-                'icon' => '🌿',
+                'icon' => 'fa-solid fa-leaf',
                 'desc' => 'Pertumbuhan daun dan cabang aktif, irigasi dan nutrisi terjaga.'
             ],
             3 => [
                 'name' => 'Fase Pembungaan & Bakal Buah',
                 'short' => 'Pembungaan & Buah',
-                'icon' => '🌼',
+                'icon' => 'fa-solid fa-spa',
                 'desc' => 'Bunga mekar serempak dan bakal buah mulai terbentuk merata.'
             ],
             4 => [
                 'name' => 'Fase Pematangan & Siap Panen',
                 'short' => 'Panen & Sortir',
-                'icon' => '🌶️',
+                'icon' => 'fa-solid fa-box-open',
                 'desc' => 'Hasil panen matang sempurna, siap petik dan grading kualitas.'
             ],
         ];
