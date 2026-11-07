@@ -17,6 +17,59 @@
 </a>
 @endsection
 
+@push('styles')
+<style>
+.preorder-headline {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.preorder-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+    gap: 24px;
+}
+.preorder-input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.preorder-finance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+@media (max-width: 992px) {
+    .preorder-layout {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 640px) {
+    .preorder-headline {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .preorder-headline a {
+        width: 100%;
+        justify-content: center;
+    }
+    .preorder-input-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 420px) {
+    .preorder-finance-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 <div x-data="{
     qty: '',
@@ -29,7 +82,7 @@
 }">
 
     {{-- Headline --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
+    <div class="preorder-headline">
         <div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Ajukan Pre-Order</h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">
@@ -56,7 +109,7 @@
         @csrf
         <input type="hidden" name="listing_id" value="{{ $listing->id }}">
 
-        <div style="display:grid; grid-template-columns:minmax(0, 1.5fr) minmax(320px, 1fr); gap:24px;">
+        <div class="preorder-layout">
             
             {{-- Kiri: Detail Kebutuhan Bisnis --}}
             <div class="card" style="padding:26px;">
@@ -72,7 +125,25 @@
                     </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="preorder-input-grid">
+                    {{-- Jumlah kg --}}
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Jumlah Pemesanan (kg) <span style="color:#E11D48;">*</span></label>
+                        <input type="number" name="quantity_kg" x-model.number="qty" min="1" :max="maxQty" required
+                               placeholder="Contoh: 100"
+                               style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
+                        <small style="color:#87968F; font-size:10px;">Tersedia maksimal: <b x-text="maxQty"></b> kg</small>
+                    </div>
+
+                    {{-- Tanggal dibutuhkan --}}
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Tanggal Dibutuhkan <span style="color:#E11D48;">*</span></label>
+                        <input type="date" name="need_date" value="{{ $listing->harvest_estimated_date ? \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d') : now()->addDays(20)->format('Y-m-d') }}" required
+                               min="{{ $listing->harvest_estimated_date ? \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d') : '' }}"
+                               style="outline:0; width:100%; border:1.5px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:12px;">
+                        <small style="color:#87968F; font-size:10px;">Estimasi panen: {{ \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('d M Y') }}</small>
+                    </div>
+                </div>
                     {{-- Jumlah kg --}}
                     <div style="display:flex; flex-direction:column; gap:6px;">
                         <label style="font-size:11px; font-weight:800; color:#365448;">Jumlah Pemesanan (kg) <span style="color:#E11D48;">*</span></label>
@@ -152,7 +223,7 @@
                     </div>
 
                     {{-- Finance 2x2 cells --}}
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+                    <div class="preorder-finance-grid">
                         <div style="border-radius:11px; background:#F7FAF9; padding:12px;">
                             <span style="font-size:10px; color:#889991;">DP 30% (Modal Benih)</span>
                             <b style="display:block; font-size:16px; color:#0C8D65; margin-top:4px;">

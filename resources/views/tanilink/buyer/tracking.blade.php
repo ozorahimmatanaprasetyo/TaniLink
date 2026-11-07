@@ -10,11 +10,80 @@
     <strong>Pantau Pesanan &amp; Pembayaran</strong>
 @endsection
 
+@push('styles')
+<style>
+.tracking-headline {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+.tracking-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+    gap: 20px;
+}
+.tracking-bank-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid #DBEAFE;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 12px;
+}
+.tracking-phase-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.tracking-doc-item {
+    display: flex;
+    gap: 14px;
+    border: 1px solid #E5ECEA;
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff;
+}
+@media (max-width: 992px) {
+    .tracking-layout {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 640px) {
+    .tracking-headline {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .tracking-bank-grid {
+        grid-template-columns: 1fr;
+    }
+    .tracking-bank-grid > div:last-child {
+        grid-column: span 1 !important;
+    }
+    .tracking-phase-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .tracking-doc-item {
+        flex-direction: column;
+    }
+    .tracking-doc-item > div:first-child {
+        width: 100% !important;
+        height: 160px !important;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 <div x-data="{ proofFileName: '' }">
 
     {{-- Headline --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:22px; flex-wrap:wrap; gap:14px;">
+    <div class="tracking-headline">
         <div>
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
                 <span style="font-size:11px; font-weight:800; background:#E9FBF3; color:#0C8D65; padding:3px 9px; border-radius:6px;">{{ $order->order_code }}</span>
@@ -62,7 +131,7 @@
     </div>
 
     {{-- Grid 2 Kolom --}}
-    <div style="display:grid; grid-template-columns:minmax(0, 1.5fr) minmax(320px, 1fr); gap:20px;">
+    <div class="tracking-layout">
 
         {{-- KIRI: Pembayaran DP & Perkembangan Tanaman Batch --}}
         <div style="display:flex; flex-direction:column; gap:20px;">
@@ -99,7 +168,7 @@
                         <div style="font-size:13px; font-weight:800; color:#1D4ED8; margin-bottom:8px;">
                             <i class="fa-solid fa-building-columns"></i> Rekening Tujuan Transfer Petani
                         </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; background:#fff; border:1px solid #DBEAFE; border-radius:10px; padding:12px; font-size:12px;">
+                        <div class="tracking-bank-grid">
                             <div>
                                 <span style="font-size:10.5px; color:#6B7280;">NAMA BANK</span>
                                 <div style="font-weight:850; color:#172B29;">{{ $order->farmer_bank_name ?: ($order->farmer->bank_name ?? 'Bank BRI') }}</div>
@@ -226,7 +295,7 @@
                 </div>
 
                 {{-- 4-Phase System Timeline --}}
-                <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:20px;">
+                <div class="tracking-phase-grid">
                     @foreach($order->harvestBatch->phase_timeline as $ph)
                     <div style="padding:12px; border-radius:10px; border:1px solid {{ $ph['status'] === 'selesai' ? '#A7F3D0' : ($ph['status'] === 'berlangsung' ? '#05C793' : '#E5ECEA') }};
                                 background:{{ $ph['status'] === 'selesai' ? '#F0FDF8' : ($ph['status'] === 'berlangsung' ? '#E6FFFA' : '#FAFCFB') }};">
@@ -255,7 +324,7 @@
                 @else
                 <div style="display:flex; flex-direction:column; gap:14px;">
                     @foreach($batchProgress as $prog)
-                    <div style="display:flex; gap:14px; border:1px solid #E5ECEA; border-radius:12px; padding:12px; background:#fff;">
+                    <div class="tracking-doc-item">
                         @if($prog->photo_url)
                         <div style="width:110px; height:85px; border-radius:8px; overflow:hidden; flex-shrink:0; background:#F8FCFA;">
                             <img src="{{ str_starts_with($prog->photo_url, 'http') ? $prog->photo_url : asset($prog->photo_url) }}"

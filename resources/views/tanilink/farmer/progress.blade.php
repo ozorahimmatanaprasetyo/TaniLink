@@ -10,11 +10,78 @@
     <strong>Detail &amp; Verifikasi DP</strong>
 @endsection
 
+@push('styles')
+<style>
+    .progress-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+        gap: 20px;
+    }
+    .progress-contract-grid {
+        border-top: 1px solid #EEF2F0;
+        padding-top: 14px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        font-size: 11.5px;
+    }
+    .progress-phase-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        font-size: 11px;
+    }
+    .progress-action-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .progress-headline {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+    @media (max-width: 992px) {
+        .progress-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 640px) {
+        .progress-headline {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .progress-contract-grid {
+            grid-template-columns: 1fr;
+        }
+        .progress-phase-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        .progress-action-row {
+            flex-direction: column;
+            width: 100%;
+        }
+        .progress-action-row form,
+        .progress-action-row button,
+        .progress-action-row a {
+            width: 100%;
+        }
+        .progress-action-row .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div x-data="{ showRejectDpModal: false }">
 
     {{-- Headline --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:22px; flex-wrap:wrap; gap:14px;">
+    <div class="progress-headline">
         <div>
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
                 <span style="font-size:11px; font-weight:800; background:#E9FBF3; color:#0C8D65; padding:3px 9px; border-radius:6px;">{{ $order->order_code }}</span>
@@ -62,14 +129,14 @@
     </div>
 
     {{-- Grid 2 Kolom --}}
-    <div style="display:grid; grid-template-columns:minmax(0, 1.5fr) minmax(320px, 1fr); gap:20px;">
+    <div class="progress-layout">
 
         {{-- KIRI: Verifikasi Pembayaran DP & Batch Panen --}}
         <div style="display:flex; flex-direction:column; gap:20px;">
 
             {{-- SECTION 1: VERIFIKASI PEMBAYARAN DP --}}
             <div class="card" style="padding:24px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
                     <div>
                         <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Alur Pembayaran Uang Muka (DP 30%)</h2>
                         <p style="font-size:11px; color:#91A19B; margin:0;">Pembayaran DP ditransfer langsung oleh konsumen ke rekening bank Anda.</p>
@@ -89,7 +156,7 @@
                         Konsumen mengajukan pre-order sebanyak <b>{{ number_format($order->quantity_kg, 0, ',', '.') }} kg</b>.
                         Silakan setujui pesanan ini agar konsumen dapat melanjutkan pembayaran DP 30% ke rekening Anda.
                     </p>
-                    <div style="display:flex; gap:10px;">
+                    <div class="progress-action-row">
                         <form action="{{ route('petani.pesanan.confirm', $order->id) }}" method="POST" style="margin:0;">
                             @csrf
                             <button type="submit" class="btn btn-primary" onclick="return confirm('Setujui pesanan ini dan terbitkan instruksi pembayaran DP ke konsumen?')">
@@ -148,7 +215,7 @@
                         </a>
                     </div>
 
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <div class="progress-action-row">
                         <form action="{{ route('petani.pesanan.confirm_dp', $order->id) }}" method="POST" style="margin:0;">
                             @csrf
                             <button type="submit" class="btn btn-primary" onclick="return confirm('Konfirmasi bahwa uang DP sebesar Rp {{ number_format($order->dp_amount, 0, ',', '.') }} telah benar-benar masuk ke rekening Anda?')">
@@ -172,7 +239,7 @@
                         Uang muka sebesar <b>Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</b> telah diverifikasi diterima pada
                         <b>{{ $order->dp_confirmed_at ? $order->dp_confirmed_at->timezone('Asia/Jakarta')->translatedFormat('d M Y, H:i') . ' WIB' : 'Terkonfirmasi' }}</b>.
                     </p>
-                    <div style="font-size:11px; color:#065F46; display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #A7F3D0; padding-top:8px;">
+                    <div style="font-size:11px; color:#065F46; display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #A7F3D0; padding-top:8px; flex-wrap:wrap; gap:8px;">
                         <span>Sisa pelunasan 70% (<b>Rp {{ number_format($order->escrow_locked_amount, 0, ',', '.') }}</b>) diselesaikan saat serah terima hasil panen.</span>
                         @if($order->dp_proof_path)
                         <a href="{{ route('pesanan.bukti_dp', $order->id) }}" target="_blank" style="color:#047857; font-weight:800; text-decoration:none;">
@@ -195,7 +262,7 @@
                 @endif
 
                 {{-- Rincian Nilai Kontrak --}}
-                <div style="border-top:1px solid #EEF2F0; padding-top:14px; display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; font-size:11.5px;">
+                <div class="progress-contract-grid">
                     <div>
                         <span style="color:#8A9A94; display:block;">Total Nilai Pesanan</span>
                         <b style="color:#172B29; font-size:13px;">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</b>
@@ -214,7 +281,7 @@
             {{-- SECTION 2: BATCH PANEN & PENGELOLAAN TERPUSAT --}}
             @if($order->harvestBatch)
             <div class="card" style="padding:24px;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap; gap:12px;">
                     <div>
                         <span style="font-size:10px; font-weight:800; color:#0C8D65; background:#E9FBF3; padding:2px 8px; border-radius:5px;">
                             {{ $order->harvestBatch->batch_code }}
@@ -238,7 +305,7 @@
                 </div>
 
                 {{-- Status 4 Fase Singkat --}}
-                <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; font-size:11px;">
+                <div class="progress-phase-grid">
                     @foreach($order->harvestBatch->phase_timeline as $ph)
                     <div style="padding:10px; border-radius:10px; border:1px solid {{ $ph['status'] === 'selesai' ? '#A7F3D0' : ($ph['status'] === 'berlangsung' ? '#05C793' : '#E5ECEA') }};
                                 background:{{ $ph['status'] === 'selesai' ? '#F0FDF8' : ($ph['status'] === 'berlangsung' ? '#E6FFFA' : '#FAFCFB') }};">
@@ -323,7 +390,7 @@
     {{-- MODAL MINTA PERBAIKAN BUKTI TRANSFER --}}
     <div x-cloak x-show="showRejectDpModal"
          style="position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; background:rgba(21,40,31,0.52); padding:16px;">
-        <div style="background:#fff; border-radius:20px; width:480px; max-width:95%; padding:26px; box-shadow:0 35px 90px rgba(16,35,29,0.4);"
+        <div style="background:#fff; border-radius:20px; width:480px; max-width:95%; max-height:90vh; overflow-y:auto; padding:26px; box-shadow:0 35px 90px rgba(16,35,29,0.4);"
              @click.away="showRejectDpModal = false">
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">

@@ -17,6 +17,51 @@
 </a>
 @endsection
 
+@push('styles')
+<style>
+.profile-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+    gap: 20px;
+}
+.profile-fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.profile-col-span-2 {
+    grid-column: span 2;
+}
+.profile-submit-btn {
+    padding: 11px 24px;
+    border-radius: 11px;
+    border: none;
+    background: #05C793;
+    font-size: 12px;
+    font-weight: 800;
+    color: #053B2D;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(5,199,147,0.25);
+}
+@media (max-width: 992px) {
+    .profile-layout {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 640px) {
+    .profile-fields-grid {
+        grid-template-columns: 1fr;
+    }
+    .profile-col-span-2 {
+        grid-column: span 1;
+    }
+    .profile-submit-btn {
+        width: 100%;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 
     {{-- Headline --}}
@@ -34,7 +79,7 @@
     @endif
 
     {{-- Grid 2 Kolom --}}
-    <div style="display:grid; grid-template-columns:minmax(0, 1.5fr) minmax(320px, 1fr); gap:20px;">
+    <div class="profile-layout">
         
         {{-- Kiri: Form Profil --}}
         <div class="card" style="padding:24px;">
@@ -45,7 +90,7 @@
 
             <form action="{{ route('pembeli.profil.update') }}" method="POST">
                 @csrf
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="profile-fields-grid">
                     
                     <div style="display:flex; flex-direction:column; gap:6px;">
                         <label style="font-size:11px; font-weight:800; color:#365448;">Nama penanggung jawab <span style="color:#E11D48;">*</span></label>
@@ -74,7 +119,7 @@
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                     </div>
 
-                    <div style="display:flex; flex-direction:column; gap:6px; grid-column:span 2;">
+                    <div class="profile-col-span-2" style="display:flex; flex-direction:column; gap:6px;">
                         <label style="font-size:11px; font-weight:800; color:#365448;">Alamat Kantor / Dapur Penerima Pasokan</label>
                         <input type="text" name="location" value="{{ old('location', $pembeli->location) }}"
                                placeholder="Belum diisi - Contoh: Jl. Raya Ijen No. 45, Kota Malang, Jawa Timur"
@@ -85,7 +130,7 @@
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; margin-top:24px;">
-                    <button type="submit" style="padding:11px 24px; border-radius:11px; border:none; background:#05C793; font-size:12px; font-weight:800; color:#053B2D; cursor:pointer; box-shadow:0 3px 10px rgba(5,199,147,0.25);">
+                    <button type="submit" class="profile-submit-btn">
                         Simpan Profil Konsumen
                     </button>
                 </div>

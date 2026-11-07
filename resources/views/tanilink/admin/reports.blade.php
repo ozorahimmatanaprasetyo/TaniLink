@@ -2,6 +2,99 @@
 
 @section('title', 'Laporan & Statistik - Admin TaniLink')
 
+@push('styles')
+<style>
+    .reports-headline {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .reports-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .reports-charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+    .reports-filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        align-items: flex-end;
+    }
+    .reports-filter-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid #EEF2F0;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .reports-table-desktop {
+        display: table;
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    .reports-card-mobile {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    @media (max-width: 992px) {
+        .reports-metrics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .reports-charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 768px) {
+        .reports-table-desktop {
+            display: none !important;
+        }
+        .reports-card-mobile {
+            display: flex !important;
+        }
+    }
+    @media (max-width: 640px) {
+        .reports-filter-grid {
+            grid-template-columns: 1fr;
+        }
+        .reports-filter-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .reports-filter-actions > div:last-child {
+            flex-direction: column;
+            width: 100%;
+        }
+        .reports-filter-actions a,
+        .reports-filter-actions button {
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+        }
+    }
+    @media (max-width: 480px) {
+        .reports-metrics-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+@endpush
+
 @section('sidebar_nav')
 <a href="{{ route('portal.admin') }}" class="nav-btn {{ request()->routeIs('portal.admin') ? 'active' : '' }}">
     <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span> Beranda Admin
@@ -30,7 +123,7 @@
 }">
 
     {{-- Headline --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+    <div class="reports-headline">
         <div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Laporan &amp; Statistik Platform</h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">Pantau performa ekosistem per periode, visualisasi tren transaksi, dan ekspor laporan PDF komprehensif.</p>
@@ -40,7 +133,7 @@
     {{-- 1. Filter Card --}}
     <div class="card" style="padding:22px; margin-bottom:24px;">
         <form method="GET" action="{{ route('admin.laporan') }}" id="reportFilterForm">
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; align-items:flex-end;">
+            <div class="reports-filter-grid">
                 
                 {{-- Periode Selector --}}
                 <div>
@@ -112,7 +205,7 @@
             </div>
 
             {{-- Action Buttons --}}
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding-top:16px; border-top:1px solid #EEF2F0; flex-wrap:wrap; gap:12px;">
+            <div class="reports-filter-actions">
                 <div style="font-size:11.5px; color:#85958F;">
                     <i class="fa-solid fa-calendar-check" style="color:#0A765A; margin-right:4px;"></i>
                     Filter aktif: <b>{{ $filters['period_type'] === 'tahunan' ? 'Tahun ' . $filters['year'] : ($filters['period_type'] === 'rentang' ? ($filters['start_date'] ?: 'Awal') . ' s/d ' . ($filters['end_date'] ?: 'Akhir') : ($months[$filters['month']] ?? '') . ' ' . $filters['year']) }}</b>
@@ -140,7 +233,7 @@
     </div>
 
     {{-- 2. 4 Metric Cards Berdasarkan Jenis Laporan --}}
-    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:24px;">
+    <div class="reports-metrics-grid">
         @if($filters['report_type'] === 'pembayaran')
             <div class="card" style="padding:19px 20px;">
                 <div style="font-size:11px; color:#7B8C86; font-weight:750; margin-bottom:6px;">Total Nilai Pesanan Sah</div>
@@ -263,7 +356,7 @@
     </div>
 
     {{-- 3 & 4. 4 Grafik Utama Interaktif --}}
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:18px; margin-bottom:24px;">
+    <div class="reports-charts-grid">
         
         {{-- A. Grafik Batang — Jumlah Pesanan --}}
         <div class="card" style="padding:22px;">
@@ -355,8 +448,8 @@
                 </div>
             </div>
 
-            <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; text-align:left;">
+            <div>
+                <table class="reports-table-desktop">
                     <thead>
                         <tr>
                             <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">KODE</th>
@@ -421,6 +514,61 @@
                         @endforelse
                     </tbody>
                 </table>
+
+                {{-- Mobile Cards for Orders --}}
+                <div class="reports-card-mobile">
+                    @forelse($allOrders as $order)
+                    <div style="border:1px solid #EEF2F0; border-radius:12px; padding:14px; background:#FAFCFB; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                            <div>
+                                <span style="font-size:11px; font-weight:800; color:#0A765A;">{{ $order->order_code }}</span>
+                                <div style="font-size:13px; font-weight:850; color:#183B30; margin-top:2px;">{{ $order->commodityListing->commodity_name ?? 'Komoditas' }}</div>
+                                <div style="font-size:10px; color:#85958F;">{{ $order->harvestBatch->batch_name ?? 'Batch' }} &bull; {{ number_format($order->quantity_kg, 0, ',', '.') }} kg</div>
+                            </div>
+                            <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:{{ $order->status === 'selesai' ? '#D1FAE5' : ($order->status === 'dibatalkan' ? '#FEE2E2' : '#EFF6FF') }}; color:{{ $order->status === 'selesai' ? '#065F46' : ($order->status === 'dibatalkan' ? '#991B1B' : '#1D4ED8') }}; font-weight:800; font-size:10px;">
+                                {{ $order->status_label }}
+                            </span>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px; background:#F3F6F5; padding:10px; border-radius:8px;">
+                            <div>
+                                <div style="font-size:10px; color:#85958F;">Petani</div>
+                                <div style="font-weight:700; color:#172B29;">{{ $order->farmer->name ?? 'Petani' }}</div>
+                                <div style="font-size:10px; color:#85958F;">{{ $order->farmer->organization ?? '-' }}</div>
+                            </div>
+                            <div>
+                                <div style="font-size:10px; color:#85958F;">Konsumen</div>
+                                <div style="font-weight:700; color:#172B29;">{{ $order->buyer->name ?? 'Konsumen' }}</div>
+                                <div style="font-size:10px; color:#85958F;">{{ $order->buyer->organization ?? '-' }}</div>
+                            </div>
+                            <div>
+                                <div style="font-size:10px; color:#85958F;">Total Nilai</div>
+                                <div style="font-weight:850; color:#0A765A;">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</div>
+                            </div>
+                            <div>
+                                <div style="font-size:10px; color:#85958F;">Status DP</div>
+                                <div>
+                                    @if($order->dp_confirmed_at)
+                                        <span style="color:#065F46; font-weight:750;">✓ DP Lunas</span>
+                                    @elseif($order->dp_uploaded_at)
+                                        <span style="color:#1E40AF; font-weight:750;">Pemeriksaan</span>
+                                    @elseif($order->status === 'menunggu_pembayaran_dp')
+                                        <span style="color:#92400E; font-weight:750;">Menunggu DP</span>
+                                    @else
+                                        <span style="color:#85958F;">-</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-size:10.5px; color:#85958F;">
+                            <i class="fa-regular fa-calendar" style="margin-right:4px;"></i> {{ $order->created_at ? $order->created_at->timezone('Asia/Jakarta')->translatedFormat('d M Y') : '-' }}
+                        </div>
+                    </div>
+                    @empty
+                    <div style="text-align:center; padding:20px; font-size:11px; color:#85958F;">
+                        Belum ada data transaksi pada periode yang dipilih.
+                    </div>
+                    @endforelse
+                </div>
             </div>
 
         @elseif($filters['report_type'] === 'komoditas')
@@ -429,8 +577,8 @@
                 <p style="font-size:11px; color:#91A19B; margin:0;">Daftar listing komoditas dan estimasi produksi petani.</p>
             </div>
 
-            <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; text-align:left;">
+            <div>
+                <table class="reports-table-desktop">
                     <thead>
                         <tr>
                             <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">KOMODITAS</th>
@@ -458,6 +606,35 @@
                         @endforelse
                     </tbody>
                 </table>
+
+                {{-- Mobile Cards for Commodities --}}
+                <div class="reports-card-mobile">
+                    @forelse($allListings as $lst)
+                    <div style="border:1px solid #EEF2F0; border-radius:12px; padding:14px; background:#FAFCFB; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                            <div>
+                                <div style="font-size:13px; font-weight:850; color:#183B30;">{{ $lst->commodity_name }}</div>
+                                <div style="font-size:11px; color:#85958F; margin-top:2px;">{{ $lst->farmer->name ?? 'Petani' }} &bull; {{ $lst->category }}</div>
+                            </div>
+                            <div style="font-size:12px; font-weight:850; color:#0A765A;">
+                                Rp {{ number_format($lst->price_per_kg, 0, ',', '.') }}<span style="font-size:10px; font-weight:normal; color:#85958F;">/kg</span>
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px; background:#F3F6F5; padding:10px; border-radius:8px;">
+                            <div>
+                                <div style="font-size:10px; color:#85958F;">Luas Lahan</div>
+                                <div style="font-weight:700; color:#172B29;">{{ number_format($lst->land_area_m2, 0, ',', '.') }} m²</div>
+                            </div>
+                            <div>
+                                <div style="font-size:10px; color:#85958F;">Estimasi Panen</div>
+                                <div style="font-weight:700; color:#0A765A;">{{ number_format($lst->estimated_harvest_kg, 0, ',', '.') }} kg</div>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div style="text-align:center; padding:20px; font-size:11px; color:#85958F;">Belum ada komoditas terdaftar.</div>
+                    @endforelse
+                </div>
             </div>
 
         @elseif($filters['report_type'] === 'pengguna')
@@ -466,8 +643,8 @@
                 <p style="font-size:11px; color:#91A19B; margin:0;">Daftar petani produsen dan konsumen pengguna platform.</p>
             </div>
 
-            <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; text-align:left;">
+            <div>
+                <table class="reports-table-desktop">
                     <thead>
                         <tr>
                             <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">NAMA PENGGUNA</th>
@@ -500,6 +677,38 @@
                         @endforelse
                     </tbody>
                 </table>
+
+                {{-- Mobile Cards for Users --}}
+                <div class="reports-card-mobile">
+                    @forelse($allUsers as $u)
+                    <div style="border:1px solid #EEF2F0; border-radius:12px; padding:14px; background:#FAFCFB; display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                            <div>
+                                <div style="font-size:13px; font-weight:800; color:#183B30;">{{ $u->name }}</div>
+                                <div style="font-size:10.5px; color:#85958F;">{{ $u->email }}</div>
+                            </div>
+                            <span style="display:inline-block; padding:3px 8px; border-radius:6px; background:{{ $u->role === 'petani' ? '#E9FBF3' : '#E8F9FC' }}; color:{{ $u->role === 'petani' ? '#0A765A' : '#0B8BAA' }}; font-weight:800; font-size:10px;">
+                                {{ ucfirst($u->role) }}
+                            </span>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px; background:#F3F6F5; padding:8px 10px; border-radius:8px;">
+                            <div>
+                                <div style="font-size:10px; color:#85958F;">Organisasi</div>
+                                <div style="font-weight:600; color:#172B29;">{{ $u->organization ?? '-' }}</div>
+                            </div>
+                            <div>
+                                <div style="font-size:10px; color:#85958F;">Lokasi</div>
+                                <div style="font-weight:600; color:#172B29;">{{ $u->location ?? '-' }}</div>
+                            </div>
+                        </div>
+                        <div style="font-size:10px; color:#85958F;">
+                            Terdaftar: {{ $u->created_at ? $u->created_at->timezone('Asia/Jakarta')->translatedFormat('d M Y') : '-' }}
+                        </div>
+                    </div>
+                    @empty
+                    <div style="text-align:center; padding:20px; font-size:11px; color:#85958F;">Belum ada pengguna terdaftar.</div>
+                    @endforelse
+                </div>
             </div>
         @endif
     </div>

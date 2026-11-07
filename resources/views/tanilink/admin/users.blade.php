@@ -23,6 +23,63 @@
 </a>
 @endsection
 
+@push('styles')
+<style>
+.users-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.users-toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.users-toolbar input,
+.users-toolbar select {
+    flex: 1;
+    min-width: 140px;
+}
+.users-table-desktop {
+    display: block;
+}
+.users-card-mobile {
+    display: none;
+}
+@media (max-width: 768px) {
+    .users-metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .users-metrics-grid > div:last-child {
+        grid-column: span 2;
+    }
+    .users-toolbar {
+        flex-direction: column;
+        width: 100%;
+    }
+    .users-toolbar input,
+    .users-toolbar select {
+        width: 100%;
+    }
+    .users-table-desktop {
+        display: none;
+    }
+    .users-card-mobile {
+        display: flex;
+    }
+}
+@media (max-width: 480px) {
+    .users-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    .users-metrics-grid > div:last-child {
+        grid-column: span 1;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 <div x-data="{ search: '', filterRole: '' }">
 
@@ -41,7 +98,7 @@
     @endif
 
     {{-- 3 Metric Cards --}}
-    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:24px;">
+    <div class="users-metrics-grid">
         <div class="card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
                 <span>Total Pengguna Aktif</span>
@@ -84,7 +141,7 @@
                 <p style="font-size:11px; color:#91A19B; margin:0;">Otorisasi dan data profil pengguna di dalam platform.</p>
             </div>
 
-            <div style="display:flex; gap:10px;">
+            <div class="users-toolbar">
                 <input type="text" x-model="search" placeholder="⌕ Cari nama, email, organisasi..."
                        style="padding:9px 13px; border:1px solid #E5ECEA; border-radius:10px; font-size:12px; color:#50695E; background:#fff; min-width:220px; outline:0;">
                 <select x-model="filterRole"
@@ -96,8 +153,128 @@
             </div>
         </div>
 
-        <div style="overflow-x:auto;">
+        {{-- DESKTOP TABLE --}}
+        <div class="users-table-desktop" style="overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <thead>
+                    <tr>
+                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">PENGGUNA</th>
+                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">EMAIL</th>
+                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">PERAN</th>
+                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">ORGANISASI / USAHA</th>
+                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">NO. TELEPON / WA</th>
+                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">BERGABUNG</th>
+                        <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px; text-align:right;">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($allUsers as $u)
+                    @php
+                        $target = strtolower($u->name . ' ' . $u->email . ' ' . ($u->organization ?? ''));
+                    @endphp
+                    <tr x-show="(search === '' || '{{ $target }}'.includes(search.toLowerCase())) && (filterRole === '' || '{{ $u->role }}' === filterRole)"
+                        style="border-bottom:1px solid #EEF2F0;">
+                        <td style="font-size:11px; font-weight:800; color:#183B30; padding:15px 10px;">
+                            <div style="display:flex; align-items:center; gap:9px;">
+                                <div style="width:30px; height:30px; border-radius:8px; background:#F5F8F7; display:grid; place-items:center; font-size:12px; font-weight:800; color:#0A765A;">
+                                    {{ strtoupper(substr($u->name, 0, 1)) }}
+                                </div>
+                                <div>
+                                    {{ $u->name }}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-size:11px; color:#50695E; padding:15px 10px;">
+                            {{ $u->email }}
+                        </td>
+                        <td style="font-size:11px; padding:15px 10px;">
+                            @if($u->role === 'petani')
+                                <span style="display:inline-flex; align-items:center; padding:4px 8px; border-radius:6px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:10px;">Petani</span>
+                            @elseif($u->role === 'pembeli')
+                                <span style="display:inline-flex; align-items:center; padding:4px 8px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10px;">Konsumen</span>
+                            @else
+                                <span style="display:inline-flex; align-items:center; padding:4px 8px; border-radius:6px; background:#F0F3F2; color:#75847F; font-weight:800; font-size:10px;">Pengguna</span>
+                            @endif
+                        </td>
+                        <td style="font-size:11px; font-weight:650; color:#172B29; padding:15px 10px;">
+                            {{ $u->organization ?? '-' }}
+                        </td>
+                        <td style="font-size:11px; font-weight:700; color:#0A765A; padding:15px 10px;">
+                            {{ $u->phone ?? '-' }}
+                        </td>
+                        <td style="font-size:11px; color:#85958F; padding:15px 10px;">
+                            {{ $u->created_at ? $u->created_at->timezone('Asia/Jakarta')->translatedFormat('d M Y') : '-' }}
+                        </td>
+                        <td style="font-size:11px; padding:15px 10px; text-align:right;">
+                            <form action="{{ route('admin.pengguna.destroy', $u->id) }}" method="POST"
+                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun {{ $u->name }}?');"
+                                  style="display:inline; margin:0;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        style="display:inline-flex; align-items:center; gap:4px; padding:5px 11px; border-radius:7px; background:#FEE2E2; border:1px solid #FECACA; color:#B91C1C; font-weight:800; font-size:11px; cursor:pointer;">
+                                    <i class="fa-regular fa-trash-can"></i> Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        {{-- MOBILE CARDS --}}
+        <div class="users-card-mobile" style="flex-direction:column; gap:10px;">
+            @foreach($allUsers as $u)
+            @php
+                $target = strtolower($u->name . ' ' . $u->email . ' ' . ($u->organization ?? ''));
+            @endphp
+            <div x-show="(search === '' || '{{ $target }}'.includes(search.toLowerCase())) && (filterRole === '' || '{{ $u->role }}' === filterRole)"
+                 style="border:1px solid #EEF2F0; border-radius:12px; padding:14px; background:#FAFCFB;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                    <div style="display:flex; align-items:center; gap:9px;">
+                        <div style="width:34px; height:34px; border-radius:8px; background:#F5F8F7; display:grid; place-items:center; font-size:13px; font-weight:800; color:#0A765A; flex-shrink:0;">
+                            {{ strtoupper(substr($u->name, 0, 1)) }}
+                        </div>
+                        <div>
+                            <div style="font-size:13px; font-weight:850; color:#172B29;">{{ $u->name }}</div>
+                            <div style="font-size:11px; color:#788D85;">{{ $u->email }}</div>
+                        </div>
+                    </div>
+                    <div>
+                        @if($u->role === 'petani')
+                            <span style="display:inline-flex; padding:3px 8px; border-radius:5px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:10px;">Petani</span>
+                        @elseif($u->role === 'pembeli')
+                            <span style="display:inline-flex; padding:3px 8px; border-radius:5px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10px;">Konsumen</span>
+                        @else
+                            <span style="display:inline-flex; padding:3px 8px; border-radius:5px; background:#F0F3F2; color:#75847F; font-weight:800; font-size:10px;">Pengguna</span>
+                        @endif
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px; font-size:11px; color:#50695E; margin-bottom:10px; border-top:1px dashed #E5ECEA; padding-top:8px;">
+                    <div><span style="color:#8A9A94;">Organisasi:</span> <b>{{ $u->organization ?? '-' }}</b></div>
+                    <div><span style="color:#8A9A94;">Telepon / WA:</span> <b style="color:#0A765A;">{{ $u->phone ?? '-' }}</b></div>
+                    <div><span style="color:#8A9A94;">Bergabung:</span> {{ $u->created_at ? $u->created_at->timezone('Asia/Jakarta')->translatedFormat('d M Y') : '-' }}</div>
+                </div>
+                <div style="display:flex; justify-content:flex-end;">
+                    <form action="{{ route('admin.pengguna.destroy', $u->id) }}" method="POST"
+                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun {{ $u->name }}?');"
+                          style="margin:0; width:100%;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                style="width:100%; display:flex; align-items:center; justify-content:center; gap:6px; padding:8px; border-radius:8px; background:#FEE2E2; border:1px solid #FECACA; color:#B91C1C; font-weight:800; font-size:12px; cursor:pointer;">
+                            <i class="fa-regular fa-trash-can"></i> Hapus Pengguna
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+</div>
+@endsection
                 <thead>
                     <tr>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">PENGGUNA</th>

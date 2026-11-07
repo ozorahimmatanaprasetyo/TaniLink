@@ -17,6 +17,51 @@
 </a>
 @endsection
 
+@push('styles')
+<style>
+.catalog-filter-row1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+.catalog-filter-row2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) auto;
+    gap: 14px;
+    align-items: flex-end;
+}
+.catalog-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.catalog-product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+@media (max-width: 640px) {
+    .catalog-filter-row1 {
+        grid-template-columns: 1fr;
+    }
+    .catalog-filter-row2 {
+        grid-template-columns: 1fr;
+    }
+    .catalog-filter-actions {
+        width: 100%;
+    }
+    .catalog-filter-actions button {
+        flex: 1;
+        justify-content: center;
+    }
+    .catalog-product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 <div x-data="{
     search: '{{ request('search', '') }}',
@@ -146,7 +191,7 @@
     {{-- Search / Filter Card --}}
     <div class="card" style="padding: 20px 22px; margin-bottom: 22px;">
         {{-- Row 1: Search & Category --}}
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 14px;">
+        <div class="catalog-filter-row1">
             {{-- Search --}}
             <div style="position: relative;">
                 <i class="fa-solid fa-search" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#80908D; font-size:13px;"></i>
@@ -166,7 +211,7 @@
         </div>
 
         {{-- Row 2: Rentang Harga & Rentang Tanggal Panen + Aksi --}}
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) auto; gap: 14px; align-items: flex-end;">
+        <div class="catalog-filter-row2">
             
             {{-- Filter Rentang Harga (Shopee/Sports Station style) --}}
             <div>
@@ -228,7 +273,7 @@
             </div>
 
             {{-- Tombol Aksi: Terapkan & Reset --}}
-            <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="catalog-filter-actions">
                 <button type="button" @click="applyFilter()"
                         style="padding: 10px 18px; border-radius: 10px; background: #05C793; border: none; color: #053B2D; font-size: 12px; font-weight: 850; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(5,199,147,0.25); transition: background 0.15s;"
                         onmouseover="this.style.background='#04b384'" onmouseout="this.style.background='#05C793'">
@@ -251,7 +296,7 @@
         });
     @endphp
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;">
+    <div class="catalog-product-grid">
         @forelse($availableListings as $listing)
         @php
             $imgUrl = $listing->image_url ?? '';

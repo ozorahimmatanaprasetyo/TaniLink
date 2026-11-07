@@ -25,6 +25,35 @@
     <strong>{{ $listing->commodity_name }}</strong>
 @endsection
 
+@push('styles')
+<style>
+.product-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(340px, 1fr);
+    gap: 24px;
+}
+.product-main-photo {
+    height: 380px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #FFE6D9, #FFF3E9);
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+}
+@media (max-width: 992px) {
+    .product-detail-layout {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 640px) {
+    .product-main-photo {
+        height: 240px;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 @php
     $imgUrl = $listing->image_url ?? '';
@@ -32,14 +61,14 @@
 @endphp
 
     {{-- Grid 2 Kolom --}}
-    <div style="display:grid; grid-template-columns:minmax(0, 1.4fr) minmax(340px, 1fr); gap:24px;">
+    <div class="product-detail-layout">
         
         {{-- Kiri: Galeri & Info Produksi --}}
         <div style="display:flex; flex-direction:column; gap:20px;">
             
             {{-- Foto Utama Komoditas --}}
             <div class="card" style="padding:16px;">
-                <div style="height:380px; border-radius:14px; background:linear-gradient(145deg, #FFE6D9, #FFF3E9); display:grid; place-items:center; position:relative; overflow:hidden;">
+                <div class="product-main-photo">
                     @if($hasImage)
                         <img src="{{ str_starts_with($imgUrl, 'http') ? $imgUrl : asset($imgUrl) }}"
                              alt="{{ $listing->commodity_name }}"

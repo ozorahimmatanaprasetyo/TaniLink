@@ -2,6 +2,83 @@
 
 @section('title', 'Manajemen Pesanan - Admin TaniLink')
 
+@push('styles')
+<style>
+    .orders-headline {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .orders-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .orders-toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .orders-table-desktop {
+        display: table;
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    .orders-card-mobile {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .modal-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+    .modal-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    @media (max-width: 992px) {
+        .orders-metrics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (max-width: 768px) {
+        .orders-table-desktop {
+            display: none !important;
+        }
+        .orders-card-mobile {
+            display: flex !important;
+        }
+        .orders-toolbar {
+            width: 100%;
+            flex-direction: column;
+        }
+        .orders-toolbar input,
+        .orders-toolbar select {
+            width: 100% !important;
+            min-width: 0 !important;
+        }
+    }
+    @media (max-width: 540px) {
+        .orders-metrics-grid {
+            grid-template-columns: 1fr;
+        }
+        .modal-grid-2,
+        .modal-grid-3 {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+@endpush
+
 @section('sidebar_nav')
 <a href="{{ route('portal.admin') }}" class="nav-btn {{ request()->routeIs('portal.admin') ? 'active' : '' }}">
     <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span> Beranda Admin
@@ -36,7 +113,7 @@
 }">
 
     {{-- Headline --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px;">
+    <div class="orders-headline">
         <div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Manajemen Pesanan &amp; Transaksi</h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">Monitoring status transaksi pre-order, konfirmasi DP antar pihak, dan progres pemenuhan batch panen.</p>
@@ -44,7 +121,7 @@
     </div>
 
     {{-- 4 Metric Cards --}}
-    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:24px;">
+    <div class="orders-metrics-grid">
         <div class="card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
                 <span>Total Nilai Pesanan Sah</span>
@@ -98,7 +175,7 @@
                 <p style="font-size:11px; color:#91A19B; margin:0;">Klik baris pesanan untuk melihat detail transaksi. Laporan PDF tersedia di halaman Laporan &amp; Statistik.</p>
             </div>
 
-            <div style="display:flex; gap:10px;">
+            <div class="orders-toolbar">
                 <input type="text" x-model="search" placeholder="⌕ Cari kode, komoditas, pihak..."
                        style="padding:9px 13px; border:1px solid #E5ECEA; border-radius:10px; font-size:12px; color:#50695E; background:#fff; min-width:220px; outline:0;">
                 <select x-model="filterStatus"
@@ -116,8 +193,8 @@
             </div>
         </div>
 
-        <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <div>
+            <table class="orders-table-desktop">
                 <thead>
                     <tr>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">KODE</th>
@@ -225,7 +302,106 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
+
+            {{-- Mobile Cards for Orders --}}
+            <div class="orders-card-mobile">
+                @foreach($allOrders as $order)
+                @php
+                    $target = strtolower($order->order_code . ' ' . ($order->commodityListing->commodity_name ?? '') . ' ' . ($order->farmer->name ?? '') . ' ' . ($order->buyer->name ?? ''));
+                @endphp
+                <div x-show="(search === '' || '{{ $target }}'.includes(search.toLowerCase())) && (filterStatus === '' || '{{ $order->status }}' === filterStatus)"
+                     style="border:1px solid #EEF2F0; border-radius:12px; padding:14px; background:#FAFCFB; display:flex; flex-direction:column; gap:10px; cursor:pointer;"
+                     @click="openDetail({
+                         code: '{{ $order->order_code }}',
+                         created: '{{ $order->created_at ? $order->created_at->timezone("Asia/Jakarta")->translatedFormat("d M Y, H:i") : "-" }}',
+                         commodity: '{{ addslashes($order->commodityListing->commodity_name ?? "Komoditas") }}',
+                         category: '{{ addslashes($order->commodityListing->category ?? "-") }}',
+                         batch: '{{ addslashes($order->harvestBatch->batch_name ?? "Batch") }}',
+                         quantity: '{{ number_format($order->quantity_kg, 0, ",", ".") }}',
+                         price_per_kg: 'Rp {{ number_format($order->price_per_kg, 0, ",", ".") }}',
+                         total: 'Rp {{ number_format($order->total_amount, 0, ",", ".") }}',
+                         dp_amount: 'Rp {{ number_format($order->dp_amount, 0, ",", ".") }}',
+                         sisa: 'Rp {{ number_format($order->escrow_locked_amount, 0, ",", ".") }}',
+                         farmer: '{{ addslashes($order->farmer->name ?? "Petani") }}',
+                         farmer_org: '{{ addslashes($order->farmer->organization ?? "-") }}',
+                         buyer: '{{ addslashes($order->buyer->name ?? "Konsumen") }}',
+                         buyer_org: '{{ addslashes($order->buyer->organization ?? "-") }}',
+                         status: '{{ $order->status }}',
+                         status_label: '{{ $order->status_label }}',
+                         dp_status: '{{ $order->dp_confirmed_at ? "confirmed" : ($order->dp_uploaded_at ? "uploaded" : ($order->status === "menunggu_pembayaran_dp" ? "waiting" : "none")) }}',
+                         confirmed_at: '{{ $order->confirmed_at ? $order->confirmed_at->timezone("Asia/Jakarta")->translatedFormat("d M Y, H:i") . " WIB" : "-" }}',
+                         dp_confirmed_at: '{{ $order->dp_confirmed_at ? $order->dp_confirmed_at->timezone("Asia/Jakarta")->translatedFormat("d M Y, H:i") . " WIB" : "-" }}',
+                         completed_at: '{{ $order->completed_at ? $order->completed_at->timezone("Asia/Jakarta")->translatedFormat("d M Y, H:i") . " WIB" : "-" }}',
+                         rejected_at: '{{ $order->rejected_at ? $order->rejected_at->timezone("Asia/Jakarta")->translatedFormat("d M Y, H:i") . " WIB" : "-" }}',
+                         rejection_reason: '{{ addslashes($order->rejection_reason ?? "") }}'
+                     })">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                        <div>
+                            <span style="font-size:11px; font-weight:800; color:#0A765A;">{{ $order->order_code }}</span>
+                            <div style="font-size:13px; font-weight:850; color:#183B30; margin-top:2px;">{{ $order->commodityListing->commodity_name ?? 'Komoditas' }}</div>
+                            <div style="font-size:10px; color:#85958F;">{{ $order->harvestBatch->batch_name ?? 'Batch' }} &bull; {{ number_format($order->quantity_kg, 0, ',', '.') }} kg</div>
+                        </div>
+                        <div>
+                            @if($order->status === 'selesai')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#D1FAE5; color:#065F46; font-weight:800; font-size:10px;">Selesai</span>
+                            @elseif(in_array($order->status, ['pesanan_aktif', 'dikonfirmasi']))
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#EFF6FF; color:#1D4ED8; font-weight:800; font-size:10px;">Pesanan Aktif</span>
+                            @elseif($order->status === 'menunggu_konfirmasi')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#FFF8EA; color:#B45309; font-weight:800; font-size:10px;">Menunggu Konfirmasi</span>
+                            @elseif($order->status === 'menunggu_pembayaran_dp')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#FEF3C7; color:#92400E; font-weight:800; font-size:10px;">Menunggu DP</span>
+                            @elseif($order->status === 'menunggu_verifikasi_dp')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#DBEAFE; color:#1E40AF; font-weight:800; font-size:10px;">Pemeriksaan DP</span>
+                            @elseif($order->status === 'siap_panen')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#E9FBF3; color:#0A765A; font-weight:800; font-size:10px;">Siap Panen</span>
+                            @elseif($order->status === 'dalam_pengiriman')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#F0FDF4; color:#15803D; font-weight:800; font-size:10px;">Dalam Pengiriman</span>
+                            @elseif($order->status === 'dibatalkan')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#FEE2E2; color:#991B1B; font-weight:800; font-size:10px;">Ditolak / Batal</span>
+                            @else
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10px;">{{ $order->status_label }}</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px; background:#F3F6F5; padding:10px; border-radius:8px;">
+                        <div>
+                            <div style="font-size:10px; color:#85958F;">Petani</div>
+                            <div style="font-weight:700; color:#172B29;">{{ $order->farmer->name ?? 'Petani' }}</div>
+                            <div style="font-size:10px; color:#85958F;">{{ $order->farmer->organization ?? '-' }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:10px; color:#85958F;">Konsumen</div>
+                            <div style="font-weight:700; color:#172B29;">{{ $order->buyer->name ?? 'Konsumen' }}</div>
+                            <div style="font-size:10px; color:#85958F;">{{ $order->buyer->organization ?? '-' }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:10px; color:#85958F;">Total Nilai</div>
+                            <div style="font-weight:850; color:#0A765A;">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:10px; color:#85958F;">Status DP</div>
+                            <div>
+                                @if($order->dp_confirmed_at)
+                                    <span style="color:#065F46; font-weight:750;">✓ DP Lunas</span>
+                                @elseif($order->dp_uploaded_at)
+                                    <span style="color:#1E40AF; font-weight:750;">Bukti Diunggah</span>
+                                @elseif($order->status === 'menunggu_pembayaran_dp')
+                                    <span style="color:#92400E; font-weight:750;">Menunggu DP</span>
+                                @else
+                                    <span style="color:#85958F;">-</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:10.5px; color:#85958F; padding-top:4px;">
+                        <span><i class="fa-regular fa-calendar" style="margin-right:4px;"></i> {{ $order->created_at ? $order->created_at->timezone('Asia/Jakarta')->translatedFormat('d M Y') : '-' }}</span>
+                        <span style="color:#0A765A; font-weight:700;">Lihat Detail <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></span>
+                    </div>
+                </div>
+                @endforeach
+            </div>
 
         @if($allOrders->isEmpty())
         <div style="text-align:center; padding:40px 20px; color:#85958F; font-size:12px;">
@@ -237,10 +413,10 @@
 
     {{-- Detail Modal --}}
     <div x-show="showModal" x-cloak
-         style="position:fixed; inset:0; z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px;"
+         style="position:fixed; inset:0; z-index:1000; display:flex; align-items:center; justify-content:center; padding:16px;"
          @keydown.escape.window="showModal = false">
         <div style="position:fixed; inset:0; background:rgba(0,0,0,0.4);" @click="showModal = false"></div>
-        <div style="position:relative; background:#fff; border-radius:16px; max-width:640px; width:100%; max-height:85vh; overflow-y:auto; padding:28px; box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+        <div style="position:relative; background:#fff; border-radius:16px; max-width:640px; width:100%; max-height:85vh; overflow-y:auto; padding:22px; box-shadow:0 20px 60px rgba(0,0,0,0.15);">
             {{-- Modal Header --}}
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                 <div>
@@ -266,7 +442,7 @@
             </div>
 
             {{-- Info Grid --}}
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;">
+            <div class="modal-grid-2" style="margin-bottom:18px;">
                 <div style="padding:14px; border-radius:10px; background:#F8FCFA; border:1px solid #E5ECEA;">
                     <div style="font-size:10px; color:#7B8C86; font-weight:700; margin-bottom:6px; text-transform:uppercase;">Petani Produsen</div>
                     <div style="font-size:12px; font-weight:800; color:#172B29;" x-text="selectedOrder?.farmer"></div>
@@ -289,7 +465,7 @@
             </div>
 
             {{-- Financial --}}
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:18px;">
+            <div class="modal-grid-3" style="margin-bottom:18px;">
                 <div style="padding:12px; border-radius:10px; border:1px solid #E5ECEA; text-align:center;">
                     <div style="font-size:9.5px; color:#7B8C86; font-weight:700; margin-bottom:4px;">HARGA SATUAN</div>
                     <div style="font-size:13px; font-weight:850; color:#172B29;" x-text="selectedOrder?.price_per_kg"></div>
@@ -320,7 +496,7 @@
             {{-- Timestamps --}}
             <div style="padding:14px; border-radius:10px; background:#FAFBFC; border:1px solid #E5ECEA; margin-bottom:18px;">
                 <div style="font-size:10px; color:#7B8C86; font-weight:700; margin-bottom:8px; text-transform:uppercase;">Waktu Penting</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:11px;">
+                <div class="modal-grid-2" style="gap:6px; font-size:11px;">
                     <div><span style="color:#85958F;">Diajukan:</span> <b style="color:#172B29;" x-text="selectedOrder?.created"></b></div>
                     <div><span style="color:#85958F;">Dikonfirmasi Petani:</span> <b style="color:#172B29;" x-text="selectedOrder?.confirmed_at"></b></div>
                     <div><span style="color:#85958F;">DP Dikonfirmasi:</span> <b style="color:#172B29;" x-text="selectedOrder?.dp_confirmed_at"></b></div>

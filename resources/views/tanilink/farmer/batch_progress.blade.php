@@ -16,11 +16,77 @@
     <strong>Perkembangan Tanaman</strong>
 @endsection
 
+@push('styles')
+<style>
+.bp-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+.bp-phase-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+.bp-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    margin-top: 22px;
+}
+.bp-headline {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.bp-headline-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+@media (max-width: 992px) {
+    .bp-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 640px) {
+    .bp-metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .bp-phase-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .bp-headline {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .bp-headline-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    .bp-headline-actions button,
+    .bp-headline-actions form,
+    .bp-headline-actions a {
+        width: 100%;
+    }
+    .bp-headline-actions button,
+    .bp-headline-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 <div x-data="{ showUploadModal: false, photoName: '' }">
 
     {{-- Headline & Action Buttons --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:22px; flex-wrap:wrap; gap:16px;">
+    <div class="bp-headline">
         <div>
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                 <span style="font-size:10px; font-weight:800; background:#E9FBF3; color:#0C8D65; padding:3px 9px; border-radius:6px; letter-spacing:0.5px;">{{ $batch->batch_code }}</span>
@@ -34,7 +100,7 @@
             </p>
         </div>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <div class="bp-headline-actions">
             @if($batch->status !== 'selesai')
             <button type="button" @click="showUploadModal = true" class="btn btn-primary">
                 <i class="fa-solid fa-camera"></i> Tambah Dokumentasi & Catatan
@@ -54,7 +120,7 @@
     </div>
 
     {{-- 4 Metric Cards --}}
-    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:22px;">
+    <div class="bp-metrics-grid">
         <div class="card" style="padding:18px 20px;">
             <div style="font-size:11px; color:#7B8C86; font-weight:750; margin-bottom:8px;">Perkiraan Waktu Panen</div>
             <div style="font-size:18px; font-weight:850; color:#172B29;">
@@ -90,7 +156,7 @@
 
     {{-- 4-Phase System Timeline Card --}}
     <div class="card" style="padding:24px; margin-bottom:22px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
             <div>
                 <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Sistem 4 Fase Perkembangan Tanaman</h2>
                 <p style="font-size:11px; color:#91A19B; margin:0;">Fase bergerak berurutan otomatis dari persiapan hingga siap panen.</p>
@@ -102,7 +168,7 @@
         </div>
 
         {{-- 4 Phase Steps Grid --}}
-        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:14px;">
+        <div class="bp-phase-grid">
             @foreach($batch->phase_timeline as $ph)
             <div style="border:1.5px solid {{ $ph['status'] === 'berlangsung' ? '#05C793' : ($ph['status'] === 'selesai' ? '#A7F3D0' : '#E5ECEA') }};
                         background:{{ $ph['status'] === 'berlangsung' ? '#F0FDF8' : ($ph['status'] === 'selesai' ? '#F8FCFA' : '#FAFCFB') }};
@@ -139,7 +205,7 @@
     </div>
 
     {{-- Grid 2 Kolom: Kiri Riwayat Dokumentasi, Kanan Pesanan Terikat --}}
-    <div style="display:grid; grid-template-columns:minmax(0, 1.6fr) minmax(320px, 1fr); gap:20px;">
+    <div class="bp-bottom-grid">
 
         {{-- Kiri: Riwayat Dokumentasi Lapangan --}}
         <div class="card" style="padding:24px;">
@@ -239,7 +305,7 @@
     {{-- MODAL UPLOAD DOKUMENTASI AKTUAL --}}
     <div x-cloak x-show="showUploadModal"
          style="position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; background:rgba(21,40,31,0.52); padding:16px;">
-        <div style="background:#fff; border-radius:20px; width:520px; max-width:95%; padding:26px; box-shadow:0 35px 90px rgba(16,35,29,0.4);"
+        <div style="background:#fff; border-radius:20px; width:520px; max-width:95%; max-height:90vh; overflow-y:auto; padding:26px; box-shadow:0 35px 90px rgba(16,35,29,0.4);"
              @click.away="showUploadModal = false">
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
