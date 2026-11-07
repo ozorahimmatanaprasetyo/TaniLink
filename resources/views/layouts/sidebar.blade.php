@@ -223,61 +223,137 @@
             color: #1B3B32;
             font-weight: 700;
         }
+        /* ── Mobile Layout & Drawer ── */
+        .sidebar-backdrop {
+            display: none;
+        }
+        .mobile-header-menu-btn {
+            display: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #172B29;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .mobile-header-menu-btn:hover {
+            background: #F2F8F5;
+            color: #07876B;
+        }
+        .mobile-header-logo {
+            display: none;
+        }
+        .drawer-close-btn {
+            display: none;
+        }
+        .mobile-bottom-nav {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
-                width: 68px !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                bottom: 0 !important;
+                height: 100vh !important;
+                width: 280px !important;
+                max-width: 84vw !important;
+                z-index: 100 !important;
+                transform: translateX(-100%);
+                transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 6px 0 28px rgba(12, 38, 28, 0.18);
+                background: #ffffff !important;
             }
-            .sidebar .sidebar-brand {
-                padding: 16px 8px !important;
-                justify-content: center !important;
+            .sidebar.drawer-open {
+                transform: translateX(0) !important;
             }
-            .sidebar .sidebar-brand .logo-full {
+            .sidebar-backdrop {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(18, 38, 32, 0.45);
+                backdrop-filter: blur(2px);
+                z-index: 95;
+            }
+            .drawer-close-btn {
+                display: flex !important;
+            }
+            .mobile-header-menu-btn {
+                display: flex !important;
+            }
+            .mobile-header-logo {
+                display: flex !important;
+                align-items: center;
+            }
+            .header-date {
                 display: none !important;
-            }
-            .sidebar .sidebar-brand .logo-icon {
-                display: block !important;
-            }
-            .sidebar .sidebar-workspace,
-            .sidebar .sidebar-nav-label,
-            .sidebar .sidebar-nav-text,
-            .sidebar .sidebar-bottom-link span {
-                display: none !important;
-            }
-            .sidebar .sidebar-nav-link,
-            .sidebar .sidebar-bottom-link {
-                justify-content: center !important;
-                padding: 12px 8px !important;
-                margin: 2px 8px !important;
-                position: relative;
-            }
-            .sidebar .sidebar-nav-badge {
-                position: absolute;
-                top: 4px;
-                right: 4px;
-                padding: 2px 5px;
-                font-size: 9px;
-            }
-            .main-content {
-                padding: 20px 16px !important;
             }
             .main-header {
-                padding: 0 16px;
-                height: auto;
-                min-height: 56px;
-                flex-wrap: wrap;
-                gap: 8px;
-                padding-top: 10px;
-                padding-bottom: 10px;
+                padding: 0 14px !important;
+                height: 60px !important;
+                min-height: 60px !important;
+                gap: 10px !important;
             }
             .header-breadcrumb {
-                flex-basis: 100%;
-                order: 2;
-                white-space: normal;
-                font-size: 11px;
+                display: none !important;
             }
-            .header-right {
-                order: 1;
-                margin-left: auto;
+            .main-content {
+                padding: 16px 14px 85px 14px !important;
+            }
+
+            /* Bottom Navigation */
+            .mobile-bottom-nav {
+                display: flex !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 64px;
+                background: #ffffff;
+                border-top: 1px solid var(--border-color);
+                box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+                z-index: 40;
+                align-items: center;
+                justify-content: space-around;
+                padding: 0 4px;
+            }
+            .mobile-bottom-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                flex: 1;
+                height: 100%;
+                text-decoration: none;
+                color: #7B9590;
+                font-size: 10px;
+                font-weight: 700;
+                gap: 4px;
+                transition: color 0.15s;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                font-family: inherit;
+            }
+            .mobile-bottom-item.active {
+                color: #008764;
+                font-weight: 800;
+            }
+            .mobile-bottom-item i,
+            .mobile-bottom-item svg {
+                font-size: 17px;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
         }
         .header-right {
@@ -483,6 +559,7 @@
     @stack('styles')
 </head>
 <body class="antialiased" x-data="{
+    sidebarOpen: false,
     toast: {
         show: {{ session('success') ? 'true' : 'false' }},
         message: '{{ addslashes(session('success') ?? '') }}',
@@ -495,6 +572,15 @@
         setTimeout(() => { this.toast.show = false; }, 3500);
     }
 }">
+
+{{-- Mobile Sidebar Backdrop --}}
+<div x-cloak x-show="sidebarOpen" @click="sidebarOpen = false" class="sidebar-backdrop"
+     x-transition:enter="transition ease-out duration-200"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"></div>
 
 @php
     $authUser   = Auth::user();
@@ -534,14 +620,19 @@
 ════════════════════════════════════ --}}
 <div style="display:flex; min-height:100vh;">
 
-    {{-- ── SIDEBAR ── --}}
-    <aside class="sidebar">
+    {{-- ── SIDEBAR (Desktop Sticky & Mobile Slide Drawer) ── --}}
+    <aside class="sidebar" :class="sidebarOpen ? 'drawer-open' : ''">
 
-        {{-- Brand --}}
-        <a href="{{ $authUser ? route('portal.' . $currentRole) : route('login') }}" class="sidebar-brand">
-            <img src="{{ asset('images/tanilink-logo.png') }}" alt="TaniLink" class="logo-full">
-            <img src="{{ asset('images/tanilink-icon.png') }}" alt="TaniLink" class="logo-icon">
-        </a>
+        {{-- Brand & Mobile Close Button --}}
+        <div style="display:flex; align-items:center; justify-content:space-between; padding-right:12px;">
+            <a href="{{ $authUser ? route('portal.' . $currentRole) : route('login') }}" class="sidebar-brand" style="flex:1;">
+                <img src="{{ asset('images/tanilink-logo.png') }}" alt="TaniLink" class="logo-full">
+                <img src="{{ asset('images/tanilink-icon.png') }}" alt="TaniLink" class="logo-icon">
+            </a>
+            <button type="button" @click="sidebarOpen = false" class="drawer-close-btn" style="width:32px; height:32px; border-radius:9px; border:1px solid #DFEAE5; background:#F8FCFA; color:#6B8077; align-items:center; justify-content:center; cursor:pointer;" aria-label="Tutup Menu">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
 
         {{-- Workspace pill --}}
         @auth
@@ -679,9 +770,17 @@
                 localStorage.setItem('tl_seen_notif_{{ Auth::id() }}', this.latestId);
             }
         }">
-            {{-- Left: Breadcrumb --}}
-            <div class="header-breadcrumb">
-                @yield('breadcrumb')
+            {{-- Left: Mobile Toggle + Mobile Logo + Breadcrumb --}}
+            <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:0;">
+                <button type="button" @click="sidebarOpen = true" class="mobile-header-menu-btn" title="Buka Menu Navigasi" aria-label="Buka Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ $authUser ? route('portal.' . $currentRole) : route('login') }}" class="mobile-header-logo" title="TaniLink">
+                    <img src="{{ asset('images/tanilink-icon.png') }}" alt="TaniLink" style="height:28px; width:auto; object-fit:contain;">
+                </a>
+                <div class="header-breadcrumb">
+                    @yield('breadcrumb')
+                </div>
             </div>
 
             {{-- Right: date + notif + user --}}
@@ -705,7 +804,7 @@
                          x-transition:leave="transition ease-in duration-100"
                          x-transition:leave-start="opacity-100"
                          x-transition:leave-end="opacity-0"
-                         style="position:absolute; right:0; top:48px; width:340px; background:#ffffff; border-radius:16px; border:1px solid var(--border-color); box-shadow:0 18px 45px rgba(0,0,0,0.12); z-index:100; overflow:hidden;">
+                         style="position:absolute; right:0; top:48px; width:340px; max-width:calc(100vw - 28px); background:#ffffff; border-radius:16px; border:1px solid var(--border-color); box-shadow:0 18px 45px rgba(0,0,0,0.12); z-index:100; overflow:hidden;">
                         
                         <div style="padding:14px 18px; border-bottom:1px solid #E5ECEA; display:flex; justify-content:space-between; align-items:center; background:#FAFCFB;">
                             <div style="display:flex; align-items:center; gap:8px;">
@@ -755,6 +854,76 @@
     </div>{{-- /main area --}}
 
 </div>{{-- /full-screen layout --}}
+
+{{-- ════════════════════════════════════
+     Mobile Bottom Navigation Bar (< 768px)
+════════════════════════════════════ --}}
+<nav class="mobile-bottom-nav">
+    @if($currentRole === 'petani')
+        <a href="{{ route('portal.petani') }}" class="mobile-bottom-item {{ request()->routeIs('portal.petani') ? 'active' : '' }}">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Beranda</span>
+        </a>
+        <a href="{{ route('petani.komoditas') }}" class="mobile-bottom-item {{ request()->routeIs('petani.komoditas*') ? 'active' : '' }}">
+            <i class="fa-solid fa-seedling"></i>
+            <span>Komoditas</span>
+        </a>
+        <a href="{{ route('petani.pesanan') }}" class="mobile-bottom-item {{ request()->routeIs('petani.pesanan*') ? 'active' : '' }}">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span>Pesanan</span>
+        </a>
+        <a href="{{ route('petani.profil') }}" class="mobile-bottom-item {{ request()->routeIs('petani.profil*') ? 'active' : '' }}">
+            <i class="fa-solid fa-user"></i>
+            <span>Profil</span>
+        </a>
+        <button type="button" @click="sidebarOpen = true" class="mobile-bottom-item">
+            <i class="fa-solid fa-bars"></i>
+            <span>Menu</span>
+        </button>
+    @elseif($currentRole === 'pembeli')
+        <a href="{{ route('portal.pembeli') }}" class="mobile-bottom-item {{ request()->routeIs('portal.pembeli') ? 'active' : '' }}">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Beranda</span>
+        </a>
+        <a href="{{ route('pembeli.katalog') }}" class="mobile-bottom-item {{ (request()->routeIs('pembeli.katalog*') || request()->routeIs('pembeli.komoditas*')) ? 'active' : '' }}">
+            <i class="fa-solid fa-store"></i>
+            <span>Katalog</span>
+        </a>
+        <a href="{{ route('pembeli.pesanan') }}" class="mobile-bottom-item {{ (request()->routeIs('pembeli.pesanan*') || request()->routeIs('pembeli.tracking*') || request()->routeIs('pembeli.preorder*')) ? 'active' : '' }}">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span>Pesanan</span>
+        </a>
+        <a href="{{ route('pembeli.profil') }}" class="mobile-bottom-item {{ request()->routeIs('pembeli.profil*') ? 'active' : '' }}">
+            <i class="fa-solid fa-user"></i>
+            <span>Profil</span>
+        </a>
+        <button type="button" @click="sidebarOpen = true" class="mobile-bottom-item">
+            <i class="fa-solid fa-bars"></i>
+            <span>Menu</span>
+        </button>
+    @else
+        <a href="{{ route('portal.admin') }}" class="mobile-bottom-item {{ request()->routeIs('portal.admin') ? 'active' : '' }}">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Beranda</span>
+        </a>
+        <a href="{{ route('admin.komoditas') }}" class="mobile-bottom-item {{ request()->routeIs('admin.komoditas*') ? 'active' : '' }}">
+            <i class="fa-solid fa-seedling"></i>
+            <span>Komoditas</span>
+        </a>
+        <a href="{{ route('admin.pesanan') }}" class="mobile-bottom-item {{ request()->routeIs('admin.pesanan*') ? 'active' : '' }}">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span>Pesanan</span>
+        </a>
+        <a href="{{ route('admin.laporan') }}" class="mobile-bottom-item {{ request()->routeIs('admin.laporan*') ? 'active' : '' }}">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Laporan</span>
+        </a>
+        <button type="button" @click="sidebarOpen = true" class="mobile-bottom-item">
+            <i class="fa-solid fa-bars"></i>
+            <span>Menu</span>
+        </button>
+    @endif
+</nav>
 
 @stack('scripts')
 </body>

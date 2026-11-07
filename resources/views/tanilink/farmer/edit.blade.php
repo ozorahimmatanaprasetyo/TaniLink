@@ -21,15 +21,77 @@
     <a href="{{ route('petani.komoditas') }}" style="color:inherit; text-decoration:none;">Komoditas Saya</a> &rsaquo; <strong>Edit Komoditas</strong>
 @endsection
 
+@push('styles')
+<style>
+    .edit-headline {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+    .edit-form-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+        gap: 20px;
+    }
+    .edit-fields-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .edit-col-span-2 {
+        grid-column: span 2;
+    }
+    .edit-actions-group {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+    @media (max-width: 992px) {
+        .edit-form-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 640px) {
+        .edit-headline {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .edit-headline .back-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        .edit-fields-grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .edit-col-span-2 {
+            grid-column: span 1;
+        }
+        .edit-actions-group {
+            flex-direction: column-reverse;
+        }
+        .edit-actions-group a,
+        .edit-actions-group button {
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 
     {{-- Headline --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px;">
+    <div class="edit-headline">
         <div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Edit Komoditas</h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">Perbarui detail harga, estimasi panen, atau kuantitas penawaran.</p>
         </div>
-        <a href="{{ route('petani.komoditas') }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; border:1px solid #DFE8E5; background:#fff; color:#365249; font-size:12px; font-weight:800; text-decoration:none;">
+        <a href="{{ route('petani.komoditas') }}" class="back-btn" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; border:1px solid #DFE8E5; background:#fff; color:#365249; font-size:12px; font-weight:800; text-decoration:none;">
             <i class="fa-solid fa-arrow-left"></i> Kembali
         </a>
     </div>
@@ -57,7 +119,7 @@
         @method('PUT')
         <input type="hidden" name="status" value="{{ $listing->status }}">
         
-        <div style="display:grid; grid-template-columns:minmax(0, 1.5fr) minmax(320px, 1fr); gap:20px;">
+        <div class="edit-form-layout">
             
             {{-- Kiri: Detail Komoditas --}}
             <div class="card" style="padding:24px;">
@@ -66,7 +128,7 @@
                     <p style="font-size:11px; color:#91A19B; margin:0;">Perubahan akan langsung terbarui di marketplace pembeli konsumen.</p>
                 </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="edit-fields-grid">
                     
                     {{-- Nama --}}
                     <div style="display:flex; flex-direction:column; gap:6px;">
@@ -88,7 +150,7 @@
                     </div>
 
                     {{-- Usulan Kategori Baru --}}
-                    <div x-show="isOtherCategory" x-cloak style="display:flex; flex-direction:column; gap:6px; grid-column:span 2; background:#F8FCFA; border:1px dashed #A9CBBB; border-radius:10px; padding:14px;">
+                    <div x-show="isOtherCategory" x-cloak class="edit-col-span-2" style="display:flex; flex-direction:column; gap:6px; background:#F8FCFA; border:1px dashed #A9CBBB; border-radius:10px; padding:14px;">
                         <label style="font-size:11px; font-weight:800; color:#1C6F57;">Nama Kategori yang Diusulkan</label>
                         <input type="text" name="proposed_category" value="{{ old('proposed_category') }}"
                                placeholder="Contoh: Tanaman Obat / Herbal, Jamur, Bunga Hias..."
@@ -103,6 +165,33 @@
                                placeholder="Contoh: Ori 212, IR 64, Bibit Hibrida F1..."
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                         <small style="font-size:10px; color:#8A9A94;">Kosongkan jika tidak mengetahui varietasnya.</small>
+                    </div>
+
+                    {{-- Grade & Kualitas Mutu --}}
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Grade &amp; Kualitas Mutu <span style="color:#E11D48;">*</span></label>
+                        @php
+                            $currentGrade = old('grade', $listing->grade ?: 'Grade A');
+                            // Normalize to short grade keys
+                            $gradeMap = [
+                                'Grade A (Ekspor & Supermarket)' => 'Grade A',
+                                'Grade B (Pasar Swalayan & Resto)' => 'Grade B',
+                                'Grade C (Lokal Pasar)' => 'Grade C',
+                                'Kualitas Pilihan' => 'Grade A',
+                                'Kualitas Standar' => 'Grade B',
+                                'Kualitas Campuran' => 'Grade C',
+                                'Belum Ditentukan' => 'Standar',
+                            ];
+                            $normalizedGrade = $gradeMap[$currentGrade] ?? $currentGrade;
+                        @endphp
+                        <select name="grade"
+                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
+                            <option value="Grade A" {{ $normalizedGrade == 'Grade A' ? 'selected' : '' }}>Grade A (Kualitas Pilihan / Supermarket)</option>
+                            <option value="Grade B" {{ $normalizedGrade == 'Grade B' ? 'selected' : '' }}>Grade B (Kualitas Standar / Pasar Swalayan &amp; Resto)</option>
+                            <option value="Grade C" {{ $normalizedGrade == 'Grade C' ? 'selected' : '' }}>Grade C (Kualitas Campuran / Pasar Tradisional)</option>
+                            <option value="Standar" {{ $normalizedGrade == 'Standar' ? 'selected' : '' }}>Standar Mutu Panen Umum</option>
+                        </select>
+                        <small style="font-size:10px; color:#8A9A94;">Tingkat mutu panen untuk spesifikasi pesanan konsumen.</small>
                     </div>
 
                     {{-- Luas Lahan --}}
@@ -134,15 +223,15 @@
                     </div>
 
                     {{-- Perkiraan Waktu Panen --}}
-                    <div style="display:flex; flex-direction:column; gap:6px; grid-column:span 2;">
+                    <div class="edit-col-span-2" style="display:flex; flex-direction:column; gap:6px;">
                         <label style="font-size:11px; font-weight:800; color:#365448;">Perkiraan Waktu Panen <span style="color:#E11D48;">*</span></label>
                         <input type="date" name="harvest_estimated_date" value="{{ old('harvest_estimated_date', $listing->harvest_estimated_date ? \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d') : '') }}" required
                                style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
                     </div>
 
                     {{-- Deskripsi --}}
-                    <div style="display:flex; flex-direction:column; gap:6px; grid-column:span 2;">
-                        <label style="font-size:11px; font-weight:800; color:#365448;">Deskripsi & Kondisi Lahan</label>
+                    <div class="edit-col-span-2" style="display:flex; flex-direction:column; gap:6px;">
+                        <label style="font-size:11px; font-weight:800; color:#365448;">Deskripsi &amp; Kondisi Lahan</label>
                         <textarea name="description" rows="3"
                                   style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:86px; resize:vertical;">{{ old('description', $listing->description) }}</textarea>
                     </div>
@@ -151,11 +240,11 @@
 
                 <div style="height:1px; background:#E5ECEA; margin:22px 0;"></div>
 
-                <div style="display:flex; gap:12px; justify-content:flex-end;">
-                    <a href="{{ route('petani.komoditas') }}" style="padding:11px 18px; border-radius:11px; border:1px solid #DFEAE5; background:#fff; font-size:12px; font-weight:800; color:#365249; text-decoration:none;">
+                <div class="edit-actions-group">
+                    <a href="{{ route('petani.komoditas') }}" style="display:inline-flex; align-items:center; justify-content:center; padding:11px 18px; border-radius:11px; border:1px solid #DFEAE5; background:#fff; font-size:12px; font-weight:800; color:#365249; text-decoration:none;">
                         Batal
                     </a>
-                    <button type="submit" style="padding:11px 22px; border-radius:11px; border:none; background:#05C793; font-size:12px; font-weight:800; color:#053B2D; cursor:pointer;">
+                    <button type="submit" style="display:inline-flex; align-items:center; justify-content:center; padding:11px 22px; border-radius:11px; border:none; background:#05C793; font-size:12px; font-weight:800; color:#053B2D; cursor:pointer;">
                         Simpan Perubahan
                     </button>
                 </div>

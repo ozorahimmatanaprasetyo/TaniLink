@@ -2,6 +2,76 @@
 
 @section('title', 'Kelola Pusat Bantuan - Admin TaniLink')
 
+@push('styles')
+<style>
+    .help-headline {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .help-contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.3fr auto;
+        gap: 12px;
+        align-items: flex-end;
+    }
+    .help-table-desktop {
+        display: table;
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    .help-card-mobile {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    @media (max-width: 992px) {
+        .help-contact-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        .help-contact-grid > div:last-child {
+            grid-column: span 2;
+        }
+    }
+    @media (max-width: 768px) {
+        .help-table-desktop {
+            display: none !important;
+        }
+        .help-card-mobile {
+            display: flex !important;
+        }
+        .segmented-tabs-wrapper {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+    }
+    @media (max-width: 640px) {
+        .help-headline button {
+            width: 100%;
+            justify-content: center;
+        }
+        .help-contact-grid {
+            grid-template-columns: 1fr;
+        }
+        .help-contact-grid > div:last-child {
+            grid-column: span 1;
+        }
+        .help-contact-grid button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+@endpush
+
 @section('sidebar_nav')
 <a href="{{ route('portal.admin') }}" class="nav-btn {{ request()->routeIs('portal.admin') ? 'active' : '' }}">
     <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span> Beranda Admin
@@ -44,7 +114,7 @@
 }">
 
     {{-- Headline --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
+    <div class="help-headline">
         <div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Kelola Pusat Bantuan &amp; Kontak Admin</h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">Kelola kontak operasional admin dan konten FAQ terpisah untuk Petani dan Konsumen.</p>
@@ -70,7 +140,7 @@
 
         <form action="{{ route('admin.bantuan.contact') }}" method="POST">
             @csrf
-            <div style="display:grid; grid-template-columns:1fr 1fr 1.3fr auto; gap:12px; align-items:flex-end;">
+            <div class="help-contact-grid">
                 <div>
                     <label style="display:block; font-size:11px; font-weight:800; color:#365448; margin-bottom:5px;">Nomor HP / WhatsApp Admin <span style="color:#E11D48;">*</span></label>
                     <input type="text" name="admin_phone" value="{{ old('admin_phone', $adminPhone ?? '+62 812-3456-7890') }}" required
@@ -133,8 +203,8 @@
             <p style="font-size:11px; color:#91A19B; margin:0;">Hanya tampil pada portal Petani. Urutan mengikuti pertanyaan yang pertama dimasukkan di posisi paling bawah.</p>
         </div>
 
-        <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <div>
+            <table class="help-table-desktop">
                 <thead>
                     <tr>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px; width:70px;">ID / URUTAN</th>
@@ -185,6 +255,43 @@
                     @endforelse
                 </tbody>
             </table>
+
+            {{-- Mobile Cards for Farmer FAQs --}}
+            <div class="help-card-mobile">
+                @forelse($petaniTopics as $t)
+                <div style="border:1px solid #EEF2F0; border-radius:12px; padding:14px; background:#FAFCFB; display:flex; flex-direction:column; gap:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                        <span style="display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:6px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:10.5px;">
+                            <i class="fa-solid fa-person-digging"></i> Khusus Petani
+                        </span>
+                        <span style="font-size:11px; color:#85958F; font-weight:700;">#{{ $t->id }}</span>
+                    </div>
+                    <div>
+                        <b style="color:#172B29; font-size:13px; font-weight:850; display:block; margin-bottom:4px;">{{ $t->question }}</b>
+                        <p style="color:#50695E; font-size:11.5px; line-height:1.6; margin:0;">{{ $t->answer }}</p>
+                    </div>
+                    <div style="display:flex; gap:8px; margin-top:4px;">
+                        <button type="button"
+                                @click="openEdit({{ $t->id }}, '{{ $t->target_role }}', '{{ addslashes($t->question) }}', '{{ addslashes($t->answer) }}', {{ $t->order_num }})"
+                                style="flex:1; justify-content:center; display:inline-flex; align-items:center; gap:4px; padding:8px; border-radius:8px; background:#F1EFFB; border:1px solid #D8D1F5; color:#7257CA; font-weight:800; font-size:11px; cursor:pointer;">
+                            <i class="fa-regular fa-pen-to-square"></i> Edit
+                        </button>
+                        <form action="{{ route('admin.bantuan.destroy', $t->id) }}" method="POST"
+                              onsubmit="return confirm('Hapus pertanyaan FAQ ini?');"
+                              style="flex:1; margin:0;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    style="width:100%; justify-content:center; display:inline-flex; align-items:center; gap:4px; padding:8px; border-radius:8px; background:#FEE2E2; border:1px solid #FECACA; color:#B91C1C; font-weight:800; font-size:11px; cursor:pointer;">
+                                <i class="fa-regular fa-trash-can"></i> Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @empty
+                <div style="padding:20px; text-align:center; color:#8A9D95; font-size:11px;">Belum ada topik khusus Petani.</div>
+                @endforelse
+            </div>
         </div>
     </div>
 
@@ -195,8 +302,8 @@
             <p style="font-size:11px; color:#91A19B; margin:0;">Hanya tampil pada portal Konsumen. Urutan mengikuti pertanyaan yang pertama dimasukkan di posisi paling bawah.</p>
         </div>
 
-        <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <div>
+            <table class="help-table-desktop">
                 <thead>
                     <tr>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px; width:70px;">ID / URUTAN</th>
@@ -247,6 +354,43 @@
                     @endforelse
                 </tbody>
             </table>
+
+            {{-- Mobile Cards for Buyer FAQs --}}
+            <div class="help-card-mobile">
+                @forelse($konsumenTopics as $t)
+                <div style="border:1px solid #EEF2F0; border-radius:12px; padding:14px; background:#FAFCFB; display:flex; flex-direction:column; gap:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                        <span style="display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10.5px;">
+                            <i class="fa-solid fa-hotel"></i> Khusus Konsumen
+                        </span>
+                        <span style="font-size:11px; color:#85958F; font-weight:700;">#{{ $t->id }}</span>
+                    </div>
+                    <div>
+                        <b style="color:#172B29; font-size:13px; font-weight:850; display:block; margin-bottom:4px;">{{ $t->question }}</b>
+                        <p style="color:#50695E; font-size:11.5px; line-height:1.6; margin:0;">{{ $t->answer }}</p>
+                    </div>
+                    <div style="display:flex; gap:8px; margin-top:4px;">
+                        <button type="button"
+                                @click="openEdit({{ $t->id }}, '{{ $t->target_role }}', '{{ addslashes($t->question) }}', '{{ addslashes($t->answer) }}', {{ $t->order_num }})"
+                                style="flex:1; justify-content:center; display:inline-flex; align-items:center; gap:4px; padding:8px; border-radius:8px; background:#F1EFFB; border:1px solid #D8D1F5; color:#7257CA; font-weight:800; font-size:11px; cursor:pointer;">
+                            <i class="fa-regular fa-pen-to-square"></i> Edit
+                        </button>
+                        <form action="{{ route('admin.bantuan.destroy', $t->id) }}" method="POST"
+                              onsubmit="return confirm('Hapus pertanyaan FAQ ini?');"
+                              style="flex:1; margin:0;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    style="width:100%; justify-content:center; display:inline-flex; align-items:center; gap:4px; padding:8px; border-radius:8px; background:#FEE2E2; border:1px solid #FECACA; color:#B91C1C; font-weight:800; font-size:11px; cursor:pointer;">
+                                <i class="fa-regular fa-trash-can"></i> Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @empty
+                <div style="padding:20px; text-align:center; color:#8A9D95; font-size:11px;">Belum ada topik khusus Konsumen.</div>
+                @endforelse
+            </div>
         </div>
     </div>
 
@@ -257,8 +401,8 @@
             <p style="font-size:11px; color:#91A19B; margin:0;">Tampil di kedua portal Petani dan Konsumen.</p>
         </div>
 
-        <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <div>
+            <table class="help-table-desktop">
                 <thead>
                     <tr>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px; width:70px;">ID / URUTAN</th>
@@ -309,13 +453,50 @@
                     @endforelse
                 </tbody>
             </table>
+
+            {{-- Mobile Cards for General FAQs --}}
+            <div class="help-card-mobile">
+                @forelse($semuaTopics as $t)
+                <div style="border:1px solid #EEF2F0; border-radius:12px; padding:14px; background:#FAFCFB; display:flex; flex-direction:column; gap:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                        <span style="display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:6px; background:#F1EFFB; color:#7257CA; font-weight:800; font-size:10.5px;">
+                            <i class="fa-solid fa-users"></i> Semua Pengguna
+                        </span>
+                        <span style="font-size:11px; color:#85958F; font-weight:700;">#{{ $t->id }}</span>
+                    </div>
+                    <div>
+                        <b style="color:#172B29; font-size:13px; font-weight:850; display:block; margin-bottom:4px;">{{ $t->question }}</b>
+                        <p style="color:#50695E; font-size:11.5px; line-height:1.6; margin:0;">{{ $t->answer }}</p>
+                    </div>
+                    <div style="display:flex; gap:8px; margin-top:4px;">
+                        <button type="button"
+                                @click="openEdit({{ $t->id }}, '{{ $t->target_role }}', '{{ addslashes($t->question) }}', '{{ addslashes($t->answer) }}', {{ $t->order_num }})"
+                                style="flex:1; justify-content:center; display:inline-flex; align-items:center; gap:4px; padding:8px; border-radius:8px; background:#F1EFFB; border:1px solid #D8D1F5; color:#7257CA; font-weight:800; font-size:11px; cursor:pointer;">
+                            <i class="fa-regular fa-pen-to-square"></i> Edit
+                        </button>
+                        <form action="{{ route('admin.bantuan.destroy', $t->id) }}" method="POST"
+                              onsubmit="return confirm('Hapus pertanyaan FAQ ini?');"
+                              style="flex:1; margin:0;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    style="width:100%; justify-content:center; display:inline-flex; align-items:center; gap:4px; padding:8px; border-radius:8px; background:#FEE2E2; border:1px solid #FECACA; color:#B91C1C; font-weight:800; font-size:11px; cursor:pointer;">
+                                <i class="fa-regular fa-trash-can"></i> Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @empty
+                <div style="padding:20px; text-align:center; color:#8A9D95; font-size:11px;">Belum ada topik umum.</div>
+                @endforelse
+            </div>
         </div>
     </div>
 
     {{-- MODAL TAMBAH TOPIK --}}
     <div x-cloak x-show="showAddModal"
          style="position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; background:rgba(21,40,31,0.52); padding:16px;">
-        <div style="background:#fff; border-radius:20px; width:520px; max-width:95%; padding:26px; box-shadow:0 35px 90px rgba(16,35,29,0.4);"
+        <div style="background:#fff; border-radius:20px; width:520px; max-width:95%; max-height:90vh; overflow-y:auto; padding:22px; box-shadow:0 35px 90px rgba(16,35,29,0.4);"
              @click.away="showAddModal = false">
             
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -367,7 +548,7 @@
     {{-- MODAL EDIT TOPIK --}}
     <div x-cloak x-show="showEditModal"
          style="position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; background:rgba(21,40,31,0.52); padding:16px;">
-        <div style="background:#fff; border-radius:20px; width:520px; max-width:95%; padding:26px; box-shadow:0 35px 90px rgba(16,35,29,0.4);"
+        <div style="background:#fff; border-radius:20px; width:520px; max-width:95%; max-height:90vh; overflow-y:auto; padding:22px; box-shadow:0 35px 90px rgba(16,35,29,0.4);"
              @click.away="showEditModal = false">
             
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">

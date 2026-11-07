@@ -23,6 +23,75 @@
 </a>
 @endsection
 
+@push('styles')
+<style>
+.admin-headline {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+.admin-headline-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.admin-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+.admin-breakdown-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+}
+.admin-dashboard-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(360px, 1fr);
+    gap: 20px;
+}
+@media (max-width: 992px) {
+    .admin-metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .admin-breakdown-strip {
+        grid-template-columns: 1fr 1fr;
+    }
+    .admin-dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 640px) {
+    .admin-headline {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .admin-headline-actions {
+        width: 100%;
+    }
+    .admin-headline-actions button,
+    .admin-headline-actions a {
+        flex: 1;
+        justify-content: center;
+        text-align: center;
+    }
+}
+@media (max-width: 480px) {
+    .admin-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    .admin-breakdown-strip {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 <div x-data="{
     stats: {{ json_encode($stats) }},
@@ -61,9 +130,9 @@
 }" x-init="startPolling()" @visibilitychange.window="if (!document.hidden) fetchStats()">
 
     {{-- Headline & Live Indicator --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:22px; flex-wrap:wrap; gap:14px;">
+    <div class="admin-headline">
         <div>
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
                 <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0;">Ringkasan Operasional Admin</h1>
                 <span style="font-size:10px; font-weight:800; padding:2px 8px; border-radius:6px; background:#E9FBF3; color:#0A765A; display:inline-flex; align-items:center; gap:5px;">
                     <span style="width:6px; height:6px; border-radius:50%; background:#05C793; display:inline-block;" :class="{ 'animate-ping': isSyncing }"></span>
@@ -75,7 +144,7 @@
             </p>
         </div>
 
-        <div style="display:flex; gap:10px;">
+        <div class="admin-headline-actions">
             <button type="button" @click="fetchStats()" class="btn btn-secondary" style="font-size:12px; padding:8px 14px;">
                 <i class="fa-solid fa-arrows-rotate" :class="{ 'fa-spin': isSyncing }"></i> Perbarui Sekarang
             </button>
@@ -86,7 +155,7 @@
     </div>
 
     {{-- 4 Primary Metric Cards --}}
-    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:22px;">
+    <div class="admin-metrics-grid">
         {{-- Total Pengguna --}}
         <div class="card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
@@ -147,7 +216,7 @@
     </div>
 
     {{-- 4 Status Breakdown Strip --}}
-    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:22px;">
+    <div class="admin-breakdown-strip">
         <div style="background:#fff; border:1px solid #E5ECEA; border-radius:14px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
             <div>
                 <span style="font-size:10.5px; color:#7B8C86; font-weight:700; text-transform:uppercase;">Menunggu DP</span>
@@ -182,7 +251,7 @@
     </div>
 
     {{-- Grid 2 Kolom: Kiri Panduan Operasional & Kanan Pesanan Terkini --}}
-    <div style="display:grid; grid-template-columns:minmax(0, 1.4fr) minmax(360px, 1fr); gap:20px;">
+    <div class="admin-dashboard-layout">
         
         {{-- Kiri: Transparansi Pembayaran & Alur Batch --}}
         <div class="card" style="padding:24px;">

@@ -2,6 +2,77 @@
 
 @section('title', 'Kelola Komoditas - Admin TaniLink')
 
+@push('styles')
+<style>
+    .listings-headline {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .listings-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .listings-filter-bar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .listings-table-desktop {
+        display: table;
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    .listings-card-mobile {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .proposal-table-desktop {
+        display: table;
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    .proposal-card-mobile {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    @media (max-width: 992px) {
+        .listings-metrics-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 768px) {
+        .listings-table-desktop,
+        .proposal-table-desktop {
+            display: none !important;
+        }
+        .listings-card-mobile,
+        .proposal-card-mobile {
+            display: flex !important;
+        }
+        .listings-filter-bar {
+            width: 100%;
+            flex-direction: column;
+        }
+        .listings-filter-bar input,
+        .listings-filter-bar select {
+            width: 100% !important;
+            min-width: 0 !important;
+        }
+    }
+</style>
+@endpush
+
 @section('sidebar_nav')
 <a href="{{ route('portal.admin') }}" class="nav-btn {{ request()->routeIs('portal.admin') ? 'active' : '' }}">
     <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span> Beranda Admin
@@ -27,7 +98,7 @@
 <div x-data="{ search: '', filterCategory: '' }">
 
     {{-- Headline --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px;">
+    <div class="listings-headline">
         <div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Kelola Komoditas</h1>
             <p style="font-size:12px; color:#8A9A94; margin:0;">Moderasi penawaran komoditas pertanian dan tinjau usulan kategori baru dari petani.</p>
@@ -35,7 +106,7 @@
     </div>
 
     {{-- 3 Metric Cards --}}
-    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:24px;">
+    <div class="listings-metrics-grid">
         <div class="card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
                 <span>Total Komoditas Unik</span>
@@ -78,8 +149,8 @@
             <p style="font-size:11px; color:#91A19B; margin:0;">Tinjau pengajuan nama kategori baru sebelum diaktifkan untuk publik.</p>
         </div>
 
-        <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <div>
+            <table class="proposal-table-desktop">
                 <thead>
                     <tr>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:10px;">NAMA KATEGORI</th>
@@ -135,6 +206,50 @@
                     @endforeach
                 </tbody>
             </table>
+
+            {{-- Mobile Cards for Category Proposals --}}
+            <div class="proposal-card-mobile">
+                @foreach($categoryProposals as $prop)
+                <div style="border:1px solid #EEF2F0; border-radius:12px; padding:14px; background:#FAFCFB; display:flex; flex-direction:column; gap:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                        <div>
+                            <div style="font-size:13px; font-weight:800; color:#183B30;">{{ $prop->name }}</div>
+                            <div style="font-size:11px; color:#6B8077; margin-top:2px;">{{ $prop->user->name ?? 'Petani' }} &bull; {{ $prop->user->organization ?? '-' }}</div>
+                        </div>
+                        <div>
+                            @if($prop->status === 'menunggu')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#FEF3C7; color:#92400E; font-weight:800; font-size:10px;">Menunggu</span>
+                            @elseif($prop->status === 'disetujui')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#D1FAE5; color:#065F46; font-weight:800; font-size:10px;">Disetujui</span>
+                            @else
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#FEE2E2; color:#991B1B; font-weight:800; font-size:10px;">Ditolak</span>
+                            @endif
+                        </div>
+                    </div>
+                    @if($prop->description)
+                    <div style="font-size:11px; color:#50695E; background:#F3F6F5; padding:8px 10px; border-radius:8px;">
+                        {{ $prop->description }}
+                    </div>
+                    @endif
+                    @if($prop->status === 'menunggu')
+                    <div style="display:flex; gap:8px; margin-top:4px;">
+                        <form action="{{ route('admin.category.approve', $prop->id) }}" method="POST" style="margin:0; flex:1;">
+                            @csrf
+                            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:8px; font-size:11px; min-height:auto;">
+                                Setujui
+                            </button>
+                        </form>
+                        <form action="{{ route('admin.category.reject', $prop->id) }}" method="POST" style="margin:0; flex:1;" onsubmit="return confirm('Tolak usulan kategori ini?');">
+                            @csrf
+                            <button type="submit" class="btn btn-danger" style="width:100%; justify-content:center; padding:8px; font-size:11px; min-height:auto;">
+                                Tolak
+                            </button>
+                        </form>
+                    </div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
         </div>
     </div>
     @endif
@@ -147,7 +262,7 @@
                 <p style="font-size:11px; color:#91A19B; margin:0;">Status alokasi kuota, harga satuan, dan perkiraan panen petani.</p>
             </div>
 
-            <div style="display:flex; gap:10px;">
+            <div class="listings-filter-bar">
                 <input type="text" x-model="search" placeholder="Cari komoditas, varietas, petani..."
                        style="padding:9px 13px; border:1px solid #E5ECEA; border-radius:10px; font-size:12px; color:#50695E; background:#fff; min-width:220px; outline:0;">
                 <select x-model="filterCategory"
@@ -160,8 +275,8 @@
             </div>
         </div>
 
-        <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <div>
+            <table class="listings-table-desktop">
                 <thead>
                     <tr>
                         <th style="font-size:10px; letter-spacing:0.3px; color:#8D9E98; font-weight:800; border-bottom:1px solid #E5ECEA; padding:12px 10px;">KOMODITAS</th>
@@ -220,6 +335,66 @@
                     @endforeach
                 </tbody>
             </table>
+
+            {{-- Mobile Cards for Listings --}}
+            <div class="listings-card-mobile">
+                @foreach($allListings as $item)
+                @php
+                    $target = strtolower($item->commodity_name . ' ' . ($item->variety ?? '') . ' ' . ($item->farmer->name ?? ''));
+                @endphp
+                <div x-show="(search === '' || '{{ $target }}'.includes(search.toLowerCase())) && (filterCategory === '' || '{{ $item->category }}' === filterCategory)"
+                     style="border:1px solid #EEF2F0; border-radius:12px; padding:14px; background:#FAFCFB; display:flex; flex-direction:column; gap:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                        <div>
+                            <div style="font-size:13px; font-weight:850; color:#183B30;">{{ $item->commodity_name }}</div>
+                            <div style="font-size:11px; color:#85958F; margin-top:2px;">{{ $item->variety ?: 'Varietas Umum' }} &bull; {{ $item->category }}</div>
+                        </div>
+                        <div>
+                            @if($item->status === 'available')
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#E9F9F2; color:#0C8D65; font-weight:800; font-size:10px;">Tersedia</span>
+                            @else
+                                <span style="display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; background:#E8F9FC; color:#0B8BAA; font-weight:800; font-size:10px;">Terkontrak</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px; background:#F3F6F5; padding:10px; border-radius:8px;">
+                        <div>
+                            <div style="font-size:10px; color:#85958F;">Petani</div>
+                            <div style="font-weight:700; color:#172B29;">{{ $item->farmer->name ?? 'Petani Mitra' }}</div>
+                            <div style="font-size:10px; color:#85958F;">{{ $item->location ?? 'Malang' }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:10px; color:#85958F;">Harga / kg</div>
+                            <div style="font-weight:800; color:#0A765A;">Rp {{ number_format($item->price_per_kg, 0, ',', '.') }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:10px; color:#85958F;">Perkiraan Panen</div>
+                            <div style="font-weight:600; color:#172B29;">{{ $item->harvest_estimated_date ? $item->harvest_estimated_date->timezone('Asia/Jakarta')->translatedFormat('d M Y') : '-' }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:10px; color:#85958F;">Kuota Tersedia</div>
+                            <div>
+                                <strong style="color:{{ $item->available_kg > 0 ? '#0C8D65' : '#B91C1C' }};">{{ number_format($item->available_kg, 0, ',', '.') }}</strong>
+                                <span style="color:#85958F; font-size:10px;">/ {{ number_format($item->estimated_harvest_kg, 0, ',', '.') }} kg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:flex-end;">
+                        <form action="{{ route('admin.komoditas.destroy', $item->id) }}" method="POST"
+                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus komoditas {{ $item->commodity_name }} ini?');"
+                              style="width:100%; margin:0;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger" style="width:100%; justify-content:center; padding:8px; font-size:11px; min-height:auto;">
+                                <i class="fa-regular fa-trash-can"></i> Hapus Komoditas
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endforeach
+            </div>
         </div>
     </div>
 

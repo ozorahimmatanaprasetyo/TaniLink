@@ -14,6 +14,52 @@
     <strong>Detail Riwayat Pesanan</strong>
 @endsection
 
+@push('styles')
+<style>
+.hd-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(340px, 1fr);
+    gap: 24px;
+}
+.hd-commodity-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 18px;
+}
+.hd-payment-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+.hd-headline-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+@media (max-width: 992px) {
+    .hd-layout {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 640px) {
+    .hd-commodity-grid,
+    .hd-payment-grid {
+        grid-template-columns: 1fr;
+    }
+    .hd-headline-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    .hd-headline-actions a {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 <div>
 
@@ -38,7 +84,7 @@
             </p>
         </div>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <div class="hd-headline-actions">
             @php
                 $backUrl = $role === 'petani' ? route('petani.pesanan') : route('pembeli.pesanan');
                 $pdfUrl = $role === 'petani' ? route('petani.pesanan.pdf', $order->id) : route('pembeli.pesanan.pdf', $order->id);
@@ -53,7 +99,7 @@
     </div>
 
     {{-- Grid 2 Kolom --}}
-    <div style="display:grid; grid-template-columns:minmax(0, 1.4fr) minmax(340px, 1fr); gap:24px;">
+    <div class="hd-layout">
 
         {{-- Kolom Kiri: Rincian Pesanan, Finansial & Timeline --}}
         <div style="display:flex; flex-direction:column; gap:20px;">
@@ -62,7 +108,7 @@
             <div class="card" style="padding:24px;">
                 <h3 style="font-size:15px; font-weight:850; color:#172B29; margin:0 0 16px;">Informasi Komoditas &amp; Nilai Kontrak</h3>
 
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; margin-bottom:18px;">
+                <div class="hd-commodity-grid">
                     <div style="background:#F8FCFA; border:1px solid #E5ECEA; border-radius:12px; padding:14px;">
                         <span style="font-size:10.5px; color:#7B9187; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">Komoditas &amp; Varietas</span>
                         <div style="font-size:14px; font-weight:800; color:#172B29;">{{ $order->commodityListing->commodity_name ?? '-' }}</div>
@@ -96,7 +142,7 @@
             <div class="card" style="padding:24px;">
                 <h3 style="font-size:15px; font-weight:850; color:#172B29; margin:0 0 16px;">Status &amp; Rincian Pembayaran</h3>
 
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:16px;">
+                <div class="hd-payment-grid">
                     <div style="border:1px solid #E5ECEA; border-radius:12px; padding:16px; background:#fff;">
                         <span style="font-size:11px; font-weight:800; color:#0C8D65; background:#E9FBF3; padding:2px 8px; border-radius:5px;">DP 30% (Awal)</span>
                         <div style="font-size:18px; font-weight:850; color:#172B29; margin:10px 0 4px;">Rp {{ number_format($order->dp_amount, 0, ',', '.') }}</div>

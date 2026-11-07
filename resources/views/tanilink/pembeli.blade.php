@@ -17,10 +17,99 @@
 </a>
 @endsection
 
+@push('styles')
+<style>
+.consumer-headline {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.consumer-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(110deg, #0B644B, #0BA87B);
+    border-radius: 20px;
+    min-height: 170px;
+    padding: 28px 36px;
+    position: relative;
+    overflow: hidden;
+    color: white;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(11,100,75,0.15);
+}
+.consumer-hero-icon {
+    line-height: 1;
+    filter: drop-shadow(0 14px 10px rgba(3,53,34,0.3));
+    z-index: 2;
+    user-select: none;
+    color: rgba(255,255,255,0.85);
+    font-size: 80px;
+}
+.consumer-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.consumer-dashboard-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+    gap: 18px;
+}
+.consumer-featured-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+@media (max-width: 992px) {
+    .consumer-dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+    .consumer-featured-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 768px) {
+    .consumer-metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .consumer-metrics-grid > div:last-child {
+        grid-column: span 2;
+    }
+}
+@media (max-width: 640px) {
+    .consumer-hero {
+        padding: 22px 20px;
+    }
+    .consumer-hero h2 {
+        font-size: 18px !important;
+    }
+    .consumer-hero-icon {
+        display: none;
+    }
+    .consumer-featured-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 480px) {
+    .consumer-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    .consumer-metrics-grid > div:last-child {
+        grid-column: span 1;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 
     {{-- Headline --}}
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
+    <div class="consumer-headline">
         <div>
             <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">
                 Selamat datang, {{ $pembeli->name }}
@@ -32,7 +121,7 @@
     </div>
 
     {{-- Hero Banner --}}
-    <div style="display:flex; justify-content:space-between; align-items:center; background:linear-gradient(110deg, #0B644B, #0BA87B); border-radius:20px; min-height:170px; padding:28px 36px; position:relative; overflow:hidden; color:white; margin-bottom:20px; box-shadow:0 8px 24px rgba(11,100,75,0.15);">
+    <div class="consumer-hero">
         <div style="position:relative; z-index:2; max-width:560px;">
             <h2 style="font-size:22px; font-weight:850; letter-spacing:-0.7px; margin:0 0 10px; line-height:1.3;">
                 Pasokan segar berkualitas, terencana sejak sebelum masa tanam.
@@ -44,13 +133,13 @@
                 Jelajahi Marketplace Komoditas
             </a>
         </div>
-        <div style="line-height:1; filter:drop-shadow(0 14px 10px rgba(3,53,34,0.3)); z-index:2; user-select:none; color:rgba(255,255,255,0.85); font-size:80px;">
+        <div class="consumer-hero-icon">
             <i class="fa-solid fa-seedling"></i>
         </div>
     </div>
 
     {{-- 3 Metric Cards --}}
-    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:24px;">
+    <div class="consumer-metrics-grid">
         <div class="card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
                 <span>Pesanan Berjalan</span>
@@ -86,11 +175,11 @@
     </div>
 
     {{-- Grid 2 Kolom --}}
-    <div style="display:grid; grid-template-columns:minmax(0, 1.6fr) minmax(300px, 1fr); gap:18px;">
+    <div class="consumer-dashboard-layout">
         
         {{-- Kiri: Komoditas Pilihan --}}
         <div class="card" style="padding:22px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:8px;">
                 <div>
                     <h2 style="font-size:15px; font-weight:850; margin:0 0 4px; color:#172B29;">Komoditas Pilihan</h2>
                     <p style="font-size:11px; color:#91A19B; margin:0;">Rencanakan pembelian berdasarkan jadwal panen.</p>
@@ -100,7 +189,7 @@
                 </a>
             </div>
 
-            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;">
+            <div class="consumer-featured-grid">
                 @foreach($catalog->take(3) as $item)
                 @php
                     $imgUrl = $item->image_url ?? '';
