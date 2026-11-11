@@ -144,24 +144,6 @@
                         <small style="color:#87968F; font-size:10px;">Estimasi panen: {{ \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('d M Y') }}</small>
                     </div>
                 </div>
-                    {{-- Jumlah kg --}}
-                    <div style="display:flex; flex-direction:column; gap:6px;">
-                        <label style="font-size:11px; font-weight:800; color:#365448;">Jumlah Pemesanan (kg) <span style="color:#E11D48;">*</span></label>
-                        <input type="number" name="quantity_kg" x-model.number="qty" min="1" :max="maxQty" required
-                               placeholder="Contoh: 100"
-                               style="outline:0; width:100%; border:1px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; color:#254D3F; font-size:12px; min-height:43px;">
-                        <small style="color:#87968F; font-size:10px;">Tersedia maksimal: <b x-text="maxQty"></b> kg</small>
-                    </div>
-
-                    {{-- Tanggal dibutuhkan --}}
-                    <div style="display:flex; flex-direction:column; gap:6px;">
-                        <label style="font-size:11px; font-weight:800; color:#365448;">Tanggal Dibutuhkan <span style="color:#E11D48;">*</span></label>
-                        <input type="date" name="need_date" value="{{ $listing->harvest_estimated_date ? \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d') : now()->addDays(20)->format('Y-m-d') }}" required
-                               min="{{ $listing->harvest_estimated_date ? \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d') : '' }}"
-                               style="outline:0; width:100%; border:1.5px solid #DFEAE5; padding:12px 14px; border-radius:10px; background:#fff; font-size:12px;">
-                        <small style="color:#87968F; font-size:10px;">Estimasi panen: {{ \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('d M Y') }}</small>
-                    </div>
-                </div>
 
                 {{-- Catatan untuk petani --}}
                 <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:18px;">
@@ -177,7 +159,7 @@
 
                 {{-- Checkbox --}}
                 <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; margin-bottom:24px;">
-                    <input type="checkbox" x-model="" required style="width:18px; height:18px; margin-top:2px; accent-color:#05C793;">
+                    <input type="checkbox" x-model="agree" required style="width:18px; height:18px; margin-top:2px; accent-color:#05C793;">
                     <span style="font-size:11.5px; color:#50695E; line-height:1.6;">
                         Saya menyetujui bahwa jadwal panen, harga penawaran, dan spesifikasi pesanan terikat dalam pemesanan sebelum panen TaniLink.
                     </span>

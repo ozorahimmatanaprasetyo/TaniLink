@@ -82,11 +82,33 @@
     }
 }
 @media (max-width: 480px) {
+    .admin-headline {
+        margin-bottom: 16px;
+        gap: 10px;
+    }
+    .admin-headline h1 {
+        font-size: 20px !important;
+        margin-bottom: 4px !important;
+    }
+    .admin-headline p {
+        font-size: 11.5px !important;
+    }
     .admin-metrics-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+        margin-bottom: 16px;
+    }
+    .admin-metrics-grid .card {
+        padding: 12px 14px !important;
+        border-radius: 14px !important;
+    }
+    .admin-metrics-grid .card .metric-val {
+        font-size: 20px !important;
     }
     .admin-breakdown-strip {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+        margin-bottom: 16px;
     }
 }
 </style>

@@ -5,16 +5,17 @@ use App\Http\Controllers\TaniLinkController;
 
 // Public / Landing Page
 Route::get('/', function () {
-    if (auth()->check()) {
-        return redirect()->route('home');
-    }
     $listings = collect();
-    if (\Illuminate\Support\Facades\Schema::hasTable('commodity_listings')) {
-        $listings = \App\Models\CommodityListing::where('status', 'available')
-            ->where('available_kg', '>', 0)
-            ->latest()
-            ->take(4)
-            ->get();
+    try {
+        if (\Illuminate\Support\Facades\Schema::hasTable('commodity_listings')) {
+            $listings = \App\Models\CommodityListing::where('status', 'available')
+                ->where('available_kg', '>', 0)
+                ->latest()
+                ->take(4)
+                ->get();
+        }
+    } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\Log::warning('Landing catalog query failed: ' . $e->getMessage());
     }
     return view('welcome', compact('listings'));
 })->name('landing');
@@ -33,10 +34,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [\App\Http\Controllers\ForgotPasswordController::class, 'reset'])->name('password.update');
 });
 
+// Logout Route (Dapat diakses kapan saja untuk mengakhiri sesi secara bersih)
+Route::match(['get', 'post'], '/logout', [TaniLinkController::class, 'logout'])->name('logout');
+
 // Protected Routes (Authenticated)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [TaniLinkController::class, 'index'])->name('home');
-    Route::match(['get', 'post'], '/logout', [TaniLinkController::class, 'logout'])->name('logout');
     
     // Onboarding / Personalisasi
     Route::get('/onboarding', [TaniLinkController::class, 'onboarding'])->name('onboarding');

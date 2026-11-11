@@ -685,12 +685,13 @@ class TaniLinkController extends Controller
         $pembeli = Auth::user();
         session(['active_role' => 'pembeli']);
 
-        // Query Pesanan Aktif
-        $activeOrders = PreOrder::with(['commodityListing', 'farmer', 'harvestBatch', 'deliveryTracking'])
+        $allOrders = PreOrder::with(['commodityListing', 'farmer', 'harvestBatch', 'deliveryTracking'])
             ->where('buyer_id', $pembeli->id)
-            ->whereNotIn('status', ['selesai', 'dibatalkan'])
             ->latest()
             ->get();
+
+        // Query Pesanan Aktif
+        $activeOrders = $allOrders->whereNotIn('status', ['selesai', 'dibatalkan']);
 
         // Query Riwayat Pesanan (Selesai & Dibatalkan/Ditolak)
         $historyQuery = PreOrder::with(['commodityListing', 'farmer', 'harvestBatch', 'deliveryTracking'])
@@ -725,7 +726,7 @@ class TaniLinkController extends Controller
         $totalPreOrderValue = $activeOrders->sum('total_amount');
         $escrowHeld = $activeOrders->sum('escrow_locked_amount');
 
-        return view('tanilink.buyer.orders', compact('pembeli', 'activeOrders', 'historyOrders', 'totalPreOrderValue', 'escrowHeld'));
+        return view('tanilink.buyer.orders', compact('pembeli', 'allOrders', 'activeOrders', 'historyOrders', 'totalPreOrderValue', 'escrowHeld'));
     }
 
     public function pembeliTracking($id)
@@ -787,18 +788,36 @@ class TaniLinkController extends Controller
                 return back()->withErrors(['error' => "Stok alokasi tidak mencukupi. Tersisa: {$listing->available_kg} kg."])->withInput();
             }
 
-            // Cari batch aktif untuk listing ini
+            // Cari batch aktif untuk listing ini (atau buat secara otomatis jika belum ada)
             $batch = HarvestBatch::where('commodity_listing_id', $listing->id)
                 ->where('status', 'aktif')
                 ->lockForUpdate()
                 ->first();
 
             if (!$batch) {
-                return back()->withErrors(['error' => 'Belum ada batch panen aktif untuk komoditas ini.'])->withInput();
+                $harvestDate = $listing->harvest_estimated_date ?: now()->addDays(60)->toDateString();
+                $monthYear = date('M Y', strtotime($harvestDate));
+                $batch = HarvestBatch::create([
+                    'commodity_listing_id' => $listing->id,
+                    'farmer_id' => $listing->user_id,
+                    'batch_code' => 'BATCH-' . str_pad($listing->id, 4, '0', STR_PAD_LEFT) . '-01',
+                    'batch_name' => 'Batch Panen ' . $monthYear,
+                    'estimated_harvest_date' => $harvestDate,
+                    'estimated_harvest_kg' => max((float)$listing->estimated_harvest_kg, $qty),
+                    'allocated_kg' => 0,
+                    'current_phase' => 'Persiapan & Penanaman',
+                    'current_phase_status' => 'berlangsung',
+                    'status' => 'aktif',
+                ]);
             }
 
             if ($qty > $batch->available_kg) {
-                return back()->withErrors(['error' => "Kuota batch panen tidak mencukupi. Tersisa: {$batch->available_kg} kg."])->withInput();
+                // Jika alokasi batch belum disesuaikan tapi listing mencukupi, naikkan estimasi batch
+                if ($qty <= $listing->available_kg) {
+                    $batch->update(['estimated_harvest_kg' => $batch->allocated_kg + $listing->available_kg]);
+                } else {
+                    return back()->withErrors(['error' => "Kuota batch panen tidak mencukupi. Tersisa: {$batch->available_kg} kg."])->withInput();
+                }
             }
 
             $total = $qty * $listing->price_per_kg;
