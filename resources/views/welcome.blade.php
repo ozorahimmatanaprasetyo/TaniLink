@@ -118,16 +118,25 @@
             gap: 10px;
         }
 
-        /* ── Hero Responsive ── */
+        /* ── Hero Responsive with Realistic Agriculture Background ── */
         .hero-section {
-            background: linear-gradient(110deg, #073F32 0%, #0D9976 100%);
+            background-color: #073F32;
+            background-image: 
+                linear-gradient(115deg, rgba(5, 48, 38, 0.92) 0%, rgba(7, 75, 58, 0.82) 45%, rgba(6, 95, 70, 0.72) 100%),
+                url("{{ asset('images/landing/hero-farm.jpg') }}");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
             color: white;
-            min-height: 480px;
-            padding: 76px 28px;
+            min-height: 520px;
+            padding: 88px 28px;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
         }
         .hero-container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
@@ -136,55 +145,65 @@
             gap: 36px;
         }
         .hero-content {
-            max-width: 640px;
+            max-width: 680px;
             z-index: 2;
         }
         .hero-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(6px);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            background: rgba(5, 199, 147, 0.22);
+            border: 1px solid rgba(5, 199, 147, 0.45);
+            backdrop-filter: blur(8px);
             font-size: 11px;
             font-weight: 850;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
-            margin-bottom: 18px;
+            color: #A7F3D0;
+            margin-bottom: 20px;
         }
         .hero-title {
-            font-size: 46px;
+            font-size: clamp(32px, 4.5vw, 48px);
             letter-spacing: -1.6px;
             line-height: 1.15;
             font-weight: 850;
             margin: 0 0 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         .hero-desc {
-            font-size: 15px;
-            color: #C2E8D8;
-            line-height: 1.8;
-            margin: 0 0 28px;
+            font-size: clamp(14px, 1.8vw, 16px);
+            color: #E2F8EE;
+            line-height: 1.75;
+            margin: 0 0 30px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.2);
         }
         .hero-buttons {
             display: flex;
             gap: 14px;
             flex-wrap: wrap;
         }
-        .hero-icon {
-            font-size: 120px;
-            color: rgba(255,255,255,0.20);
-            z-index: 2;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+
+        /* ── Full-Width Section Containers ── */
+        .landing-section-wrapper {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .section-inner-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-sizing: border-box;
         }
 
         /* ── Responsive Grids ── */
         .section-ekosistem {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 80px 28px;
+            width: 100%;
+            padding: 84px 28px;
+            background: #ffffff;
+            box-sizing: border-box;
         }
         .grid-ekosistem {
             display: grid;
@@ -193,10 +212,12 @@
         }
 
         .section-cara-kerja {
+            width: 100%;
             background: #F9FBFA;
             border-top: 1px solid #E5ECEA;
             border-bottom: 1px solid #E5ECEA;
-            padding: 80px 28px;
+            padding: 84px 28px;
+            box-sizing: border-box;
         }
         .grid-cara-kerja {
             display: grid;
@@ -205,9 +226,10 @@
         }
 
         .section-escrow {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 80px 28px;
+            width: 100%;
+            padding: 84px 28px;
+            background: #ffffff;
+            box-sizing: border-box;
         }
         .grid-escrow {
             display: grid;
@@ -216,10 +238,12 @@
         }
 
         .section-katalog {
+            width: 100%;
             background: #F9FBFA;
             border-top: 1px solid #E5ECEA;
             border-bottom: 1px solid #E5ECEA;
-            padding: 80px 28px;
+            padding: 84px 28px;
+            box-sizing: border-box;
         }
         .katalog-header {
             display: flex;
@@ -234,7 +258,10 @@
         }
 
         /* ── Breakpoints ── */
-        @media (max-width: 992px) {
+        @media (max-width: 1024px) {
+            .hero-section {
+                padding: 64px 24px;
+            }
             .grid-cara-kerja {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -259,7 +286,7 @@
             }
 
             .hero-section {
-                padding: 46px 18px;
+                padding: 48px 18px;
                 min-height: auto;
             }
             .hero-container {
@@ -268,14 +295,14 @@
                 gap: 20px;
             }
             .hero-title {
-                font-size: 30px;
-                letter-spacing: -1px;
+                font-size: 28px;
+                letter-spacing: -0.8px;
                 line-height: 1.25;
             }
             .hero-desc {
                 font-size: 13.5px;
                 line-height: 1.65;
-                margin-bottom: 22px;
+                margin-bottom: 24px;
             }
             .hero-buttons {
                 flex-direction: column;
@@ -286,9 +313,6 @@
                 text-align: center;
                 justify-content: center;
                 box-sizing: border-box;
-            }
-            .hero-icon {
-                display: none;
             }
 
             .section-ekosistem,
@@ -340,9 +364,19 @@
             {{-- Desktop Auth Buttons --}}
             <div class="landing-desktop-auth">
                 @auth
-                    @php $role = Auth::user()->role; @endphp
-                    <a href="{{ route('portal.' . $role) }}" style="padding:10px 20px; border-radius:11px; font-size:12px; font-weight:850; color:#053B2D; background:#05C793; box-shadow:0 3px 10px rgba(5,199,147,0.25);">
-                        Buka Dashboard
+                    @php
+                        $userRole = Auth::user()->role;
+                        $targetRoute = match($userRole) {
+                            'admin' => route('portal.admin'),
+                            'petani' => route('portal.petani'),
+                            'pembeli' => route('portal.pembeli'),
+                            'pending' => route('onboarding'),
+                            default => route('home'),
+                        };
+                        $btnLabel = $userRole === 'pending' ? 'Lanjutkan Onboarding' : 'Buka Dashboard (' . ucfirst($userRole) . ')';
+                    @endphp
+                    <a href="{{ $targetRoute }}" style="padding:10px 20px; border-radius:11px; font-size:12px; font-weight:850; color:#053B2D; background:#05C793; box-shadow:0 3px 10px rgba(5,199,147,0.25);">
+                        {{ $btnLabel }}
                     </a>
                 @else
                     <a href="{{ route('login') }}" style="padding:10px 18px; border-radius:11px; font-size:12px; font-weight:800; color:#163D34; border:1px solid #DFE8E5; background:#fff; transition:all 0.15s;">
@@ -389,9 +423,19 @@
 
             <div class="landing-mobile-auth">
                 @auth
-                    @php $role = Auth::user()->role; @endphp
-                    <a href="{{ route('portal.' . $role) }}" style="display:block; text-align:center; padding:12px; border-radius:11px; font-size:13px; font-weight:850; color:#053B2D; background:#05C793;">
-                        Buka Dashboard ({{ ucfirst($role) }})
+                    @php
+                        $userRole = Auth::user()->role;
+                        $targetRoute = match($userRole) {
+                            'admin' => route('portal.admin'),
+                            'petani' => route('portal.petani'),
+                            'pembeli' => route('portal.pembeli'),
+                            'pending' => route('onboarding'),
+                            default => route('home'),
+                        };
+                        $btnLabel = $userRole === 'pending' ? 'Lanjutkan Onboarding' : 'Buka Dashboard (' . ucfirst($userRole) . ')';
+                    @endphp
+                    <a href="{{ $targetRoute }}" style="display:block; text-align:center; padding:12px; border-radius:11px; font-size:13px; font-weight:850; color:#053B2D; background:#05C793;">
+                        {{ $btnLabel }}
                     </a>
                 @else
                     <a href="{{ route('login') }}" style="display:block; text-align:center; padding:11px; border-radius:11px; font-size:13px; font-weight:800; color:#163D34; border:1px solid #DFE8E5; background:#fff;">
@@ -427,22 +471,19 @@
                     </a>
                 </div>
             </div>
-
-            <div class="hero-icon">
-                <i class="fa-solid fa-wheat-awn"></i>
-            </div>
         </div>
     </section>
 
     {{-- 2. Section Ekosistem --}}
     <section id="ekosistem" class="section-ekosistem">
-        <div style="text-align:center; max-width:640px; margin:0 auto 40px;">
-            <div style="font-size:10px; font-weight:900; color:#049874; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">EKOSISTEM TANILINK</div>
-            <h2 style="font-size:clamp(22px, 5.5vw, 30px); font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 8px;">Koneksi Adil untuk Petani &amp; Konsumen</h2>
-            <p style="font-size:13px; color:#80908D; margin:0; line-height:1.6;">Menghapus ketidakpastian fluktuasi harga panen dan mata rantai perantara yang merugikan kedua belah pihak.</p>
-        </div>
+        <div class="section-inner-container">
+            <div style="text-align:center; max-width:640px; margin:0 auto 40px;">
+                <div style="font-size:10px; font-weight:900; color:#049874; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">EKOSISTEM TANILINK</div>
+                <h2 style="font-size:clamp(22px, 5.5vw, 30px); font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 8px;">Koneksi Adil untuk Petani &amp; Konsumen</h2>
+                <p style="font-size:13px; color:#80908D; margin:0; line-height:1.6;">Menghapus ketidakpastian fluktuasi harga panen dan mata rantai perantara yang merugikan kedua belah pihak.</p>
+            </div>
 
-        <div class="grid-ekosistem">
+            <div class="grid-ekosistem">
             {{-- Card Petani --}}
             <div style="background:#fff; border:1px solid #E5ECEA; border-radius:20px; padding:28px 24px; box-shadow:0 4px 20px rgba(31,61,45,0.04);">
                 <div style="width:48px; height:48px; border-radius:13px; background:#E9FBF3; color:#0C8D65; display:grid; place-items:center; font-size:20px; margin-bottom:16px;">
@@ -497,7 +538,7 @@
 
     {{-- 3. Section Cara Kerja --}}
     <section id="keunggulan" class="section-cara-kerja">
-        <div style="max-width:1200px; margin:0 auto;">
+        <div class="section-inner-container">
             <div style="text-align:center; max-width:640px; margin:0 auto 40px;">
                 <div style="font-size:10px; font-weight:900; color:#05C793; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">ALUR KERJA PLATFORM</div>
                 <h2 style="font-size:clamp(22px, 5.5vw, 30px); font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 8px;">Cara Kerja TaniLink</h2>
@@ -550,13 +591,14 @@
 
     {{-- 4. Section Escrow Bersama --}}
     <section id="escrow" class="section-escrow">
-        <div style="text-align:center; max-width:620px; margin:0 auto 40px;">
-            <div style="font-size:10px; font-weight:900; color:#7257CA; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">KEAMANAN TRANSAKSI</div>
-            <h2 style="font-size:clamp(22px, 5.5vw, 30px); font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 8px;">Skema Escrow Bersama TaniLink</h2>
-            <p style="font-size:13px; color:#80908D; margin:0; line-height:1.6;">Transaksi terlindungi dengan pemisahan modal kerja petani dan dana pelunasan aman.</p>
-        </div>
+        <div class="section-inner-container">
+            <div style="text-align:center; max-width:620px; margin:0 auto 40px;">
+                <div style="font-size:10px; font-weight:900; color:#7257CA; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">KEAMANAN TRANSAKSI</div>
+                <h2 style="font-size:clamp(22px, 5.5vw, 30px); font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 8px;">Skema Escrow Bersama TaniLink</h2>
+                <p style="font-size:13px; color:#80908D; margin:0; line-height:1.6;">Transaksi terlindungi dengan pemisahan modal kerja petani dan dana pelunasan aman.</p>
+            </div>
 
-        <div class="grid-escrow">
+            <div class="grid-escrow">
             <div style="background:#fff; border:1px solid #E5ECEA; border-radius:18px; padding:24px 22px; box-shadow:0 4px 18px rgba(0,0,0,0.03);">
                 <div style="width:42px; height:42px; border-radius:12px; background:#E9FBF3; color:#0C8D65; display:grid; place-items:center; font-size:18px; font-weight:850; margin-bottom:14px;">
                     1
@@ -591,16 +633,31 @@
 
     {{-- 5. Section Showcase Komoditas Pilihan --}}
     <section id="katalog" class="section-katalog">
-        <div style="max-width:1200px; margin:0 auto;">
+        <div class="section-inner-container">
             <div class="katalog-header">
                 <div>
                     <div style="font-size:10px; font-weight:900; color:#049874; text-transform:uppercase; letter-spacing:1.6px; margin-bottom:6px;">KATALOG TERSEDIA</div>
                     <h2 style="font-size:clamp(22px, 5.5vw, 28px); font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Komoditas Siap Pre-Order</h2>
                     <p style="font-size:13px; color:#80908D; margin:0; line-height:1.6;">Pesan langsung sebelum jadwal panen untuk mengunci pasokan dengan harga terbaik.</p>
                 </div>
-                <a href="{{ route('login') }}" style="display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border-radius:10px; background:#EBF9F2; color:#078362; font-size:12px; font-weight:800; text-decoration:none;">
-                    Lihat Semua Komoditas
-                </a>
+                @auth
+                    @php
+                        $userRole = Auth::user()->role;
+                        $katalogLink = match($userRole) {
+                            'pembeli' => route('pembeli.katalog'),
+                            'petani' => route('petani.komoditas'),
+                            'admin' => route('admin.komoditas'),
+                            default => route('home'),
+                        };
+                    @endphp
+                    <a href="{{ $katalogLink }}" style="display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border-radius:10px; background:#EBF9F2; color:#078362; font-size:12px; font-weight:800; text-decoration:none;">
+                        Lihat Semua Komoditas
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" style="display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border-radius:10px; background:#EBF9F2; color:#078362; font-size:12px; font-weight:800; text-decoration:none;">
+                        Lihat Semua Komoditas
+                    </a>
+                @endauth
             </div>
 
             <div class="grid-katalog">
@@ -613,14 +670,14 @@
                      onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.08)';"
                      onmouseout="this.style.transform='none'; this.style.boxShadow='0 3px 12px rgba(0,0,0,0.03)';">
                     
-                    <div style="height:150px; display:grid; place-items:center; background:linear-gradient(145deg, #F0FDF4, #E2F8EE); position:relative; overflow:hidden;">
-                        @if($item->image_url)
-                            <img src="{{ str_starts_with($item->image_url, 'http') ? $item->image_url : asset($item->image_url) }}"
-                                 alt="{{ $item->commodity_name }}" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;">
-                        @else
-                            <i class="fa-solid fa-seedling" style="font-size:38px; color:#05C793;"></i>
-                        @endif
-                        <span style="position:absolute; top:10px; left:10px; font-size:9.5px; font-weight:850; background:#fff; color:#0C8D65; border-radius:7px; padding:3px 8px; box-shadow:0 2px 5px rgba(0,0,0,0.08);">
+                    <div style="height:160px; display:grid; place-items:center; background:#F0FDF4; position:relative; overflow:hidden;">
+                        <img src="{{ $item->resolved_image_url }}"
+                             alt="{{ $item->commodity_name }}"
+                             onerror="this.onerror=null; this.src='{{ asset('images/products/default-vegetable.jpg') }}';"
+                             style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; transition:transform 0.25s;"
+                             onmouseover="this.style.transform='scale(1.04)';"
+                             onmouseout="this.style.transform='scale(1)';">
+                        <span style="position:absolute; top:10px; left:10px; font-size:9.5px; font-weight:850; background:rgba(255,255,255,0.95); color:#0C8D65; border-radius:7px; padding:3px 8px; box-shadow:0 2px 5px rgba(0,0,0,0.08); z-index:1;">
                             Stok {{ number_format($item->available_kg, 0, ',', '.') }} kg
                         </span>
                     </div>
@@ -656,16 +713,40 @@
         </div>
     </section>
 
+    {{-- 6. Section Call To Action (Full-Width) --}}
+    <section style="width:100%; box-sizing:border-box; background:linear-gradient(135deg, #053B2D 0%, #075E48 100%); color:#fff; padding:72px 24px; position:relative; overflow:hidden;">
+        <div style="position:absolute; inset:0; opacity:0.12; background-image:radial-gradient(#05C793 1.5px, transparent 1.5px); background-size:24px 24px;"></div>
+        <div class="section-inner-container" style="position:relative; z-index:2; text-align:center;">
+            <span style="display:inline-block; padding:5px 12px; border-radius:9999px; background:rgba(5,199,147,0.2); border:1px solid rgba(5,199,147,0.35); font-size:11px; font-weight:850; color:#A7F3D0; letter-spacing:1px; text-transform:uppercase; margin-bottom:14px;">
+                GABUNG SEKARANG
+            </span>
+            <h2 style="font-size:clamp(24px, 5vw, 36px); font-weight:850; letter-spacing:-1px; margin:0 0 12px; color:#ffffff;">
+                Siap Mewujudkan Transaksi Pertanian yang Pasti?
+            </h2>
+            <p style="font-size:14px; color:#C2E8D8; max-width:600px; margin:0 auto 28px; line-height:1.7;">
+                Mulai kemitraan agrikultur transparan hari ini. Baik sebagai petani produsen maupun konsumen usaha, amankan panen dan pasokan Anda bersama TaniLink.
+            </p>
+            <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+                <a href="{{ route('register') }}" style="padding:14px 28px; border-radius:12px; background:#05C793; color:#053B2D; font-size:13px; font-weight:850; text-decoration:none; box-shadow:0 4px 16px rgba(5,199,147,0.35);">
+                    Daftar Kemitraan Baru
+                </a>
+                <a href="{{ route('login') }}" style="padding:14px 26px; border-radius:12px; background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.25); font-size:13px; font-weight:800; text-decoration:none; backdrop-filter:blur(8px);">
+                    Masuk ke Akun
+                </a>
+            </div>
+        </div>
+    </section>
+
     {{-- Footer --}}
-    <footer style="background:#ffffff; padding:40px 20px; text-align:center; border-top:1px solid #E5ECEA;">
-        <div style="max-width:1200px; margin:0 auto;">
+    <footer style="width:100%; box-sizing:border-box; background:#ffffff; padding:44px 20px; text-align:center; border-top:1px solid #E5ECEA;">
+        <div class="section-inner-container">
             <div style="display:flex; justify-content:center; align-items:center; margin-bottom:12px;">
                 <x-brand-logo variant="full" height="34px" alt="TaniLink" />
             </div>
-            <p style="font-size:11.5px; color:#8A9D95; margin:0 0 10px;">
+            <p style="font-size:12px; color:#8A9D95; margin:0 0 10px;">
                 Platform Agrikultur Terencana &bull; Kepastian Suplai Panen &amp; Rekening Bersama Escrow
             </p>
-            <div style="font-size:10px; color:#A2AEAA;">
+            <div style="font-size:10.5px; color:#A2AEAA;">
                 &copy; {{ date('Y') }} TaniLink Indonesia. Hak cipta dilindungi undang-undang.
             </div>
         </div>

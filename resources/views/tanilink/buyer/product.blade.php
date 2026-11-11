@@ -48,7 +48,18 @@
 }
 @media (max-width: 640px) {
     .product-main-photo {
-        height: 240px;
+        height: 220px;
+    }
+    .product-detail-layout {
+        gap: 14px;
+    }
+    .product-detail-layout .card {
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+    .product-detail-layout h1 {
+        font-size: 20px !important;
+        margin: 10px 0 4px !important;
     }
 }
 </style>
@@ -56,8 +67,7 @@
 
 @section('content')
 @php
-    $imgUrl = $listing->image_url ?? '';
-    $hasImage = !empty($imgUrl);
+    $imgSrc = $listing->resolved_image_url;
 @endphp
 
     {{-- Grid 2 Kolom --}}
@@ -69,13 +79,10 @@
             {{-- Foto Utama Komoditas --}}
             <div class="card" style="padding:16px;">
                 <div class="product-main-photo">
-                    @if($hasImage)
-                        <img src="{{ str_starts_with($imgUrl, 'http') ? $imgUrl : asset($imgUrl) }}"
-                             alt="{{ $listing->commodity_name }}"
-                             style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;">
-                    @else
-                        <i class="fa-solid fa-leaf" style="font-size:72px; color:#10B981;"></i>
-                    @endif
+                    <img src="{{ $imgSrc }}"
+                         alt="{{ $listing->commodity_name }}"
+                         onerror="this.onerror=null; this.src='{{ asset('images/products/default-vegetable.jpg') }}';"
+                         style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;">
 
                     {{-- Badges di atas foto --}}
                     <div style="position:absolute; top:16px; left:16px; display:flex; gap:8px;">

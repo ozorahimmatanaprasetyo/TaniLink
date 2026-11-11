@@ -102,10 +102,19 @@
     }
     @media (max-width: 480px) {
         .orders-metrics-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 10px !important;
+            margin-bottom: 16px !important;
         }
         .orders-metrics-grid > div:last-child {
-            grid-column: span 1;
+            grid-column: span 2 !important;
+        }
+        .orders-metrics-grid .card {
+            padding: 12px 14px !important;
+            border-radius: 14px !important;
+        }
+        .orders-headline h1 {
+            font-size: 20px !important;
         }
     }
 </style>
@@ -165,8 +174,6 @@
             </div>
             <div style="font-size:10px; color:#7B9187;">Pesanan selesai atau dibatalkan</div>
         </div>
-    </div>
-
     </div>
 
     {{-- Segmented Navigation Tabs --}}

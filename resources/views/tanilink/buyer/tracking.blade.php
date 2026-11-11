@@ -97,7 +97,10 @@
             </p>
         </div>
 
-        <div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <a href="{{ route('pembeli.pesanan') }}" class="btn btn-secondary" style="font-size:12px; padding:7px 14px; min-height:auto;">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Pesanan
+            </a>
             @if($order->status === 'menunggu_konfirmasi')
                 <span style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; background:#FEF3C7; color:#D97706; font-weight:800; font-size:12px;">
                     Menunggu Persetujuan Petani
@@ -297,12 +300,26 @@
                 {{-- 4-Phase System Timeline --}}
                 <div class="tracking-phase-grid">
                     @foreach($order->harvestBatch->phase_timeline as $ph)
-                    <div style="padding:12px; border-radius:10px; border:1px solid {{ $ph['status'] === 'selesai' ? '#A7F3D0' : ($ph['status'] === 'berlangsung' ? '#05C793' : '#E5ECEA') }};
-                                background:{{ $ph['status'] === 'selesai' ? '#F0FDF8' : ($ph['status'] === 'berlangsung' ? '#E6FFFA' : '#FAFCFB') }};">
-                        <div style="font-size:11px; font-weight:850; color:#172B29;">{{ $ph['index'] }}. {{ $ph['short'] }}</div>
-                        <div style="font-size:10px; margin-top:3px;
-                            {{ $ph['status'] === 'selesai' ? 'color:#047857; font-weight:800;' : ($ph['status'] === 'berlangsung' ? 'color:#0E7490; font-weight:800;' : 'color:#94A3B8;') }}">
-                            {{ $ph['status'] === 'selesai' ? '✓ Selesai' : ($ph['status'] === 'berlangsung' ? '● Berlangsung' : 'Menunggu') }}
+                    <div style="border-radius:12px; border:1px solid {{ $ph['status'] === 'selesai' ? '#A7F3D0' : ($ph['status'] === 'berlangsung' ? '#05C793' : '#E5ECEA') }};
+                                background:{{ $ph['status'] === 'selesai' ? '#F0FDF8' : ($ph['status'] === 'berlangsung' ? '#E6FFFA' : '#FAFCFB') }};
+                                overflow:hidden; display:flex; flex-direction:column; justify-content:space-between;">
+                        <div style="height:70px; width:100%; position:relative; overflow:hidden; background:#E2E8F0;">
+                            <img src="{{ $ph['image_url'] }}"
+                                 alt="{{ $ph['name'] }}"
+                                 onerror="this.onerror=null; this.src='{{ asset('images/phases/fase-4-vegetatif.jpg') }}';"
+                                 style="width:100%; height:100%; object-fit:cover;">
+                            <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%);"></div>
+                            <span style="position:absolute; top:6px; left:6px; width:22px; height:22px; border-radius:6px; display:grid; place-items:center; font-size:11px; font-weight:850;
+                                {{ $ph['status'] === 'selesai' ? 'background:#05C793; color:#fff;' : ($ph['status'] === 'berlangsung' ? 'background:#0E7490; color:#fff;' : 'background:#E2E8F0; color:#64748B;') }}">
+                                {{ $ph['status'] === 'selesai' ? '✓' : $ph['index'] }}
+                            </span>
+                        </div>
+                        <div style="padding:10px;">
+                            <div style="font-size:11px; font-weight:850; color:#172B29;">{{ $ph['short'] }}</div>
+                            <div style="font-size:10px; margin-top:3px;
+                                {{ $ph['status'] === 'selesai' ? 'color:#047857; font-weight:800;' : ($ph['status'] === 'berlangsung' ? 'color:#0E7490; font-weight:800;' : 'color:#94A3B8;') }}">
+                                {{ $ph['status'] === 'selesai' ? '✓ Selesai' : ($ph['status'] === 'berlangsung' ? '● Berlangsung' : 'Menunggu') }}
+                            </div>
                         </div>
                     </div>
                     @endforeach
@@ -325,13 +342,12 @@
                 <div style="display:flex; flex-direction:column; gap:14px;">
                     @foreach($batchProgress as $prog)
                     <div class="tracking-doc-item">
-                        @if($prog->photo_url)
                         <div style="width:110px; height:85px; border-radius:8px; overflow:hidden; flex-shrink:0; background:#F8FCFA;">
-                            <img src="{{ str_starts_with($prog->photo_url, 'http') ? $prog->photo_url : asset($prog->photo_url) }}"
+                            <img src="{{ $prog->resolved_photo_url }}"
                                  alt="{{ $prog->stage_name }}"
+                                 onerror="this.onerror=null; this.src='{{ asset('images/phases/fase-4-vegetatif.jpg') }}';"
                                  style="width:100%; height:100%; object-fit:cover;">
                         </div>
-                        @endif
                         <div style="flex:1;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                                 <span style="font-size:10px; font-weight:800; color:#0C8D65; background:#E9F9F2; padding:2px 7px; border-radius:4px;">

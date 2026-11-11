@@ -307,12 +307,26 @@
                 {{-- Status 4 Fase Singkat --}}
                 <div class="progress-phase-grid">
                     @foreach($order->harvestBatch->phase_timeline as $ph)
-                    <div style="padding:10px; border-radius:10px; border:1px solid {{ $ph['status'] === 'selesai' ? '#A7F3D0' : ($ph['status'] === 'berlangsung' ? '#05C793' : '#E5ECEA') }};
-                                background:{{ $ph['status'] === 'selesai' ? '#F0FDF8' : ($ph['status'] === 'berlangsung' ? '#E6FFFA' : '#FAFCFB') }};">
-                        <div style="font-weight:800; color:#172B29;">{{ $ph['index'] }}. {{ $ph['short'] }}</div>
-                        <div style="font-size:10px; margin-top:3px;
-                            {{ $ph['status'] === 'selesai' ? 'color:#047857; font-weight:800;' : ($ph['status'] === 'berlangsung' ? 'color:#0E7490; font-weight:800;' : 'color:#94A3B8;') }}">
-                            {{ $ph['status'] === 'selesai' ? '✓ Selesai' : ($ph['status'] === 'berlangsung' ? '● Berlangsung' : 'Menunggu') }}
+                    <div style="border-radius:12px; border:1px solid {{ $ph['status'] === 'selesai' ? '#A7F3D0' : ($ph['status'] === 'berlangsung' ? '#05C793' : '#E5ECEA') }};
+                                background:{{ $ph['status'] === 'selesai' ? '#F0FDF8' : ($ph['status'] === 'berlangsung' ? '#E6FFFA' : '#FAFCFB') }};
+                                overflow:hidden; display:flex; flex-direction:column; justify-content:space-between;">
+                        <div style="height:64px; width:100%; position:relative; overflow:hidden; background:#E2E8F0;">
+                            <img src="{{ $ph['image_url'] }}"
+                                 alt="{{ $ph['name'] }}"
+                                 onerror="this.onerror=null; this.src='{{ asset('images/phases/fase-4-vegetatif.jpg') }}';"
+                                 style="width:100%; height:100%; object-fit:cover;">
+                            <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%);"></div>
+                            <span style="position:absolute; top:6px; left:6px; width:20px; height:20px; border-radius:6px; display:grid; place-items:center; font-size:10px; font-weight:850;
+                                {{ $ph['status'] === 'selesai' ? 'background:#05C793; color:#fff;' : ($ph['status'] === 'berlangsung' ? 'background:#0E7490; color:#fff;' : 'background:#E2E8F0; color:#64748B;') }}">
+                                {{ $ph['status'] === 'selesai' ? '✓' : $ph['index'] }}
+                            </span>
+                        </div>
+                        <div style="padding:8px 10px;">
+                            <div style="font-size:11px; font-weight:800; color:#172B29;">{{ $ph['short'] }}</div>
+                            <div style="font-size:9.5px; margin-top:2px;
+                                {{ $ph['status'] === 'selesai' ? 'color:#047857; font-weight:800;' : ($ph['status'] === 'berlangsung' ? 'color:#0E7490; font-weight:800;' : 'color:#94A3B8;') }}">
+                                {{ $ph['status'] === 'selesai' ? '✓ Selesai' : ($ph['status'] === 'berlangsung' ? '● Berlangsung' : 'Menunggu') }}
+                            </div>
                         </div>
                     </div>
                     @endforeach

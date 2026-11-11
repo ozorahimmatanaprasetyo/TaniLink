@@ -260,11 +260,12 @@
                 <div style="display:flex; flex-direction:column; gap:12px;">
                     @forelse($order->harvestBatch->plantingProgress->take(4) as $prog)
                     <div style="display:flex; gap:12px; border:1px solid #EEF2F0; border-radius:10px; padding:10px; background:#fff;">
-                        @if($prog->photo_url)
-                        <div style="width:60px; height:60px; border-radius:8px; overflow:hidden; flex-shrink:0;">
-                            <img src="{{ str_starts_with($prog->photo_url, 'http') ? $prog->photo_url : asset($prog->photo_url) }}" style="width:100%; height:100%; object-fit:cover;">
+                        <div style="width:60px; height:60px; border-radius:8px; overflow:hidden; flex-shrink:0; background:#F8FCFA;">
+                            <img src="{{ $prog->resolved_photo_url }}"
+                                 alt="{{ $prog->stage_name }}"
+                                 onerror="this.onerror=null; this.src='{{ asset('images/phases/fase-4-vegetatif.jpg') }}';"
+                                 style="width:100%; height:100%; object-fit:cover;">
                         </div>
-                        @endif
                         <div style="flex:1;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span style="font-size:10px; font-weight:800; color:#0C8D65; background:#E9FBF3; padding:2px 6px; border-radius:4px;">{{ $prog->stage_name }}</span>

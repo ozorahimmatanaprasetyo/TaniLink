@@ -19,6 +19,10 @@
 
 @push('styles')
 <style>
+.catalog-filter-card {
+    padding: 20px 22px;
+    margin-bottom: 22px;
+}
 .catalog-filter-row1 {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -36,27 +40,174 @@
     align-items: center;
     gap: 8px;
 }
+
+/* ── Responsive Product Grid ── */
+/* Desktop (>1024px): 4 Kolom */
 .catalog-product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 16px;
 }
+
+/* Tablet (768px - 1024px): 3 Kolom */
+@media (max-width: 1024px) {
+    .catalog-product-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+    }
+}
+
+/* Small Tablet (641px - 768px): 2 Kolom */
+@media (max-width: 768px) {
+    .catalog-product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+/* Mobile Devices (<= 640px): 2 Kolom Shopee Style */
 @media (max-width: 640px) {
+    .mobile-filter-toggle {
+        display: flex !important;
+    }
+    .catalog-filter-card {
+        padding: 12px 14px !important;
+        margin-bottom: 14px !important;
+        border-radius: 14px !important;
+    }
     .catalog-filter-row1 {
         grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
     }
     .catalog-filter-row2 {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
     .catalog-filter-actions {
         width: 100%;
+        gap: 8px;
+        margin-top: 4px;
     }
     .catalog-filter-actions button {
         flex: 1;
         justify-content: center;
+        padding: 9px 12px !important;
+        font-size: 11.5px !important;
+        border-radius: 9px !important;
     }
+
+    /* 2 Kolom Persis Shopee */
     .catalog-product-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+
+    .catalog-header-title {
+        font-size: 20px !important;
+        margin-bottom: 4px !important;
+    }
+    .catalog-header-desc {
+        font-size: 11.5px !important;
+    }
+
+    .catalog-card-compact {
+        border-radius: 12px !important;
+    }
+    /* 1:1 Aspect Ratio Shopee-style Image */
+    .catalog-card-image-box {
+        width: 100% !important;
+        aspect-ratio: 1 / 1 !important;
+        height: auto !important;
+    }
+    .catalog-card-content {
+        padding: 10px 9px 8px !important;
+    }
+    .catalog-card-badge {
+        font-size: 7.5px !important;
+        padding: 2px 6px !important;
+        border-radius: 5px !important;
+        top: 6px !important;
+        left: 6px !important;
+    }
+    .catalog-card-category {
+        font-size: 8.5px !important;
+    }
+    .catalog-card-title {
+        font-size: 12.5px !important;
+        line-height: 1.3 !important;
+        height: 32px !important;
+        white-space: normal !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        margin: 2px 0 3px !important;
+    }
+    .catalog-card-meta {
+        font-size: 10px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .catalog-card-price-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        margin: 4px 0 !important;
+        gap: 1px !important;
+    }
+    .catalog-card-price {
+        font-size: 14px !important;
+        line-height: 1.2 !important;
+    }
+    .catalog-card-stock {
+        font-size: 9.5px !important;
+        color: #71877F !important;
+    }
+    .catalog-card-harvest {
+        font-size: 9px !important;
+        margin-bottom: 6px !important;
+        line-height: 1.25 !important;
+    }
+    .catalog-card-desc {
+        display: none !important; /* Shopee card grid tidak menampilkan paragraf panjang agar card proporsional */
+    }
+    .catalog-card-actions {
+        padding: 0 9px 10px !important;
+        gap: 5px !important;
+    }
+    .catalog-card-actions a {
+        padding: 7px 6px !important;
+        font-size: 10.5px !important;
+        border-radius: 7px !important;
+    }
+    .catalog-card-actions .btn-detail {
+        display: none !important; /* Pada tampilan Shopee 2 kolom, fokus pada 1 tombol utama pre-order */
+    }
+}
+
+/* HP Sangat Kecil (<= 375px) */
+@media (max-width: 375px) {
+    .catalog-product-grid {
+        gap: 8px !important;
+    }
+    .catalog-card-content {
+        padding: 8px 7px 6px !important;
+    }
+    .catalog-card-title {
+        font-size: 11.5px !important;
+        height: 30px !important;
+    }
+    .catalog-card-price {
+        font-size: 13.5px !important;
+    }
+    .catalog-card-actions {
+        padding: 0 7px 8px !important;
+    }
+    .catalog-card-actions a {
+        font-size: 10px !important;
+        padding: 6px 4px !important;
     }
 }
 </style>
@@ -78,6 +229,11 @@
     priceError: '',
     dateError: '',
     visibleCount: 0,
+    filterOpen: false,
+
+    get hasActiveFilters() {
+        return !!(this.kategori || this.appliedMinPrice || this.appliedMaxPrice || this.appliedStartDate || this.appliedEndDate);
+    },
 
     formatRupiah(val) {
         if (!val) return '';
@@ -184,108 +340,106 @@
 
     {{-- Page Header --}}
     <div style="margin-bottom:18px;">
-        <h1 style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Marketplace Komoditas</h1>
-        <p style="font-size:12px; color:#8A9A94; margin:0;">Cari hasil panen segar langsung dari petani lokal dengan kepastian harga dan jadwal panen.</p>
+        <h1 class="catalog-header-title" style="font-size:26px; font-weight:850; letter-spacing:-1px; color:#172B29; margin:0 0 6px;">Marketplace Komoditas</h1>
+        <p class="catalog-header-desc" style="font-size:12px; color:#8A9A94; margin:0;">Cari hasil panen segar langsung dari petani lokal dengan kepastian harga dan jadwal panen.</p>
     </div>
 
-    {{-- Search / Filter Card --}}
-    <div class="card" style="padding: 20px 22px; margin-bottom: 22px;">
-        {{-- Row 1: Search & Category --}}
-        <div class="catalog-filter-row1">
-            {{-- Search --}}
-            <div style="position: relative;">
+    {{-- Search / Filter Card (Collapsible on Mobile) --}}
+    <div class="card catalog-filter-card">
+        {{-- Row 1: Search & Filter Toggle --}}
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
+            {{-- Search Bar (Full Width) --}}
+            <div style="position:relative; flex:1;">
                 <i class="fa-solid fa-search" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#80908D; font-size:13px;"></i>
                 <input type="text" x-model="search" @input="$nextTick(() => updateCount())" placeholder="Cari nama komoditas, varietas..."
-                       style="width:100%; padding:10px 14px 10px 38px; border:1.5px solid #E5ECEA; border-radius:11px; font-size:12.5px; color:#172B29; font-family:inherit; outline:none; transition:border-color 0.15s;"
+                       class="catalog-input-compact"
+                       style="width:100%; height:42px; padding:9px 14px 9px 38px; border:1.5px solid #E5ECEA; border-radius:11px; font-size:12.5px; color:#172B29; font-family:inherit; outline:none; transition:border-color 0.15s; box-sizing:border-box;"
                        @focus="$el.style.borderColor='#05C793'"
                        @blur="$el.style.borderColor='#E5ECEA'">
             </div>
-            {{-- Kategori --}}
-            <select x-model="kategori" @change="$nextTick(() => updateCount())"
-                    style="width:100%; padding:10px 14px; border:1.5px solid #E5ECEA; border-radius:11px; font-size:12.5px; color:#172B29; font-family:inherit; outline:none; background:white; cursor:pointer;">
-                <option value="">Semua Kategori</option>
-                @foreach($catalog->pluck('category')->unique()->filter() as $kat)
-                <option value="{{ $kat }}">{{ $kat }}</option>
-                @endforeach
-            </select>
+
+            {{-- Mobile Collapsible Filter Toggle Button --}}
+            <button type="button" @click="filterOpen = !filterOpen"
+                    class="mobile-filter-toggle"
+                    style="display:none; height:42px; padding:0 14px; border-radius:11px; border:1.5px solid #E5ECEA; background:#fff; color:#172B29; font-size:12px; font-weight:750; align-items:center; gap:6px; cursor:pointer; flex-shrink:0;">
+                <i class="fa-solid fa-sliders" :style="hasActiveFilters ? 'color:#05C793;' : 'color:#5C736A;'"></i>
+                <span>Filter</span>
+                <span x-show="hasActiveFilters" style="width:7px; height:7px; border-radius:50%; background:#05C793;"></span>
+            </button>
         </div>
 
-        {{-- Row 2: Rentang Harga & Rentang Tanggal Panen + Aksi --}}
-        <div class="catalog-filter-row2">
-            
-            {{-- Filter Rentang Harga (Shopee/Sports Station style) --}}
-            <div>
-                <label style="display:block; font-size:11px; font-weight:750; color:#495D56; margin-bottom:6px;">
-                    Rentang Harga (Rp/kg)
-                </label>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="position: relative; flex: 1;">
-                        <input type="number" x-model="minPriceInput" placeholder="Harga Minimum"
-                               min="0" step="500"
-                               style="width:100%; padding:9px 12px; border:1.5px solid #E5ECEA; border-radius:10px; font-size:12px; color:#172B29; outline:none; transition:border-color 0.15s;"
-                               @focus="$el.style.borderColor='#05C793'"
-                               @blur="$el.style.borderColor='#E5ECEA'">
-                    </div>
-                    <span style="color:#80908D; font-weight:700; font-size:12px;">–</span>
-                    <div style="position: relative; flex: 1;">
-                        <input type="number" x-model="maxPriceInput" placeholder="Harga Maksimum"
-                               min="0" step="500"
-                               style="width:100%; padding:9px 12px; border:1.5px solid #E5ECEA; border-radius:10px; font-size:12px; color:#172B29; outline:none; transition:border-color 0.15s;"
-                               @focus="$el.style.borderColor='#05C793'"
-                               @blur="$el.style.borderColor='#E5ECEA'">
-                    </div>
+        {{-- Collapsible Content: Kategori, Harga, Tanggal Panen, dan Aksi --}}
+        <div class="catalog-filter-collapsible" x-show="filterOpen || window.innerWidth > 640" x-transition>
+            {{-- Kategori & Rentang Harga/Tanggal --}}
+            <div class="catalog-filter-row1" style="margin-bottom:12px;">
+                {{-- Kategori Dropdown --}}
+                <div>
+                    <label class="catalog-label-compact" style="display:block; font-size:11px; font-weight:750; color:#495D56; margin-bottom:5px;">
+                        Kategori Komoditas
+                    </label>
+                    <select x-model="kategori" @change="$nextTick(() => updateCount())"
+                            class="catalog-input-compact"
+                            style="width:100%; height:40px; padding:8px 12px; border:1.5px solid #E5ECEA; border-radius:10px; font-size:12px; color:#172B29; font-family:inherit; outline:none; background:white; cursor:pointer; box-sizing:border-box;">
+                        <option value="">Semua Kategori</option>
+                        @foreach($catalog->pluck('category')->unique()->filter() as $kat)
+                        <option value="{{ $kat }}">{{ $kat }}</option>
+                        @endforeach
+                    </select>
                 </div>
-                <template x-if="minPriceInput || maxPriceInput">
-                    <div style="font-size:10.5px; color:#0A765A; font-weight:700; margin-top:4px;">
-                        <span x-text="minPriceInput ? formatRupiah(minPriceInput) : 'Rp 0'"></span>
-                        <span> – </span>
-                        <span x-text="maxPriceInput ? formatRupiah(maxPriceInput) : 'Tak terbatas'"></span>
+
+                {{-- Rentang Harga (Rp/kg) --}}
+                <div>
+                    <label class="catalog-label-compact" style="display:block; font-size:11px; font-weight:750; color:#495D56; margin-bottom:5px;">
+                        Rentang Harga (Rp/kg)
+                    </label>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <input type="number" x-model="minPriceInput" placeholder="Min" min="0" step="500"
+                               class="catalog-input-compact"
+                               style="width:100%; height:40px; padding:8px 10px; border:1.5px solid #E5ECEA; border-radius:10px; font-size:12px; color:#172B29; outline:none; box-sizing:border-box;">
+                        <span style="color:#80908D; font-weight:700; font-size:11px;">–</span>
+                        <input type="number" x-model="maxPriceInput" placeholder="Maks" min="0" step="500"
+                               class="catalog-input-compact"
+                               style="width:100%; height:40px; padding:8px 10px; border:1.5px solid #E5ECEA; border-radius:10px; font-size:12px; color:#172B29; outline:none; box-sizing:border-box;">
                     </div>
-                </template>
-                <template x-if="priceError">
-                    <div style="font-size:10.5px; color:#DC2626; font-weight:700; margin-top:4px;" x-text="priceError"></div>
-                </template>
+                    <template x-if="priceError">
+                        <div style="font-size:10px; color:#DC2626; font-weight:700; margin-top:3px;" x-text="priceError"></div>
+                    </template>
+                </div>
             </div>
 
-            {{-- Filter Rentang Tanggal Panen --}}
-            <div>
-                <label style="display:block; font-size:11px; font-weight:750; color:#495D56; margin-bottom:6px;">
-                    Estimasi Tanggal Panen
-                </label>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="position: relative; flex: 1;">
+            {{-- Row 2: Rentang Tanggal Panen + Aksi --}}
+            <div class="catalog-filter-row2">
+                {{-- Estimasi Panen --}}
+                <div>
+                    <label class="catalog-label-compact" style="display:block; font-size:11px; font-weight:750; color:#495D56; margin-bottom:5px;">
+                        Estimasi Tanggal Panen
+                    </label>
+                    <div style="display:flex; align-items:center; gap:6px;">
                         <input type="date" x-model="startDateInput"
-                               style="width:100%; padding:9px 10px; border:1.5px solid #E5ECEA; border-radius:10px; font-size:12px; color:#172B29; outline:none; background:white; cursor:pointer; transition:border-color 0.15s;"
-                               @focus="$el.style.borderColor='#05C793'"
-                               @blur="$el.style.borderColor='#E5ECEA'">
-                    </div>
-                    <span style="color:#80908D; font-weight:700; font-size:12px;">–</span>
-                    <div style="position: relative; flex: 1;">
+                               class="catalog-input-compact"
+                               style="width:100%; height:40px; padding:8px 8px; border:1.5px solid #E5ECEA; border-radius:10px; font-size:11.5px; color:#172B29; outline:none; background:white; cursor:pointer; box-sizing:border-box;">
+                        <span style="color:#80908D; font-weight:700; font-size:11px;">–</span>
                         <input type="date" x-model="endDateInput"
-                               style="width:100%; padding:9px 10px; border:1.5px solid #E5ECEA; border-radius:10px; font-size:12px; color:#172B29; outline:none; background:white; cursor:pointer; transition:border-color 0.15s;"
-                               @focus="$el.style.borderColor='#05C793'"
-                               @blur="$el.style.borderColor='#E5ECEA'">
+                               class="catalog-input-compact"
+                               style="width:100%; height:40px; padding:8px 8px; border:1.5px solid #E5ECEA; border-radius:10px; font-size:11.5px; color:#172B29; outline:none; background:white; cursor:pointer; box-sizing:border-box;">
                     </div>
+                    <template x-if="dateError">
+                        <div style="font-size:10px; color:#DC2626; font-weight:700; margin-top:3px;" x-text="dateError"></div>
+                    </template>
                 </div>
-                <template x-if="dateError">
-                    <div style="font-size:10.5px; color:#DC2626; font-weight:700; margin-top:4px;" x-text="dateError"></div>
-                </template>
-            </div>
 
-            {{-- Tombol Aksi: Terapkan & Reset --}}
-            <div class="catalog-filter-actions">
-                <button type="button" @click="applyFilter()"
-                        style="padding: 10px 18px; border-radius: 10px; background: #05C793; border: none; color: #053B2D; font-size: 12px; font-weight: 850; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(5,199,147,0.25); transition: background 0.15s;"
-                        onmouseover="this.style.background='#04b384'" onmouseout="this.style.background='#05C793'">
-                    <i class="fa-solid fa-filter"></i> Terapkan Filter
-                </button>
-                <button type="button" @click="resetFilter()"
-                        style="padding: 10px 14px; border-radius: 10px; background: #F1F5F3; border: 1px solid #DFE8E4; color: #4B6358; font-size: 12px; font-weight: 750; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: background 0.15s;"
-                        onmouseover="this.style.background='#E5ECE8'" onmouseout="this.style.background='#F1F5F3'">
-                    <i class="fa-solid fa-rotate-left"></i> Reset
-                </button>
+                {{-- Action Buttons --}}
+                <div class="catalog-filter-actions">
+                    <button type="button" @click="applyFilter()"
+                            style="padding:10px 18px; border-radius:10px; background:#05C793; border:none; color:#053B2D; font-size:12px; font-weight:850; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(5,199,147,0.25);">
+                        <i class="fa-solid fa-filter"></i> Terapkan
+                    </button>
+                    <button type="button" @click="resetFilter()"
+                            style="padding:10px 14px; border-radius:10px; background:#F1F5F3; border:1px solid #DFE8E4; color:#4B6358; font-size:12px; font-weight:750; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    </button>
+                </div>
             </div>
-
         </div>
     </div>
 
@@ -299,11 +453,11 @@
     <div class="catalog-product-grid">
         @forelse($availableListings as $listing)
         @php
-            $imgUrl = $listing->image_url ?? '';
-            $hasImage = !empty($imgUrl);
+            $imgSrc = $listing->resolved_image_url;
             $harvestDateYmd = \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('Y-m-d');
         @endphp
         <div data-listing
+             class="catalog-card-compact"
              x-show="matches({
                  name: '{{ strtolower(addslashes($listing->commodity_name . ' ' . ($listing->variety ?? ''))) }}',
                  kategori: '{{ addslashes($listing->category) }}',
@@ -313,44 +467,43 @@
              style="border: 1px solid #E5ECEA; border-radius: 16px; background: white; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
 
             <div>
-                {{-- Image / Emoji --}}
-                <div style="height: 135px; display: flex; align-items: center; justify-content: center; font-size: 48px; position: relative; background: linear-gradient(145deg, #FFE6D9, #FFF3E9);">
-                    @if($hasImage)
-                        <img src="{{ str_starts_with($imgUrl, 'http') ? $imgUrl : asset($imgUrl) }}"
-                             alt="{{ $listing->commodity_name }}"
-                             style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;">
-                    @else
-                        <i class="fa-solid fa-leaf" style="font-size:42px; color:#10B981;"></i>
-                    @endif
-                    <span style="position:absolute; top:10px; left:10px; font-size:9px; font-weight:900; background:white; border-radius:8px; padding:3px 8px; box-shadow:0 1px 4px rgba(0,0,0,0.1); z-index:1; color:#0C8D65;">
+                {{-- Image / Photo 1:1 Aspect Ratio Shopee Style --}}
+                <div class="catalog-card-image-box" style="height: 140px; display: flex; align-items: center; justify-content: center; position: relative; background: #F0FDF4; overflow: hidden;">
+                    <img src="{{ $imgSrc }}"
+                         alt="{{ $listing->commodity_name }}"
+                         onerror="this.onerror=null; this.src='{{ asset('images/products/default-vegetable.jpg') }}';"
+                         style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; transition: transform 0.25s ease;"
+                         onmouseover="this.style.transform='scale(1.04)';"
+                         onmouseout="this.style.transform='scale(1)';">
+                    <span class="catalog-card-badge" style="position:absolute; top:8px; left:8px; font-size:8.5px; font-weight:900; background:rgba(255,255,255,0.95); border-radius:6px; padding:2px 7px; box-shadow:0 1px 4px rgba(0,0,0,0.1); z-index:1; color:#0C8D65;">
                         Tersedia
                     </span>
                 </div>
 
                 {{-- Info --}}
-                <div style="padding: 14px;">
-                    <div style="font-size: 10px; color: #80908D; text-transform:uppercase; font-weight:800;">{{ $listing->category ?? 'Komoditas' }}</div>
-                    <h3 style="font-size: 14px; font-weight: 850; margin: 4px 0 2px; color: #172B29; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div class="catalog-card-content" style="padding: 14px;">
+                    <div class="catalog-card-category" style="font-size: 9.5px; color: #80908D; text-transform:uppercase; font-weight:800;">{{ $listing->category ?? 'Komoditas' }}</div>
+                    <h3 class="catalog-card-title" style="font-size: 14.5px; font-weight: 850; margin: 3px 0 2px; color: #172B29;">
                         {{ $listing->commodity_name }}
                     </h3>
-                    <div style="font-size: 10.5px; color: #80908D; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <div class="catalog-card-meta" style="font-size: 10.5px; color: #80908D;">
                         {{ $listing->variety ? $listing->variety . ' • ' : '' }}{{ $listing->location ?? 'Malang' }}
                     </div>
 
-                    <div style="display:flex; align-items:baseline; justify-content:space-between; margin: 10px 0 6px;">
-                        <div style="font-size: 16px; font-weight: 900; color: #0A765A;">
+                    <div class="catalog-card-price-row" style="display:flex; align-items:baseline; justify-content:space-between; margin: 8px 0 5px;">
+                        <div class="catalog-card-price" style="font-weight: 900; color: #0A765A;">
                             Rp {{ number_format($listing->price_per_kg, 0, ',', '.') }}
                             <span style="font-size: 10px; font-weight: 500; color: #80908D;">/kg</span>
                         </div>
-                        <div style="font-size:11px; font-weight:700; color:#172B29;">{{ number_format($listing->available_kg, 0, ',', '.') }} kg</div>
+                        <div class="catalog-card-stock" style="font-size:10.5px; font-weight:700; color:#172B29;">Stok: {{ number_format($listing->available_kg, 0, ',', '.') }} kg</div>
                     </div>
 
-                    <div style="font-size:10px; color:#80908D; margin-bottom: 10px;">
+                    <div class="catalog-card-harvest" style="font-size:9.5px; color:#80908D; margin-bottom: 8px;">
                         Est. Panen: <b style="color:#172B29;">{{ \Carbon\Carbon::parse($listing->harvest_estimated_date)->format('d M Y') }}</b>
                     </div>
 
                     @if(!empty($listing->description))
-                    <div style="font-size:11px; color:#556C62; line-height:1.45; margin-bottom:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;" title="{{ $listing->description }}">
+                    <div class="catalog-card-desc" style="font-size:11px; color:#556C62; line-height:1.45; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;" title="{{ $listing->description }}">
                         {{ $listing->description }}
                     </div>
                     @endif
@@ -358,14 +511,15 @@
             </div>
 
             {{-- Action Buttons --}}
-            <div style="padding: 0 14px 14px; display:flex; flex-direction:column; gap:8px;">
+            <div class="catalog-card-actions" style="padding: 0 14px 14px; display:flex; flex-direction:column; gap:8px;">
                 <a href="{{ route('pembeli.komoditas.show', $listing->id) }}"
+                   class="btn-detail"
                    style="display:flex; align-items:center; justify-content:center; gap:5px; width:100%; text-align:center; padding:8px; border-radius:9px; border:1px solid #DFE8E5; background:#fff; color:#365249; font-size:11.5px; font-weight:800; text-decoration:none;">
                     Lihat Detail
                 </a>
                 <a href="{{ route('pembeli.preorder', $listing->id) }}"
-                   style="display:flex; align-items:center; justify-content:center; gap:6px; width:100%; text-align:center; padding:9px; border-radius:9px; background:#05C793; color:#053B2D; font-size:11.5px; font-weight:800; text-decoration:none; box-shadow:0 2px 8px rgba(5,199,147,0.25);">
-                    <i class="fa-solid fa-cart-shopping"></i> Pesan Sebelum Panen
+                   style="display:flex; align-items:center; justify-content:center; gap:6px; width:100%; text-align:center; padding:9px; border-radius:9px; background:#05C793; color:#053B2D; font-size:11.5px; font-weight:850; text-decoration:none; box-shadow:0 2px 8px rgba(5,199,147,0.25);">
+                    <i class="fa-solid fa-cart-shopping"></i> Pesan
                 </a>
             </div>
         </div>

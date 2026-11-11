@@ -48,7 +48,23 @@
 
     @media (max-width: 992px) {
         .listings-metrics-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .listings-metrics-grid > div:last-child {
+            grid-column: span 2;
+        }
+    }
+    @media (max-width: 480px) {
+        .listings-metrics-grid {
+            gap: 10px !important;
+            margin-bottom: 16px !important;
+        }
+        .listings-metrics-grid .card {
+            padding: 12px 14px !important;
+            border-radius: 14px !important;
+        }
+        .listings-headline h1 {
+            font-size: 20px !important;
         }
     }
     @media (max-width: 768px) {

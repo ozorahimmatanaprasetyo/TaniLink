@@ -25,7 +25,13 @@
             width: 50%;
             min-height: 100vh;
             min-height: 100dvh;
-            background: linear-gradient(140deg, #04614a, #16ca9d);
+            background-color: #073F32;
+            background-image: 
+                linear-gradient(135deg, rgba(4, 97, 74, 0.92) 0%, rgba(6, 62, 50, 0.88) 50%, rgba(7, 48, 38, 0.94) 100%),
+                url("{{ asset('images/landing/hero-farm.jpg') }}");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
             position: relative;
             display: flex;
             align-items: center;
@@ -33,9 +39,18 @@
             padding: 48px 56px;
             overflow: hidden;
         }
+        .register-left::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(22, 202, 157, 0.22) 0%, transparent 60%);
+            pointer-events: none;
+        }
         .register-left-inner {
             width: 100%;
             max-width: 440px;
+            position: relative;
+            z-index: 2;
         }
         .register-left-brand {
             margin-bottom: 28px;

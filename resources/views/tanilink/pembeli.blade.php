@@ -83,24 +83,78 @@
 }
 @media (max-width: 640px) {
     .consumer-hero {
-        padding: 22px 20px;
+        padding: 16px 18px;
+        min-height: auto;
+        border-radius: 16px;
     }
     .consumer-hero h2 {
-        font-size: 18px !important;
+        font-size: 16px !important;
+        margin-bottom: 6px !important;
+        line-height: 1.35 !important;
+    }
+    .consumer-hero p {
+        font-size: 11.5px !important;
+        margin-bottom: 12px !important;
+        line-height: 1.5 !important;
+    }
+    .consumer-hero a {
+        padding: 8px 16px !important;
+        font-size: 11px !important;
+        border-radius: 9px !important;
     }
     .consumer-hero-icon {
         display: none;
     }
     .consumer-featured-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
     }
 }
 @media (max-width: 480px) {
+    .consumer-headline {
+        margin-bottom: 14px;
+        gap: 8px;
+    }
+    .consumer-headline h1 {
+        font-size: 20px !important;
+        letter-spacing: -0.5px !important;
+        margin-bottom: 4px !important;
+    }
+    .consumer-headline p {
+        font-size: 12px !important;
+    }
+    .consumer-hero {
+        padding: 14px 16px;
+        margin-bottom: 14px;
+        border-radius: 14px;
+    }
     .consumer-metrics-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+        margin-bottom: 16px;
     }
     .consumer-metrics-grid > div:last-child {
-        grid-column: span 1;
+        grid-column: span 2 !important;
+    }
+    .consumer-metric-card {
+        padding: 12px 14px !important;
+        border-radius: 14px !important;
+    }
+    .consumer-metric-val {
+        font-size: 22px !important;
+        margin: 8px 0 4px !important;
+    }
+    .consumer-metric-icon {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 13px !important;
+        border-radius: 8px !important;
+    }
+    .consumer-metric-label {
+        font-size: 10.5px !important;
+    }
+    .consumer-metric-sub {
+        font-size: 9.5px !important;
     }
 }
 </style>
@@ -140,37 +194,37 @@
 
     {{-- 3 Metric Cards --}}
     <div class="consumer-metrics-grid">
-        <div class="card" style="padding:19px 20px;">
+        <div class="card consumer-metric-card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
-                <span>Pesanan Berjalan</span>
-                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:15px;"><i class="fa-solid fa-bag-shopping"></i></span>
+                <span class="consumer-metric-label">Pesanan Berjalan</span>
+                <span class="consumer-metric-icon" style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:15px;"><i class="fa-solid fa-bag-shopping"></i></span>
             </div>
-            <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
+            <div class="consumer-metric-val" style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
                 {{ str_pad($myOrders->count(), 2, '0', STR_PAD_LEFT) }}
             </div>
-            <div style="font-size:10px; color:#7B9187;">Aktif dalam pemantauan tanam</div>
+            <div class="consumer-metric-sub" style="font-size:10px; color:#7B9187;">Aktif dalam pemantauan tanam</div>
         </div>
 
-        <div class="card" style="padding:19px 20px;">
+        <div class="card consumer-metric-card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
-                <span>Total Nilai Pesanan</span>
-                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:15px;"><i class="fa-solid fa-receipt"></i></span>
+                <span class="consumer-metric-label">Total Nilai Pesanan</span>
+                <span class="consumer-metric-icon" style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:15px;"><i class="fa-solid fa-receipt"></i></span>
             </div>
-            <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
+            <div class="consumer-metric-val" style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
                 Rp {{ number_format($totalPreOrderValue, 0, ',', '.') }}
             </div>
-            <div style="font-size:10px; color:#7B9187;">Total komitmen pasokan</div>
+            <div class="consumer-metric-sub" style="font-size:10px; color:#7B9187;">Total komitmen pasokan</div>
         </div>
 
-        <div class="card" style="padding:19px 20px;">
+        <div class="card consumer-metric-card" style="padding:19px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7B8C86; font-weight:750;">
-                <span>Pesanan Selesai</span>
-                <span style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:15px;"><i class="fa-solid fa-circle-check"></i></span>
+                <span class="consumer-metric-label">Pesanan Selesai</span>
+                <span class="consumer-metric-icon" style="width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:#E9FBF3; color:#139B78; font-size:15px;"><i class="fa-solid fa-circle-check"></i></span>
             </div>
-            <div style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
+            <div class="consumer-metric-val" style="font-weight:850; font-size:25px; letter-spacing:-1px; margin:12px 0 6px; color:#172B29;">
                 {{ str_pad($myOrders->where('status', 'selesai')->count(), 2, '0', STR_PAD_LEFT) }}
             </div>
-            <div style="font-size:10px; color:#7B9187;">Hasil panen telah diterima</div>
+            <div class="consumer-metric-sub" style="font-size:10px; color:#7B9187;">Hasil panen telah diterima</div>
         </div>
     </div>
 
@@ -192,16 +246,15 @@
             <div class="consumer-featured-grid">
                 @foreach($catalog->take(3) as $item)
                 @php
-                    $imgUrl = $item->image_url ?? '';
+                    $imgSrc = $item->resolved_image_url;
                 @endphp
                 <div style="border:1px solid #E5ECEA; border-radius:16px; background:#fff; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between;">
-                    <div style="height:115px; display:grid; place-items:center; font-size:44px; background:linear-gradient(145deg, #FFE6D9, #FFF3E9); position:relative; overflow:hidden;">
-                        @if($imgUrl)
-                        <img src="{{ str_starts_with($imgUrl, 'http') ? $imgUrl : asset($imgUrl) }}" alt="{{ $item->commodity_name }}" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;">
-                        @else
-                        <i class="fa-solid fa-leaf" style="font-size:36px; color:#10B981;"></i>
-                        @endif
-                        <span style="position:absolute; top:8px; left:8px; font-size:9px; font-weight:900; background:#fff; border-radius:6px; padding:3px 7px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+                    <div style="height:120px; display:grid; place-items:center; background:#F0FDF4; position:relative; overflow:hidden;">
+                        <img src="{{ $imgSrc }}"
+                             alt="{{ $item->commodity_name }}"
+                             onerror="this.onerror=null; this.src='{{ asset('images/products/default-vegetable.jpg') }}';"
+                             style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;">
+                        <span style="position:absolute; top:8px; left:8px; font-size:9px; font-weight:900; background:rgba(255,255,255,0.95); border-radius:6px; padding:3px 7px; box-shadow:0 1px 3px rgba(0,0,0,0.08); z-index:1; color:#0C8D65;">
                             {{ $item->status === 'available' ? 'Tersedia' : 'Pesan Sebelum Panen' }}
                         </span>
                     </div>

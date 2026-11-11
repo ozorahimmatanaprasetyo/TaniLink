@@ -21,7 +21,13 @@ return new class extends Migration
         });
 
         // Modify column to be nullable
-        DB::statement('ALTER TABLE planting_progress MODIFY pre_order_id BIGINT UNSIGNED NULL DEFAULT NULL');
+        if (DB::getDriverName() === 'sqlite') {
+            Schema::table('planting_progress', function (Blueprint $table) {
+                $table->unsignedBigInteger('pre_order_id')->nullable()->change();
+            });
+        } else {
+            DB::statement('ALTER TABLE planting_progress MODIFY pre_order_id BIGINT UNSIGNED NULL DEFAULT NULL');
+        }
 
         // Re-add foreign key with nullable support
         Schema::table('planting_progress', function (Blueprint $table) {
@@ -45,7 +51,13 @@ return new class extends Migration
         // Set null values to 0 first (or remove rows) before making NOT NULL
         DB::table('planting_progress')->whereNull('pre_order_id')->delete();
 
-        DB::statement('ALTER TABLE planting_progress MODIFY pre_order_id BIGINT UNSIGNED NOT NULL');
+        if (DB::getDriverName() === 'sqlite') {
+            Schema::table('planting_progress', function (Blueprint $table) {
+                $table->unsignedBigInteger('pre_order_id')->nullable(false)->change();
+            });
+        } else {
+            DB::statement('ALTER TABLE planting_progress MODIFY pre_order_id BIGINT UNSIGNED NOT NULL');
+        }
 
         Schema::table('planting_progress', function (Blueprint $table) {
             $table->foreign('pre_order_id')

@@ -69,7 +69,16 @@
     }
     @media (max-width: 540px) {
         .orders-metrics-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 10px !important;
+            margin-bottom: 16px !important;
+        }
+        .orders-metrics-grid .card {
+            padding: 12px 14px !important;
+            border-radius: 14px !important;
+        }
+        .orders-headline h1 {
+            font-size: 20px !important;
         }
         .modal-grid-2,
         .modal-grid-3 {

@@ -190,11 +190,9 @@
                     <tr style="border-bottom:1px solid #EEF2F0;">
                         <td style="font-size:11px; font-weight:650; padding:15px 10px;">
                             <div style="display:flex; align-items:center; gap:10px;">
-                                @if($listing->image_url)
-                                <div style="width:38px; height:38px; border-radius:8px; overflow:hidden; border:1px solid #E5ECEA; flex-shrink:0;">
-                                    <img src="{{ str_starts_with($listing->image_url, 'http') ? $listing->image_url : asset($listing->image_url) }}" alt="" style="width:100%; height:100%; object-fit:cover;">
+                                <div style="width:38px; height:38px; border-radius:8px; overflow:hidden; border:1px solid #E5ECEA; flex-shrink:0; background:#F0FDF4;">
+                                    <img src="{{ $listing->resolved_image_url }}" alt="{{ $listing->commodity_name }}" onerror="this.onerror=null; this.src='{{ asset('images/products/default-vegetable.jpg') }}';" style="width:100%; height:100%; object-fit:cover;">
                                 </div>
-                                @endif
                                 <div>
                                     <b style="font-weight:850; color:#183B30;">{{ $listing->commodity_name }}</b>
                                     <div style="font-size:10px; color:#85958F; margin-top:2px;">{{ $listing->category }} &bull; {{ $listing->variety ?? '-' }}</div>
@@ -253,11 +251,9 @@
             @foreach($myListings as $listing)
             <div style="border:1px solid #E5ECEA; border-radius:14px; padding:14px; background:#F8FCFA; display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; gap:12px; align-items:flex-start;">
-                    @if($listing->image_url)
-                    <div style="width:56px; height:56px; border-radius:10px; overflow:hidden; border:1px solid #E5ECEA; flex-shrink:0;">
-                        <img src="{{ str_starts_with($listing->image_url, 'http') ? $listing->image_url : asset($listing->image_url) }}" alt="" style="width:100%; height:100%; object-fit:cover;">
+                    <div style="width:56px; height:56px; border-radius:10px; overflow:hidden; border:1px solid #E5ECEA; flex-shrink:0; background:#F0FDF4;">
+                        <img src="{{ $listing->resolved_image_url }}" alt="{{ $listing->commodity_name }}" onerror="this.onerror=null; this.src='{{ asset('images/products/default-vegetable.jpg') }}';" style="width:100%; height:100%; object-fit:cover;">
                     </div>
-                    @endif
                     <div style="flex:1; min-width:0;">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">
                             <b style="font-size:14px; font-weight:850; color:#183B30; line-height:1.3;">{{ $listing->commodity_name }}</b>

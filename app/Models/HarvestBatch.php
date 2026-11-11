@@ -120,6 +120,13 @@ class HarvestBatch extends Model
 
             $completedAtCol = "phase{$idx}_completed_at";
 
+            $phaseImages = [
+                1 => 'images/phases/fase-1-persiapan-lahan.jpg',
+                2 => 'images/phases/fase-4-vegetatif.jpg',
+                3 => 'images/phases/fase-5-pembuahan.jpg',
+                4 => 'images/phases/fase-6-panen.jpg',
+            ];
+
             $timeline[] = [
                 'index' => $idx,
                 'name' => $p['name'],
@@ -127,6 +134,7 @@ class HarvestBatch extends Model
                 'desc' => $p['desc'],
                 'status' => $status,
                 'completed_at' => $this->{$completedAtCol},
+                'image_url' => asset($phaseImages[$idx] ?? 'images/phases/fase-4-vegetatif.jpg'),
             ];
         }
 

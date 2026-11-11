@@ -172,33 +172,45 @@
             @foreach($batch->phase_timeline as $ph)
             <div style="border:1.5px solid {{ $ph['status'] === 'berlangsung' ? '#05C793' : ($ph['status'] === 'selesai' ? '#A7F3D0' : '#E5ECEA') }};
                         background:{{ $ph['status'] === 'berlangsung' ? '#F0FDF8' : ($ph['status'] === 'selesai' ? '#F8FCFA' : '#FAFCFB') }};
-                        border-radius:14px; padding:16px; position:relative;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-                    <span style="width:26px; height:26px; border-radius:8px; display:grid; place-items:center; font-size:12px; font-weight:850;
+                        border-radius:14px; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; position:relative;">
+                {{-- Banner Foto Fase Tanam --}}
+                <div style="height:100px; width:100%; position:relative; overflow:hidden; background:#E2E8F0;">
+                    <img src="{{ $ph['image_url'] }}"
+                         alt="{{ $ph['name'] }}"
+                         onerror="this.onerror=null; this.src='{{ asset('images/phases/fase-4-vegetatif.jpg') }}';"
+                         style="width:100%; height:100%; object-fit:cover;">
+                    <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.45) 100%);"></div>
+                    <span style="position:absolute; top:8px; left:8px; width:26px; height:26px; border-radius:8px; display:grid; place-items:center; font-size:12px; font-weight:850; box-shadow:0 2px 6px rgba(0,0,0,0.25);
                         {{ $ph['status'] === 'selesai' ? 'background:#05C793; color:#fff;' : ($ph['status'] === 'berlangsung' ? 'background:#0E7490; color:#fff;' : 'background:#E2E8F0; color:#64748B;') }}">
                         {{ $ph['status'] === 'selesai' ? '✓' : $ph['index'] }}
                     </span>
-                    @if($ph['status'] === 'selesai')
-                        <span style="font-size:10px; font-weight:800; color:#065F46; background:#D1FAE5; padding:2px 7px; border-radius:5px;">Selesai</span>
-                    @elseif($ph['status'] === 'berlangsung')
-                        <span style="font-size:10px; font-weight:800; color:#0E7490; background:#CFFAFE; padding:2px 7px; border-radius:5px;">Sedang Berlangsung</span>
-                    @else
-                        <span style="font-size:10px; font-weight:750; color:#94A3B8; background:#F1F5F9; padding:2px 7px; border-radius:5px;">Menunggu</span>
+                    <div style="position:absolute; top:8px; right:8px;">
+                        @if($ph['status'] === 'selesai')
+                            <span style="font-size:10px; font-weight:850; color:#065F46; background:rgba(209,250,229,0.95); padding:3px 8px; border-radius:6px;">Selesai</span>
+                        @elseif($ph['status'] === 'berlangsung')
+                            <span style="font-size:10px; font-weight:850; color:#0E7490; background:rgba(207,250,254,0.95); padding:3px 8px; border-radius:6px;">Berlangsung</span>
+                        @else
+                            <span style="font-size:10px; font-weight:750; color:#475569; background:rgba(241,245,249,0.95); padding:3px 8px; border-radius:6px;">Menunggu</span>
+                        @endif
+                    </div>
+                </div>
+
+                <div style="padding:14px; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                        <div style="font-size:13px; font-weight:850; color:#172B29; margin-bottom:4px;">
+                            {{ $ph['name'] }}
+                        </div>
+                        <p style="font-size:11px; color:#64748B; margin:0 0 10px; line-height:1.45;">
+                            {{ $ph['desc'] }}
+                        </p>
+                    </div>
+
+                    @if($ph['completed_at'])
+                    <div style="font-size:10px; color:#065F46; font-weight:700; border-top:1px dashed #A7F3D0; padding-top:8px;">
+                        <i class="fa-regular fa-clock"></i> Selesai: {{ $ph['completed_at']->timezone('Asia/Jakarta')->translatedFormat('d M Y, H:i') }} WIB
+                    </div>
                     @endif
                 </div>
-
-                <div style="font-size:13px; font-weight:850; color:#172B29; margin-bottom:4px;">
-                    {{ $ph['name'] }}
-                </div>
-                <p style="font-size:11px; color:#64748B; margin:0 0 10px; line-height:1.45;">
-                    {{ $ph['desc'] }}
-                </p>
-
-                @if($ph['completed_at'])
-                <div style="font-size:10px; color:#065F46; font-weight:700; border-top:1px dashed #A7F3D0; padding-top:8px;">
-                    <i class="fa-regular fa-clock"></i> Selesai: {{ $ph['completed_at']->timezone('Asia/Jakarta')->translatedFormat('d M Y, H:i') }} WIB
-                </div>
-                @endif
             </div>
             @endforeach
         </div>
@@ -232,13 +244,12 @@
             <div style="display:flex; flex-direction:column; gap:16px;">
                 @foreach($batch->plantingProgress()->latest('reported_at')->get() as $prog)
                 <div style="display:flex; gap:16px; border:1px solid #E5ECEA; border-radius:14px; padding:14px; background:#fff;">
-                    @if($prog->photo_url)
                     <div style="width:120px; height:90px; border-radius:10px; overflow:hidden; flex-shrink:0; background:#F8FCFA;">
-                        <img src="{{ str_starts_with($prog->photo_url, 'http') ? $prog->photo_url : asset($prog->photo_url) }}"
+                        <img src="{{ $prog->resolved_photo_url }}"
                              alt="{{ $prog->stage_name }}"
+                             onerror="this.onerror=null; this.src='{{ asset('images/phases/fase-4-vegetatif.jpg') }}';"
                              style="width:100%; height:100%; object-fit:cover;">
                     </div>
-                    @endif
                     <div style="flex:1;">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
                             <div>

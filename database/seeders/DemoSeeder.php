@@ -218,7 +218,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 3500,
                 'est_harvest' => 2800,
                 'price' => 32000,
-                'image_url' => 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/cabai-rawit.jpg',
                 'desc' => 'Cabai rawit merah varietas unggul dengan ketahanan simpan tinggi, cocok untuk kebutuhan industri sambal dan horeka.'
             ],
             [
@@ -230,7 +230,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 4000,
                 'est_harvest' => 3500,
                 'price' => 28000,
-                'image_url' => 'https://images.unsplash.com/photo-1590779033100-9f60a05a013d?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/cabai-keriting.jpg',
                 'desc' => 'Cabai keriting merah segar panen langsung dari kebun dataran tinggi dengan warna merah merata dan mengkilap.'
             ],
             [
@@ -242,7 +242,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 5000,
                 'est_harvest' => 4500,
                 'price' => 25000,
-                'image_url' => 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/bawang-merah.jpg',
                 'desc' => 'Bawang merah dengan umbi padat, aroma kuat, dan daya simpan alami hingga 2 bulan pasca panen.'
             ],
             [
@@ -254,7 +254,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 1500,
                 'est_harvest' => 1500,
                 'price' => 35000,
-                'image_url' => 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/tomat-ceri.jpg',
                 'desc' => 'Tomat ceri manis segar bernutrisi tinggi hasil budidaya greenhouse hidroponik bebas pestisida kimia sintetis.'
             ],
             [
@@ -266,7 +266,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 6000,
                 'est_harvest' => 8000,
                 'price' => 16000,
-                'image_url' => 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/kentang-granola.jpg',
                 'desc' => 'Kentang sayur kualitas premium ukuran seragam, cocok untuk olahan katering, perkedel, dan sayur sop restoran.'
             ],
             [
@@ -278,7 +278,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 3000,
                 'est_harvest' => 3500,
                 'price' => 14000,
-                'image_url' => 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/wortel.jpg',
                 'desc' => 'Wortel oranye cerah berkulit mulus dan renyah dengan rasa manis alami kaya vitamin A.'
             ],
             [
@@ -290,7 +290,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 7000,
                 'est_harvest' => 7500,
                 'price' => 9000,
-                'image_url' => 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/jagung-manis.jpg',
                 'desc' => 'Jagung manis bertongkol penuh dengan tingkat kemanisan brix 13-14, sangat diminati katering dan restoran.'
             ],
             [
@@ -302,7 +302,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 3500,
                 'est_harvest' => 5000,
                 'price' => 8000,
-                'image_url' => 'https://images.unsplash.com/photo-1628771065518-0d82f1938462?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/kubis.jpg',
                 'desc' => 'Kubis krop padat tanpa cacat ulat, disortir bersih sebelum penimbangan dan pengiriman.'
             ],
             [
@@ -314,7 +314,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 2000,
                 'est_harvest' => 1200,
                 'price' => 65000,
-                'image_url' => 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/bawang-putih.jpg',
                 'desc' => 'Bawang lanang berkhasiat herbal tinggi, disukai industri minuman kesehatan dan pengolahan jamu.'
             ],
             [
@@ -326,7 +326,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 3000,
                 'est_harvest' => 2500,
                 'price' => 38000,
-                'image_url' => 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/jahe-merah.jpg',
                 'desc' => 'Rimpang jahe merah segar berumur panen 10 bulan dengan kadar minyak atsiri pekat dan pedas mantap.'
             ],
             [
@@ -338,7 +338,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 2500,
                 'est_harvest' => 2000,
                 'price' => 24000,
-                'image_url' => 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/brokoli.jpg',
                 'desc' => 'Kuntum bunga brokoli hijau rapat segar, dipetik pagi hari menjelang serah terima kontrak.'
             ],
             [
@@ -350,7 +350,7 @@ class DemoSeeder extends Seeder
                 'land_area' => 3000,
                 'est_harvest' => 3600,
                 'price' => 18000,
-                'image_url' => 'https://images.unsplash.com/photo-1570586435893-ab4e76b2d039?w=600&auto=format&fit=crop&q=80',
+                'image_url' => 'images/products/labu-madu.jpg',
                 'desc' => 'Labu madu manis bertekstur pulen lembut dan legit, cocok untuk makanan pendamping ASI dan menu bakery.'
             ],
         ];
